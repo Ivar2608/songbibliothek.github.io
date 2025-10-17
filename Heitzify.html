@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heitzify Songbibliothek</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Heitzify Gradient (Cyan to Fuchsia) -->
+    <!-- Application Structure Plan: A dashboard layout was chosen to provide an immediate overview and easy exploration. Key stats at the top offer a quick summary. Interactive controls (search, artist filter) allow users to drill down into the data. The main content is a filterable list for detailed viewing. This structure moves from a broad summary to specific details, guiding the user's discovery process effectively. A dark mode toggle has been added for user comfort. -->
+    <!-- Visualization & Content Choices: 1. Summary Stats: Inform -> Stat Cards (HTML/Tailwind) -> Static display -> Provides immediate, high-level context. 2. Full Song List: Organize/Explore -> Filterable List (HTML/JS) -> Real-time search and dropdown filtering -> Allows users to easily find specific songs or view an artist's entire collection. The chart section was removed per user request. NO SVG/Mermaid used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        .dark body {
+            background-color: #0f172a;
+            color: #f1f5f9;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0;
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+    </style>
+</head>
+<body class="antialiased transition-colors duration-300">
+
+    <div class="container mx-auto p-4 sm:p-6 md:p-8">
+        
+        <div class="relative text-center mb-12">
+            <h1 class="text-5xl font-bold bg-gradient-to-r from-cyan-400 to-fuchsia-500 text-transparent bg-clip-text pb-2 px-16">Heitzify Songbibliothek</h1>
+            <p class="text-slate-600 dark:text-slate-400 mt-2">Eine interaktive Übersicht deiner Musiksammlung.</p>
+            <button id="theme-toggle" class="absolute top-0 right-0 p-2 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 dark:focus:ring-offset-slate-900 focus:ring-cyan-500" aria-label="Toggle Dark Mode">
+                <svg id="theme-icon-light" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                <svg id="theme-icon-dark" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+            </button>
+        </div>
+
+        <main>
+            <section id="stats" class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md text-center transition-colors duration-300">
+                    <h2 class="text-lg font-semibold text-slate-500 dark:text-slate-400">Gesamtzahl Songs</h2>
+                    <p id="total-songs" class="text-4xl font-bold text-cyan-600 dark:text-cyan-400 mt-2">0</p>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md text-center transition-colors duration-300">
+                    <h2 class="text-lg font-semibold text-slate-500 dark:text-slate-400">Einzigartige Künstler</h2>
+                    <p id="unique-artists" class="text-4xl font-bold text-cyan-600 dark:text-cyan-400 mt-2">0</p>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md text-center transition-colors duration-300">
+                    <h2 class="text-lg font-semibold text-slate-500 dark:text-slate-400">Top Künstler</h2>
+                    <p id="top-artist" class="text-2xl sm:text-3xl font-bold text-cyan-600 dark:text-cyan-400 mt-2 truncate">-</p>
+                </div>
+            </section>
+
+            <section id="song-list-section" class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md transition-colors duration-300">
+                <h2 class="text-2xl font-bold text-slate-700 dark:text-slate-200">Vollständige Songliste</h2>
+                <p class="text-slate-600 dark:text-slate-400 mb-6">Hier findest du alle deine Songs. Du kannst die Liste durchsuchen, um schnell einen bestimmten Titel oder Interpreten zu finden, oder die Auswahl nach einem bestimmten Künstler filtern, um nur dessen Songs anzuzeigen.</p>
+                <div class="flex flex-col sm:flex-row gap-4 mb-6">
+                    <input type="text" id="search-input" placeholder="Suche nach Song oder Künstler..." class="flex-grow p-3 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition-colors duration-300">
+                    <select id="artist-filter" class="p-3 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition-colors duration-300">
+                        <option value="all">Alle Künstler</option>
+                    </select>
+                </div>
+                <div class="overflow-y-auto max-h-[60vh] pr-2">
+                     <ul id="song-list" class="space-y-2">
+                     </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const lightIcon = document.getElementById('theme-icon-light');
+            const darkIcon = document.getElementById('theme-icon-dark');
+
+            const applyTheme = (theme) => {
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                    lightIcon.classList.add('hidden');
+                    darkIcon.classList.remove('hidden');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    lightIcon.classList.remove('hidden');
+                    darkIcon.classList.add('hidden');
+                }
+            };
+
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
+
+            themeToggleBtn.addEventListener('click', () => {
+                const isDark = document.documentElement.classList.toggle('dark');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                lightIcon.classList.toggle('hidden', isDark);
+                darkIcon.classList.toggle('hidden', !isDark);
+            });
+
+            const songData = [
+                { artist: "ABBA", title: "Mamma Mia" },
+                { artist: "AnnenMayKantereit", title: "Ausgehen" },
+                { artist: "AnnenMayKantereit", title: "Barfuß am Klavier" },
+                { artist: "AnnenMayKantereit", title: "Oft gefragt" },
+                { artist: "AnnenMayKantereit", title: "Pocahontas" },
+                { artist: "Banaroo", title: "Dubi Dam Dam" },
+                { artist: "Billy Joel", title: "Uptown Girl" },
+                { artist: "Coldplay", title: "Speed Of Sound (Album Version)" },
+                { artist: "Disney's Aladdin", title: "Ein Traum wird wahr [DUET]" },
+                { artist: "Disney's Aladdin", title: "Prinz Ali" },
+                { artist: "Disney's Arielle", title: "Nur ein Kuss" },
+                { artist: "Disney's Arielle", title: "Unter dem Meer" },
+                { artist: "Disney's Aristocats", title: "Katzen brauchen furchtbar viel Musik [DUET]" },
+                { artist: "Disney's Chip & Chap", title: "Intro" },
+                { artist: "Disney's Das Dschungelbuch", title: "Ich wäre gern wie Du" },
+                { artist: "Disney's Das Dschungelbuch", title: "Ich wäre gern wie Du [DUET]" },
+                { artist: "Disney's Das Dschungelbuch", title: "Probier's mal mit Gemütlichkeit" },
+                { artist: "Disney's Die Eiskönigin", title: "Lass jetzt los" },
+                { artist: "Disney's DuckTales", title: "Theme" },
+                { artist: "Disney's Encanto", title: "Druck" },
+                { artist: "Disney's Gummibärenbande", title: "Theme" },
+                { artist: "Disney's Hercules", title: "Ich werd's noch beweisen!" },
+                { artist: "Disney's Hercules", title: "Ich will keinen Mann" },
+                { artist: "Disney's Käpt'n Balu und seine tollkühne Crew", title: "Intro" },
+                { artist: "Disney's Der König der Löwen", title: "Der ewige Kreis [DUET]" },
+                { artist: "Disney's Der König der Löwen", title: "Hakuna Matata" },
+                { artist: "Disney's Der König der Löwen", title: "Hakuna Matata [DUET]" },
+                { artist: "Disney's Der König der Löwen", title: "Ich will jetzt gleich König sein" },
+                { artist: "Disney's Der König der Löwen", title: "Kann es wirklich Liebe sein" },
+                { artist: "Disney's Mulan", title: "Sei ein Mann" },
+                { artist: "Disney's Pocahontas", title: "Das Farbenspiel des Winds" },
+                { artist: "Disney's Tarzan", title: "Zwei Welten (Musical)" },
+                { artist: "Disney's Tarzan", title: "So ein Mann (Phil Collins)" },
+                { artist: "Disney's Tarzan", title: "Dir gehört mein Herz (Phil Collins & Eva Mattes)" },
+                { artist: "Disney's Toy Story", title: "Du hast 'n Freund in mir" },
+                { artist: "Disney's Vaiana", title: "Voll gerne (Andreas Bourani)" },
+                { artist: "Disney's Vaiana", title: "Ich bin bereit (Debbie van Dooren)" },
+                { artist: "Disney's Vaiana", title: "Ich bin bereit (Helene Fischer)" },
+                { artist: "DJ BoBo", title: "Chihuahua" },
+                { artist: "DJ Ötzi & Nik P.", title: "Ein Stern (... der deinen Namen trägt)" },
+                { artist: "Echt", title: "Du trägst keine Liebe in dir" },
+                { artist: "Erste Allgemeine Verunsicherung", title: "Ding Dong" },
+                { artist: "Extreme", title: "More Than Words [DUET]" },
+                { artist: "Geier Sturzflug", title: "Bruttosozialprodukt" },
+                { artist: "Helene Fischer", title: "Atemlos durch die Nacht" },
+                { artist: "Helene Fischer", title: "Herzbeben" },
+                { artist: "Hermes House Band", title: "Country Roads" },
+                { artist: "Hoobastank", title: "The Reason" },
+                { artist: "Höhner", title: "Viva Colonia (Da simmer dabei, dat is prima!)" },
+                { artist: "John Denver", title: "Take Me Home, Country Roads" },
+                { artist: "Khaled", title: "Aïcha" },
+                { artist: "Lady Gaga", title: "Paparazzi" },
+                { artist: "Leonard Cohen", title: "Hallelujah" },
+                { artist: "Mark Forster", title: "Übermorgen" },
+                { artist: "Matthias Reim", title: "Verdammt - ich lieb' dich" },
+                { artist: "Mickie Krause", title: "Laudato si" },
+                { artist: "Olaf Henning", title: "Cowboy und Indianer (Komm hol' das Lasso raus)" },
+                { artist: "Oliver Pocher", title: "Schwarz und weiß" },
+                { artist: "Paramore", title: "Still Into You" },
+                { artist: "Peter Maffay", title: "Und es war Sommer" },
+                { artist: "Philipp Dittberner & Marv", title: "Wolke 4" },
+                { artist: "Philipp Poisel", title: "Ich will nur (Live)" },
+                { artist: "Philipp Poisel", title: "Wie soll ein Mensch das ertragen" },
+                { artist: "Pur", title: "Hitmix" },
+                { artist: "Rednex", title: "Cotton Eye Joe" },
+                { artist: "Right Said Fred", title: "You're My Mate" },
+                { artist: "Santiano", title: "Alle die mit uns auf Kaperfahrt fahren" },
+                { artist: "Scorpions", title: "Wind Of Change" },
+                { artist: "Tabaluga & Lilli", title: "Nessaja (Peter Maffay)" },
+                { artist: "Taylor Swift", title: "Anti-Hero" },
+                { artist: "Taylor Swift", title: "Bad Blood" },
+                { artist: "Taylor Swift", title: "Blank Space" },
+                { artist: "Taylor Swift", title: "Cruel Summer" },
+                { artist: "Taylor Swift", title: "I Knew You Were Trouble" },
+                { artist: "Taylor Swift", title: "Karma" },
+                { artist: "Taylor Swift", title: "Miss Americana & The Heartbreak Prince" },
+                { artist: "Taylor Swift feat. Ice Spice", title: "Karma" },
+                { artist: "Wir sind Helden", title: "Denkmal" },
+                { artist: "Wolfgang Petry", title: "Wahsinns (Live)" },
+            ];
+
+            const songListEl = document.getElementById('song-list');
+            const searchInputEl = document.getElementById('search-input');
+            const artistFilterEl = document.getElementById('artist-filter');
+
+            function renderSongList(songs) {
+                songListEl.innerHTML = '';
+                if (songs.length === 0) {
+                    songListEl.innerHTML = `<li class="text-slate-500 dark:text-slate-400 text-center p-4">Keine Songs gefunden.</li>`;
+                    return;
+                }
+                const sortedSongs = songs.sort((a,b) => a.title.localeCompare(b.title));
+                sortedSongs.forEach((song, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'flex items-center p-3 bg-slate-50 dark:bg-slate-800/[.5] rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors duration-200';
+                    li.innerHTML = `
+                        <span class="text-slate-500 dark:text-slate-400 font-medium w-8 text-right mr-4">${index + 1}.</span>
+                        <div class="flex-grow">
+                            <p class="font-semibold text-slate-800 dark:text-slate-100">${song.title}</p>
+                            <p class="text-sm text-slate-600 dark:text-slate-400">${song.artist}</p>
+                        </div>
+                    `;
+                    songListEl.appendChild(li);
+                });
+            }
+            
+            function calculateAndDisplayStats() {
+                const totalSongs = songData.length;
+                const artists = songData.map(s => s.artist);
+                const uniqueArtists = [...new Set(artists)];
+                
+                const artistCounts = artists.reduce((acc, artist) => {
+                    acc[artist] = (acc[artist] || 0) + 1;
+                    return acc;
+                }, {});
+
+                const topArtistEntry = Object.entries(artistCounts).sort((a, b) => b[1] - a[1])[0];
+                
+                document.getElementById('total-songs').textContent = totalSongs;
+                document.getElementById('unique-artists').textContent = uniqueArtists.length;
+                document.getElementById('top-artist').textContent = topArtistEntry ? `${topArtistEntry[0]} (${topArtistEntry[1]})` : '-';
+
+                return { uniqueArtists };
+            }
+
+            function setupFilters(uniqueArtists) {
+                uniqueArtists.sort((a,b) => a.localeCompare(b)).forEach(artist => {
+                    const option = document.createElement('option');
+                    option.value = artist;
+                    option.textContent = artist;
+                    artistFilterEl.appendChild(option);
+                });
+            }
+
+            function filterAndRender() {
+                const searchTerm = searchInputEl.value.toLowerCase();
+                const selectedArtist = artistFilterEl.value;
+
+                const filteredSongs = songData.filter(song => {
+                    const matchesSearch = song.title.toLowerCase().includes(searchTerm) || song.artist.toLowerCase().includes(searchTerm);
+                    const matchesArtist = selectedArtist === 'all' || song.artist === selectedArtist;
+                    return matchesSearch && matchesArtist;
+                });
+                renderSongList(filteredSongs);
+            }
+
+            const { uniqueArtists } = calculateAndDisplayStats();
+            setupFilters(uniqueArtists);
+            filterAndRender();
+
+            searchInputEl.addEventListener('input', filterAndRender);
+            artistFilterEl.addEventListener('change', filterAndRender);
+        });
+    </script>
+</body>
+</html>
+
+
