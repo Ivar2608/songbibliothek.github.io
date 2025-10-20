@@ -56,6 +56,9 @@
             background-color: #083344 !important;
             border-color: #06b6d4 !important;
         }
+        .modal {
+            transition: opacity 0.25s ease;
+        }
     </style>
 </head>
 <body class="antialiased transition-colors duration-300">
@@ -90,11 +93,17 @@
             <section id="song-list-section" class="bg-slate-50 dark:bg-slate-900 p-6 rounded-lg shadow-md transition-colors duration-300">
                 <h2 class="text-2xl font-bold text-slate-700 dark:text-slate-200">Vollständige Songliste</h2>
                 <p class="text-slate-600 dark:text-slate-400 mb-6">Hier findest du alle deine Songs. Du kannst die Liste durchsuchen, um schnell einen bestimmten Titel oder Interpreten zu finden, oder die Auswahl nach einem bestimmten Künstler filtern, um nur dessen Songs anzuzeigen.</p>
-                <div class="flex flex-col sm:flex-row gap-4 mb-4">
-                    <input type="text" id="search-input" placeholder="Suche nach Song oder Künstler..." class="flex-grow p-3 border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition-colors duration-300">
-                    <select id="artist-filter" class="p-3 border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition-all duration-300">
+                <div class="flex flex-col md:flex-row gap-4 mb-4 items-center">
+                    <input type="text" id="search-input" placeholder="Suche nach Song oder Künstler..." class="flex-grow w-full md:w-auto p-3 border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition-colors duration-300">
+                    <select id="artist-filter" class="p-3 w-full md:w-56 border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition-all duration-300">
                         <option value="all">Alle Künstler</option>
                     </select>
+                    <button id="random-song-btn" class="w-full md:w-auto flex items-center justify-center gap-2 p-3 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors duration-300 font-semibold">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M15.33 3.52a.75.75 0 01.428 1.316l-3.033 3.033a1.5 1.5 0 01-2.122 0L7.57 4.836A.75.75 0 018.63 3.77l1.745 1.745a.25.25 0 00.354 0L13.5 2.744a.75.75 0 011.33.428L12.5 5.5h2.75a.75.75 0 010 1.5H12.5l2.33 2.33a.75.75 0 11-1.06 1.06L10.738 7.357a1.5 1.5 0 010-2.122L13.77 2.2a.75.75 0 011.56.54v2.78zm-10 4.15a.75.75 0 11-1.06-1.06L7.303 3.577a1.5 1.5 0 012.122 0l3.033 3.033a.75.75 0 11-1.06 1.06L8.36 4.637a.25.25 0 00-.354 0L5.262 7.382zM4.67 15.17a.75.75 0 01-1.33-.428L5.5 12.36V9.75a.75.75 0 011.5 0V12.5l-2.33 2.33a.75.75 0 01-1.06-1.06l3.033-3.033a1.5 1.5 0 012.122 0l3.033 3.033a.75.75 0 01-1.06 1.06L9.262 12.618a.25.25 0 00-.354 0l-2.745 2.745z" clip-rule="evenodd" />
+                        </svg>
+                        Zufall
+                    </button>
                 </div>
                  <div class="flex items-center gap-4 mb-6">
                     <span class="text-sm font-medium text-slate-600 dark:text-slate-400">Sortieren nach:</span>
@@ -136,6 +145,19 @@
       </svg>
     </button>
 
+    <div id="random-song-modal" class="modal hidden fixed inset-0 bg-slate-900 bg-opacity-70 flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none">
+        <div class="bg-slate-50 dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-md relative transform scale-95 transition-all duration-300">
+            <div class="p-6 text-center">
+                <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">Dein zufälliger Song!</h3>
+                <div id="random-song-content" class="my-6">
+                    <p class="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-fuchsia-500 text-transparent bg-clip-text" id="random-song-title">-</p>
+                    <p class="text-lg text-slate-500 dark:text-slate-400 mt-1" id="random-song-artist">-</p>
+                </div>
+                <button id="close-modal-btn" class="mt-4 px-6 py-2 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-md hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors duration-300">Schließen</button>
+            </div>
+        </div>
+    </div>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -143,6 +165,11 @@
             const lightIcon = document.getElementById('theme-icon-light');
             const darkIcon = document.getElementById('theme-icon-dark');
             const backToTopBtn = document.getElementById('back-to-top');
+            const randomSongBtn = document.getElementById('random-song-btn');
+            const randomSongModal = document.getElementById('random-song-modal');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const randomSongTitleEl = document.getElementById('random-song-title');
+            const randomSongArtistEl = document.getElementById('random-song-artist');
 
             const applyTheme = (theme) => {
                 if (theme === 'dark') {
@@ -178,7 +205,6 @@
             backToTopBtn.addEventListener('click', () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
-
 
             const songData = [
                 { artist: "ABBA", title: "Mamma Mia" },
@@ -341,18 +367,20 @@
                     artistFilterEl.appendChild(option);
                 });
             }
-
-            function filterAndRender() {
+            
+            function getFilteredSongs() {
                 const searchTerm = searchInputEl.value.toLowerCase();
                 const selectedArtist = artistFilterEl.value;
-                
-                artistFilterEl.classList.toggle('filter-active', selectedArtist !== 'all');
-
-                const filteredSongs = songData.filter(song => {
+                return songData.filter(song => {
                     const matchesSearch = song.title.toLowerCase().includes(searchTerm) || song.artist.toLowerCase().includes(searchTerm);
                     const matchesArtist = selectedArtist === 'all' || song.artist === selectedArtist;
                     return matchesSearch && matchesArtist;
                 });
+            }
+
+            function filterAndRender() {
+                artistFilterEl.classList.toggle('filter-active', artistFilterEl.value !== 'all');
+                const filteredSongs = getFilteredSongs();
                 renderSongList(filteredSongs);
             }
             
@@ -375,6 +403,44 @@
 
             searchInputEl.addEventListener('input', filterAndRender);
             artistFilterEl.addEventListener('change', filterAndRender);
+
+            function showModal() {
+                randomSongModal.classList.remove('hidden');
+                setTimeout(() => {
+                    randomSongModal.classList.remove('opacity-0', 'pointer-events-none');
+                    randomSongModal.querySelector('div').classList.remove('scale-95');
+                }, 10);
+            }
+
+            function hideModal() {
+                randomSongModal.classList.add('opacity-0');
+                randomSongModal.querySelector('div').classList.add('scale-95');
+                setTimeout(() => {
+                    randomSongModal.classList.add('hidden', 'pointer-events-none');
+                }, 300);
+            }
+
+            randomSongBtn.addEventListener('click', () => {
+                const currentSongs = getFilteredSongs();
+                if (currentSongs.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * currentSongs.length);
+                    const randomSong = currentSongs[randomIndex];
+                    randomSongTitleEl.textContent = randomSong.title;
+                    randomSongArtistEl.textContent = randomSong.artist;
+                } else {
+                    randomSongTitleEl.textContent = 'Kein Song gefunden';
+                    randomSongArtistEl.textContent = 'Bitte ändere deine Filterauswahl.';
+                }
+                showModal();
+            });
+
+            closeModalBtn.addEventListener('click', hideModal);
+            randomSongModal.addEventListener('click', (event) => {
+                if (event.target === randomSongModal) {
+                    hideModal();
+                }
+            });
+
         });
     </script>
 </body>
