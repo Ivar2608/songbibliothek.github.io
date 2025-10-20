@@ -48,6 +48,14 @@
         .dark ::-webkit-scrollbar-thumb:hover {
             background: #64748b;
         }
+        .filter-active {
+            background-color: #cffafe !important;
+            border-color: #22d3ee !important;
+        }
+        .dark .filter-active {
+            background-color: #083344 !important;
+            border-color: #06b6d4 !important;
+        }
     </style>
 </head>
 <body class="antialiased transition-colors duration-300">
@@ -82,11 +90,18 @@
             <section id="song-list-section" class="bg-slate-50 dark:bg-slate-900 p-6 rounded-lg shadow-md transition-colors duration-300">
                 <h2 class="text-2xl font-bold text-slate-700 dark:text-slate-200">Vollständige Songliste</h2>
                 <p class="text-slate-600 dark:text-slate-400 mb-6">Hier findest du alle deine Songs. Du kannst die Liste durchsuchen, um schnell einen bestimmten Titel oder Interpreten zu finden, oder die Auswahl nach einem bestimmten Künstler filtern, um nur dessen Songs anzuzeigen.</p>
-                <div class="flex flex-col sm:flex-row gap-4 mb-6">
+                <div class="flex flex-col sm:flex-row gap-4 mb-4">
                     <input type="text" id="search-input" placeholder="Suche nach Song oder Künstler..." class="flex-grow p-3 border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition-colors duration-300">
-                    <select id="artist-filter" class="p-3 border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition-colors duration-300">
+                    <select id="artist-filter" class="p-3 border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition-all duration-300">
                         <option value="all">Alle Künstler</option>
                     </select>
+                </div>
+                 <div class="flex items-center gap-4 mb-6">
+                    <span class="text-sm font-medium text-slate-600 dark:text-slate-400">Sortieren nach:</span>
+                    <div class="flex gap-2">
+                        <button id="sort-by-title" class="sort-btn px-4 py-2 text-sm rounded-md transition-colors duration-300">Titel</button>
+                        <button id="sort-by-artist" class="sort-btn px-4 py-2 text-sm rounded-md transition-colors duration-300">Künstler</button>
+                    </div>
                 </div>
                 <div class="overflow-y-auto max-h-[60vh] pr-2">
                      <ul id="song-list" class="space-y-2">
@@ -105,13 +120,29 @@
             </section>
 
         </main>
+        
+        <footer class="text-center mt-12 pt-8 border-t border-slate-200 dark:border-slate-800">
+            <p class="text-slate-500 dark:text-slate-400">Heitzify Songbibliothek</p>
+            <p id="footer-song-count" class="text-sm text-slate-400 dark:text-slate-500 mt-1"></p>
+            <p class="text-xs text-slate-400 dark:text-slate-500 mt-6 max-w-2xl mx-auto">
+                 Heitzify ist unsere persönliche Erweiterung für das fantastische Open-Source-Projekt <strong>UltraStar Deluxe</strong>. Als passionierte Mitwirkende des Originals wollen wir eine vereinfachte Erfahrung schaffen: Wir bieten eine handverlesene, stetig wachsende Songbibliothek, die sofort und ohne Umwege für den perfekten Karaoke-Abend bereitsteht.
+            </p>
+        </footer>
     </div>
+    
+    <button id="back-to-top" class="hidden fixed bottom-5 right-5 bg-cyan-500 hover:bg-cyan-600 text-white p-3 rounded-full shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 dark:focus:ring-offset-slate-900 focus:ring-cyan-500">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+      </svg>
+    </button>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const themeToggleBtn = document.getElementById('theme-toggle');
             const lightIcon = document.getElementById('theme-icon-light');
             const darkIcon = document.getElementById('theme-icon-dark');
+            const backToTopBtn = document.getElementById('back-to-top');
 
             const applyTheme = (theme) => {
                 if (theme === 'dark') {
@@ -135,6 +166,19 @@
                 lightIcon.classList.toggle('hidden', isDark);
                 darkIcon.classList.toggle('hidden', !isDark);
             });
+            
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) {
+                    backToTopBtn.classList.remove('hidden');
+                } else {
+                    backToTopBtn.classList.add('hidden');
+                }
+            });
+
+            backToTopBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
 
             const songData = [
                 { artist: "ABBA", title: "Mamma Mia" },
@@ -221,6 +265,23 @@
             const songListEl = document.getElementById('song-list');
             const searchInputEl = document.getElementById('search-input');
             const artistFilterEl = document.getElementById('artist-filter');
+            const sortByTitleBtn = document.getElementById('sort-by-title');
+            const sortByArtistBtn = document.getElementById('sort-by-artist');
+            let currentSort = 'title';
+
+            function updateSortButtons() {
+                if (currentSort === 'title') {
+                    sortByTitleBtn.classList.add('bg-cyan-500', 'text-white');
+                    sortByTitleBtn.classList.remove('bg-slate-200', 'dark:bg-slate-700', 'text-slate-700', 'dark:text-slate-200');
+                    sortByArtistBtn.classList.add('bg-slate-200', 'dark:bg-slate-700', 'text-slate-700', 'dark:text-slate-200');
+                    sortByArtistBtn.classList.remove('bg-cyan-500', 'text-white');
+                } else {
+                    sortByArtistBtn.classList.add('bg-cyan-500', 'text-white');
+                    sortByArtistBtn.classList.remove('bg-slate-200', 'dark:bg-slate-700', 'text-slate-700', 'dark:text-slate-200');
+                    sortByTitleBtn.classList.add('bg-slate-200', 'dark:bg-slate-700', 'text-slate-700', 'dark:text-slate-200');
+                    sortByTitleBtn.classList.remove('bg-cyan-500', 'text-white');
+                }
+            }
 
             function renderSongList(songs) {
                 songListEl.innerHTML = '';
@@ -228,7 +289,15 @@
                     songListEl.innerHTML = `<li class="text-slate-500 dark:text-slate-400 text-center p-4">Keine Songs gefunden.</li>`;
                     return;
                 }
-                const sortedSongs = songs.sort((a,b) => a.title.localeCompare(b.title));
+
+                const sortedSongs = [...songs].sort((a, b) => {
+                    if (currentSort === 'artist') {
+                        const artistCompare = a.artist.localeCompare(b.artist);
+                        if (artistCompare !== 0) return artistCompare;
+                    }
+                    return a.title.localeCompare(b.title);
+                });
+
                 sortedSongs.forEach((song, index) => {
                     const li = document.createElement('li');
                     li.className = 'flex items-center p-3 bg-slate-100 dark:bg-slate-800/[.5] rounded-md hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors duration-200';
@@ -258,6 +327,8 @@
                 document.getElementById('total-songs').textContent = totalSongs;
                 document.getElementById('unique-artists').textContent = uniqueArtists.length;
                 document.getElementById('top-artist').textContent = topArtistEntry ? `${topArtistEntry[0]} (${topArtistEntry[1]})` : '-';
+                document.getElementById('footer-song-count').textContent = `${totalSongs} Songs in der Bibliothek`;
+
 
                 return { uniqueArtists };
             }
@@ -274,6 +345,8 @@
             function filterAndRender() {
                 const searchTerm = searchInputEl.value.toLowerCase();
                 const selectedArtist = artistFilterEl.value;
+                
+                artistFilterEl.classList.toggle('filter-active', selectedArtist !== 'all');
 
                 const filteredSongs = songData.filter(song => {
                     const matchesSearch = song.title.toLowerCase().includes(searchTerm) || song.artist.toLowerCase().includes(searchTerm);
@@ -282,9 +355,22 @@
                 });
                 renderSongList(filteredSongs);
             }
+            
+            sortByTitleBtn.addEventListener('click', () => {
+                currentSort = 'title';
+                updateSortButtons();
+                filterAndRender();
+            });
+
+            sortByArtistBtn.addEventListener('click', () => {
+                currentSort = 'artist';
+                updateSortButtons();
+                filterAndRender();
+            });
 
             const { uniqueArtists } = calculateAndDisplayStats();
             setupFilters(uniqueArtists);
+            updateSortButtons();
             filterAndRender();
 
             searchInputEl.addEventListener('input', filterAndRender);
