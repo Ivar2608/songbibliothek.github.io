@@ -65,26 +65,26 @@
 
         <main>
             <section id="stats" class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md text-center transition-colors duration-300">
+                <div class="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg shadow-md text-center transition-colors duration-300">
                     <h2 class="text-lg font-semibold text-slate-500 dark:text-slate-400">Gesamtzahl Songs</h2>
                     <p id="total-songs" class="text-4xl font-bold text-cyan-600 dark:text-cyan-400 mt-2">0</p>
                 </div>
-                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md text-center transition-colors duration-300">
+                <div class="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg shadow-md text-center transition-colors duration-300">
                     <h2 class="text-lg font-semibold text-slate-500 dark:text-slate-400">Einzigartige Künstler</h2>
                     <p id="unique-artists" class="text-4xl font-bold text-cyan-600 dark:text-cyan-400 mt-2">0</p>
                 </div>
-                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md text-center transition-colors duration-300">
+                <div class="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg shadow-md text-center transition-colors duration-300">
                     <h2 class="text-lg font-semibold text-slate-500 dark:text-slate-400">Top Künstler</h2>
                     <p id="top-artist" class="text-2xl sm:text-3xl font-bold text-cyan-600 dark:text-cyan-400 mt-2 truncate">-</p>
                 </div>
             </section>
 
-            <section id="song-list-section" class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md transition-colors duration-300">
+            <section id="song-list-section" class="bg-slate-50 dark:bg-slate-900 p-6 rounded-lg shadow-md transition-colors duration-300">
                 <h2 class="text-2xl font-bold text-slate-700 dark:text-slate-200">Vollständige Songliste</h2>
                 <p class="text-slate-600 dark:text-slate-400 mb-6">Hier findest du alle deine Songs. Du kannst die Liste durchsuchen, um schnell einen bestimmten Titel oder Interpreten zu finden, oder die Auswahl nach einem bestimmten Künstler filtern, um nur dessen Songs anzuzeigen.</p>
                 <div class="flex flex-col sm:flex-row gap-4 mb-6">
-                    <input type="text" id="search-input" placeholder="Suche nach Song oder Künstler..." class="flex-grow p-3 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition-colors duration-300">
-                    <select id="artist-filter" class="p-3 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition-colors duration-300">
+                    <input type="text" id="search-input" placeholder="Suche nach Song oder Künstler..." class="flex-grow p-3 border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition-colors duration-300">
+                    <select id="artist-filter" class="p-3 border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition-colors duration-300">
                         <option value="all">Alle Künstler</option>
                     </select>
                 </div>
@@ -134,36 +134,36 @@
                 { artist: "Banaroo", title: "Dubi Dam Dam" },
                 { artist: "Billy Joel", title: "Uptown Girl" },
                 { artist: "Coldplay", title: "Speed Of Sound (Album Version)" },
-                { artist: "Disney's Aladdin", title: "Ein Traum wird wahr [DUET]" },
-                { artist: "Disney's Aladdin", title: "Prinz Ali" },
-                { artist: "Disney's Arielle", title: "Nur ein Kuss" },
-                { artist: "Disney's Arielle", title: "Unter dem Meer" },
-                { artist: "Disney's Aristocats", title: "Katzen brauchen furchtbar viel Musik [DUET]" },
-                { artist: "Disney's Chip & Chap", title: "Intro" },
-                { artist: "Disney's Das Dschungelbuch", title: "Ich wäre gern wie Du" },
-                { artist: "Disney's Das Dschungelbuch", title: "Ich wäre gern wie Du [DUET]" },
-                { artist: "Disney's Das Dschungelbuch", title: "Probier's mal mit Gemütlichkeit" },
-                { artist: "Disney's Die Eiskönigin", title: "Lass jetzt los" },
-                { artist: "Disney's DuckTales", title: "Theme" },
-                { artist: "Disney's Encanto", title: "Druck" },
-                { artist: "Disney's Gummibärenbande", title: "Theme" },
-                { artist: "Disney's Hercules", title: "Ich werd's noch beweisen!" },
-                { artist: "Disney's Hercules", title: "Ich will keinen Mann" },
-                { artist: "Disney's Käpt'n Balu und seine tollkühne Crew", title: "Intro" },
-                { artist: "Disney's Der König der Löwen", title: "Der ewige Kreis [DUET]" },
-                { artist: "Disney's Der König der Löwen", title: "Hakuna Matata" },
-                { artist: "Disney's Der König der Löwen", title: "Hakuna Matata [DUET]" },
-                { artist: "Disney's Der König der Löwen", title: "Ich will jetzt gleich König sein" },
-                { artist: "Disney's Der König der Löwen", title: "Kann es wirklich Liebe sein" },
-                { artist: "Disney's Mulan", title: "Sei ein Mann" },
-                { artist: "Disney's Pocahontas", title: "Das Farbenspiel des Winds" },
-                { artist: "Disney's Tarzan", title: "Zwei Welten (Musical)" },
-                { artist: "Disney's Tarzan", title: "So ein Mann (Phil Collins)" },
-                { artist: "Disney's Tarzan", title: "Dir gehört mein Herz (Phil Collins & Eva Mattes)" },
-                { artist: "Disney's Toy Story", title: "Du hast 'n Freund in mir" },
-                { artist: "Disney's Vaiana", title: "Voll gerne (Andreas Bourani)" },
-                { artist: "Disney's Vaiana", title: "Ich bin bereit (Debbie van Dooren)" },
-                { artist: "Disney's Vaiana", title: "Ich bin bereit (Helene Fischer)" },
+                { artist: "Disney", title: "Ein Traum wird wahr (Aladdin) [DUET]" },
+                { artist: "Disney", title: "Prinz Ali (Aladdin)" },
+                { artist: "Disney", title: "Nur ein Kuss (Arielle)" },
+                { artist: "Disney", title: "Unter dem Meer (Arielle)" },
+                { artist: "Disney", title: "Katzen brauchen furchtbar viel Musik (Aristocats) [DUET]" },
+                { artist: "Disney", title: "Intro (Chip & Chap)" },
+                { artist: "Disney", title: "Ich wäre gern wie Du (Das Dschungelbuch)" },
+                { artist: "Disney", title: "Ich wäre gern wie Du (Das Dschungelbuch) [DUET]" },
+                { artist: "Disney", title: "Probier's mal mit Gemütlichkeit (Das Dschungelbuch)" },
+                { artist: "Disney", title: "Lass jetzt los (Die Eiskönigin)" },
+                { artist: "Disney", title: "Theme (DuckTales)" },
+                { artist: "Disney", "title": "Druck (Encanto)" },
+                { artist: "Disney", title: "Theme (Gummibärenbande)" },
+                { artist: "Disney", title: "Ich werd's noch beweisen! (Hercules)" },
+                { artist: "Disney", title: "Ich will keinen Mann (Hercules)" },
+                { artist: "Disney", title: "Intro (Käpt'n Balu und seine tollkühne Crew)" },
+                { artist: "Disney", title: "Der ewige Kreis (Der König der Löwen) [DUET]" },
+                { artist: "Disney", title: "Hakuna Matata (Der König der Löwen)" },
+                { artist: "Disney", title: "Hakuna Matata (Der König der Löwen) [DUET]" },
+                { artist: "Disney", title: "Ich will jetzt gleich König sein (Der König der Löwen)" },
+                { artist: "Disney", title: "Kann es wirklich Liebe sein (Der König der Löwen)" },
+                { artist: "Disney", title: "Sei ein Mann (Mulan)" },
+                { artist: "Disney", title: "Das Farbenspiel des Winds (Pocahontas)" },
+                { artist: "Disney", title: "Zwei Welten (Tarzan Musical)" },
+                { artist: "Disney", title: "So ein Mann (Tarzan / Phil Collins)" },
+                { artist: "Disney", title: "Dir gehört mein Herz (Tarzan / Phil Collins & Eva Mattes)" },
+                { artist: "Disney", title: "Du hast 'n Freund in mir (Toy Story)" },
+                { artist: "Disney", title: "Voll gerne (Vaiana / Andreas Bourani)" },
+                { artist: "Disney", title: "Ich bin bereit (Vaiana / Debbie van Dooren)" },
+                { artist: "Disney", title: "Ich bin bereit (Vaiana / Helene Fischer)" },
                 { artist: "DJ BoBo", title: "Chihuahua" },
                 { artist: "DJ Ötzi & Nik P.", title: "Ein Stern (... der deinen Namen trägt)" },
                 { artist: "Echt", title: "Du trägst keine Liebe in dir" },
@@ -220,7 +220,7 @@
                 const sortedSongs = songs.sort((a,b) => a.title.localeCompare(b.title));
                 sortedSongs.forEach((song, index) => {
                     const li = document.createElement('li');
-                    li.className = 'flex items-center p-3 bg-slate-50 dark:bg-slate-800/[.5] rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors duration-200';
+                    li.className = 'flex items-center p-3 bg-slate-100 dark:bg-slate-800/[.5] rounded-md hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors duration-200';
                     li.innerHTML = `
                         <span class="text-slate-500 dark:text-slate-400 font-medium w-8 text-right mr-4">${index + 1}.</span>
                         <div class="flex-grow">
@@ -282,5 +282,4 @@
     </script>
 </body>
 </html>
-
 
