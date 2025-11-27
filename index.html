@@ -111,6 +111,23 @@
                 Die moderne Songbibliothek für dein Karaoke-Erlebnis.
             </p>
             
+            <!-- VERSION BADGE (New) -->
+            <div class="mt-4 flex justify-center">
+                <span class="px-3 py-1 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-full text-xs font-mono text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    Aktuelle Version: v1.0 (27.11.2025)
+                </span>
+            </div>
+            
+            <!-- Navigation Bar -->
+            <nav class="flex justify-center gap-4 mt-6">
+                <button onclick="switchView('home')" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300">Bibliothek</button>
+                <button onclick="switchView('downloads')" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                    Downloads
+                </button>
+            </nav>
+            
             <button id="theme-toggle" class="absolute top-0 right-0 p-3 rounded-full glass-panel text-slate-800 dark:text-slate-200 hover:scale-110 transition-transform duration-300 shadow-lg focus:outline-none focus:ring-2 focus:ring-cyan-500" aria-label="Toggle Dark Mode">
                 <svg id="theme-icon-light" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                 <svg id="theme-icon-dark" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
@@ -122,8 +139,7 @@
             
             <!-- HOME VIEW -->
             <div id="home-view" class="view-section active space-y-8">
-                
-                <!-- SONG OF THE DAY FEATURE -->
+                <!-- Song of Day & Stats & List -->
                 <section id="song-of-day-card" class="glass-panel p-6 rounded-2xl relative overflow-hidden border-l-4 border-yellow-400">
                     <div class="absolute top-0 right-0 p-4 opacity-10">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32 text-yellow-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" /></svg>
@@ -143,7 +159,6 @@
                     </div>
                 </section>
 
-                <!-- Stats -->
                 <section id="stats" class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
                     <div class="glass-panel p-6 rounded-2xl text-center transform hover:-translate-y-1 transition-transform duration-300">
                         <h2 class="text-sm font-bold uppercase tracking-wide text-slate-600 dark:text-slate-400">Songs</h2>
@@ -159,7 +174,6 @@
                     </div>
                 </section>
 
-                <!-- List -->
                 <section class="glass-panel rounded-2xl overflow-hidden">
                     <div class="p-6 md:p-8 border-b border-slate-200 dark:border-slate-700/30">
                         <div class="flex justify-between items-center mb-6">
@@ -167,29 +181,18 @@
                                 <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Bibliothek durchsuchen</h2>
                                 <p class="text-sm text-slate-500 dark:text-slate-400">Finde deinen nächsten Hit.</p>
                             </div>
-                            <!-- Favorites Toggle Button -->
                             <button id="show-favorites-btn" class="p-2 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:text-pink-500 dark:hover:text-pink-400 hover:border-pink-300 transition-colors" title="Nur Favoriten anzeigen">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                </svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
                             </button>
                         </div>
-                        
                         <div class="flex flex-col gap-4 mt-6">
                             <div class="flex flex-col md:flex-row gap-3">
                                 <div class="relative flex-grow group">
-                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <svg class="h-5 w-5 text-slate-400 group-focus-within:text-cyan-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                                    </div>
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><svg class="h-5 w-5 text-slate-400 group-focus-within:text-cyan-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg></div>
                                     <input type="text" id="search-input" placeholder="Titel oder Künstler suchen..." class="w-full pl-10 p-3 bg-white dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent outline-none transition-all duration-300 text-slate-900 dark:text-slate-100 placeholder-slate-400 shadow-sm">
                                 </div>
-                                <select id="artist-filter" class="p-3 bg-white dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none text-slate-900 dark:text-slate-100 w-full md:w-64 transition-all duration-300 cursor-pointer shadow-sm">
-                                    <option value="all">Alle Künstler</option>
-                                </select>
-                                <button id="random-song-btn" class="p-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-300 font-semibold flex items-center justify-center gap-2 whitespace-nowrap shadow-md shadow-cyan-500/20">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M15.33 3.52a.75.75 0 01.428 1.316l-3.033 3.033a1.5 1.5 0 01-2.122 0L7.57 4.836A.75.75 0 018.63 3.77l1.745 1.745a.25.25 0 00.354 0L13.5 2.744a.75.75 0 011.33.428L12.5 5.5h2.75a.75.75 0 010 1.5H12.5l2.33 2.33a.75.75 0 11-1.06 1.06L10.738 7.357a1.5 1.5 0 010-2.122L13.77 2.2a.75.75 0 011.56.54v2.78zm-10 4.15a.75.75 0 11-1.06-1.06L7.303 3.577a1.5 1.5 0 012.122 0l3.033 3.033a.75.75 0 11-1.06 1.06L8.36 4.637a.25.25 0 00-.354 0L5.262 7.382zM4.67 15.17a.75.75 0 01-1.33-.428L5.5 12.36V9.75a.75.75 0 011.5 0V12.5l-2.33 2.33a.75.75 0 01-1.06-1.06l3.033-3.033a1.5 1.5 0 012.122 0l3.033 3.033a.75.75 0 01-1.06 1.06L9.262 12.618a.25.25 0 00-.354 0l-2.745 2.745z" clip-rule="evenodd" /></svg>
-                                    Zufall
-                                </button>
+                                <select id="artist-filter" class="p-3 bg-white dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none text-slate-900 dark:text-slate-100 w-full md:w-64 transition-all duration-300 cursor-pointer shadow-sm"><option value="all">Alle Künstler</option></select>
+                                <button id="random-song-btn" class="p-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-300 font-semibold flex items-center justify-center gap-2 whitespace-nowrap shadow-md shadow-cyan-500/20"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M15.33 3.52a.75.75 0 01.428 1.316l-3.033 3.033a1.5 1.5 0 01-2.122 0L7.57 4.836A.75.75 0 018.63 3.77l1.745 1.745a.25.25 0 00.354 0L13.5 2.744a.75.75 0 011.33.428L12.5 5.5h2.75a.75.75 0 010 1.5H12.5l2.33 2.33a.75.75 0 11-1.06 1.06L10.738 7.357a1.5 1.5 0 010-2.122L13.77 2.2a.75.75 0 011.56.54v2.78zm-10 4.15a.75.75 0 11-1.06-1.06L7.303 3.577a1.5 1.5 0 012.122 0l3.033 3.033a.75.75 0 11-1.06 1.06L8.36 4.637a.25.25 0 00-.354 0L5.262 7.382zM4.67 15.17a.75.75 0 01-1.33-.428L5.5 12.36V9.75a.75.75 0 011.5 0V12.5l-2.33 2.33a.75.75 0 01-1.06-1.06l3.033-3.033a1.5 1.5 0 012.122 0l3.033 3.033a.75.75 0 01-1.06 1.06L9.262 12.618a.25.25 0 00-.354 0l-2.745 2.745z" clip-rule="evenodd" /></svg>Zufall</button>
                             </div>
                             <div class="flex gap-2">
                                 <button id="sort-by-title" class="px-4 py-1.5 text-sm font-medium rounded-lg transition-all duration-300 border border-transparent">Titel</button>
@@ -198,22 +201,67 @@
                         </div>
                     </div>
                     <div class="bg-slate-50/80 dark:bg-slate-900/30 backdrop-blur-sm">
-                        <div class="overflow-y-auto max-h-[60vh] p-4" id="scroll-container">
-                            <ul id="song-list" class="space-y-3"></ul>
-                        </div>
+                        <div class="overflow-y-auto max-h-[60vh] p-4" id="scroll-container"><ul id="song-list" class="space-y-3"></ul></div>
                     </div>
                 </section>
                 
                 <section class="glass-panel p-6 rounded-2xl border-l-4 border-fuchsia-500">
-                    <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100 mb-3 flex items-center gap-2">
-                        <span class="inline-block w-2 h-2 rounded-full bg-fuchsia-500 animate-pulse"></span> Coming Soon
-                    </h2>
+                    <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100 mb-3 flex items-center gap-2"><span class="inline-block w-2 h-2 rounded-full bg-fuchsia-500 animate-pulse"></span> Coming Soon</h2>
                     <div class="flex flex-wrap gap-2">
                         <span class="px-3 py-1 bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-900/30 dark:text-fuchsia-300 rounded-full text-xs font-medium border border-fuchsia-200 dark:border-fuchsia-800">Disneys High School Musical</span>
                         <span class="px-3 py-1 bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-900/30 dark:text-fuchsia-300 rounded-full text-xs font-medium border border-fuchsia-200 dark:border-fuchsia-800">Classic Schlager</span>
                         <span class="px-3 py-1 bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-900/30 dark:text-fuchsia-300 rounded-full text-xs font-medium border border-fuchsia-200 dark:border-fuchsia-800">Rock & Pop Classics</span>
                     </div>
                 </section>
+            </div>
+
+            <!-- DOWNLOADS VIEW -->
+            <div id="downloads-view" class="view-section hidden">
+                <div class="glass-panel p-8 rounded-2xl shadow-xl max-w-3xl mx-auto">
+                    <h2 class="text-3xl font-bold mb-6 text-slate-800 dark:text-slate-100 border-b border-slate-200 dark:border-slate-700 pb-4">Downloads</h2>
+                    <p class="text-slate-600 dark:text-slate-300 mb-8">Hier findest du in Zukunft die Links zum Herunterladen der UltraStar Deluxe Software und der aktualisierten Song-Pakete.</p>
+                    
+                    <div class="space-y-6">
+                        <!-- Main Software Download -->
+                        <div class="bg-white/50 dark:bg-slate-800/50 p-6 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div>
+                                <div class="flex items-center gap-3 mb-1">
+                                    <h3 class="font-bold text-lg text-slate-800 dark:text-slate-100">Heitzify UltraStar Paket</h3>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800">v1.0</span>
+                                </div>
+                                <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Das komplette Paket inklusive Software & Songs.</p>
+                                <p class="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1 font-mono">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                    Stand: 27.11.2025
+                                </p>
+                            </div>
+                            <button class="px-6 py-2.5 bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-lg cursor-not-allowed font-medium w-full sm:w-auto" disabled>Bald verfügbar</button>
+                        </div>
+
+                        <!-- Song Update Download -->
+                        <div class="bg-white/50 dark:bg-slate-800/50 p-6 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div>
+                                <div class="flex items-center gap-3 mb-1">
+                                    <h3 class="font-bold text-lg text-slate-800 dark:text-slate-100">Songbibliothek Update</h3>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800">v1.0</span>
+                                </div>
+                                <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Nur die neuen Lieder für dein bestehendes Spiel.</p>
+                                <p class="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1 font-mono">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                    Stand: 27.11.2025
+                                </p>
+                            </div>
+                            <button class="px-6 py-2.5 bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-lg cursor-not-allowed font-medium w-full sm:w-auto" disabled>Bald verfügbar</button>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg text-sm text-yellow-800 dark:text-yellow-200 flex gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+                        <p><strong>Hinweis:</strong> Die Downloads werden über Google Drive bereitgestellt. Bitte beachte unsere Datenschutzerklärung bezüglich externer Links.</p>
+                    </div>
+                    
+                    <button onclick="switchView('home')" class="mt-8 px-6 py-2 bg-slate-200 dark:bg-slate-700 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">Zurück zur Übersicht</button>
+                </div>
             </div>
 
             <!-- IMPRESSUM VIEW -->
@@ -239,7 +287,10 @@
                         <p><strong>Cookies & Local Storage:</strong><br>Wir nutzen den "Local Storage" Ihres Browsers, um Ihre Einstellungen (z.B. Dark Mode, Cookie-Zustimmung) und <strong>Ihre persönliche Favoritenliste (Merkzettel)</strong> lokal auf Ihrem Gerät zu speichern. Diese Daten werden nicht an uns übertragen.</p>
                         
                         <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 mt-4">2. Externe Links (YouTube)</h3>
-                        <p>Unsere Webseite enthält Links zur Plattform YouTube. Diese sind mit einem "Play"-Symbol gekennzeichnet. Erst wenn Sie auf diesen Link klicken, werden Sie zu YouTube weitergeleitet. Ab diesem Zeitpunkt gelten die Datenschutzbestimmungen von YouTube (Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland). Wir haben keinen Einfluss darauf, welche Daten YouTube erhebt.</p>
+                        <p>Unsere Webseite enthält Links zur Plattform YouTube. Diese sind mit einem "Play"-Symbol gekennzeichnet. Erst wenn Sie auf diesen Link klicken, werden Sie zu YouTube weitergeleitet. Ab diesem Zeitpunkt gelten die Datenschutzbestimmungen von YouTube.</p>
+
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 mt-4">3. Externe Links (Google Drive)</h3>
+                        <p>Für den Download von Dateien verweisen wir auf Google Drive. Wenn Sie einen Download-Link anklicken, werden Sie zu den Servern von Google weitergeleitet. Hierbei gelten die Datenschutzbestimmungen von Google. Wir haben keinen Zugriff auf die Daten, die Google bei der Nutzung seiner Dienste erhebt.</p>
                         
                         <button onclick="switchView('home')" class="mt-8 px-6 py-2 bg-slate-200 dark:bg-slate-700 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">Zurück zur Übersicht</button>
                     </div>
@@ -254,6 +305,7 @@
                 <div class="mt-6 flex justify-center gap-6 text-xs text-slate-500 dark:text-slate-400">
                     <button onclick="switchView('impressum')" class="hover:text-cyan-500 transition-colors">Impressum</button>
                     <button onclick="switchView('datenschutz')" class="hover:text-cyan-500 transition-colors">Datenschutz</button>
+                    <button onclick="switchView('downloads')" class="hover:text-cyan-500 transition-colors">Downloads</button>
                     <button onclick="openCookieSettings()" class="hover:text-cyan-500 transition-colors">Cookie-Einstellungen</button>
                 </div>
             </div>
@@ -271,6 +323,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             // ... Elements ...
             const themeToggleBtn = document.getElementById('theme-toggle');
+            const lightIcon = document.getElementById('theme-icon-light');
+            const darkIcon = document.getElementById('theme-icon-dark');
             const bgAnimation = document.getElementById('bg-animation');
             const backToTopBtn = document.getElementById('back-to-top');
             const randomSongBtn = document.getElementById('random-song-btn');
@@ -346,7 +400,7 @@
                 { artist: "Disney", title: "Probier's mal mit Gemütlichkeit (Das Dschungelbuch)", tags: ["Disney", "Klassiker"] },
                 { artist: "Disney", title: "Lass jetzt los (Die Eiskönigin)", tags: ["Disney", "Hit", "Ballade"] },
                 { artist: "Disney", title: "Theme (DuckTales)", tags: ["Disney", "TV-Theme"] },
-                { artist: "Disney", title: "Druck (Encanto)", tags: ["Disney", "Modern"] },
+                { artist: "Disney", "title": "Druck (Encanto)", tags: ["Disney", "Modern"] },
                 { artist: "Disney", title: "Theme (Gummibärenbande)", tags: ["Disney", "TV-Theme"] },
                 { artist: "Disney", title: "Ich werd's noch beweisen! (Hercules)", tags: ["Disney", "Ballade"] },
                 { artist: "Disney", title: "Ich will keinen Mann (Hercules)", tags: ["Disney", "Pop"] },
@@ -416,19 +470,15 @@
 
             // --- SONG OF THE DAY ---
             const updateSongOfTheDay = () => {
-                const today = new Date().toDateString(); // "Thu Nov 27 2025"
-                // Simple hash function to get a consistent index for the day
+                const today = new Date().toDateString(); 
                 let hash = 0;
-                for (let i = 0; i < today.length; i++) {
-                    hash = today.charCodeAt(i) + ((hash << 5) - hash);
-                }
+                for (let i = 0; i < today.length; i++) hash = today.charCodeAt(i) + ((hash << 5) - hash);
                 const index = Math.abs(hash) % songData.length;
                 const dailySong = songData[index];
 
                 sodTitle.textContent = dailySong.title;
                 sodArtist.textContent = dailySong.artist;
                 
-                // Tags
                 sodTags.innerHTML = '';
                 if(dailySong.tags) {
                     dailySong.tags.forEach(tag => {
@@ -438,7 +488,6 @@
                         sodTags.appendChild(span);
                     });
                 }
-
                 sodPlayBtn.onclick = () => openYoutube(dailySong.artist, dailySong.title);
             };
             updateSongOfTheDay();
