@@ -5,207 +5,372 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Heitzify Songbibliothek</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Tailwind Config for Dark Mode -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Exo 2', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Heitzify Gradient (Cyan to Fuchsia) -->
-    <!-- Application Structure Plan: A dashboard layout was chosen to provide an immediate overview and easy exploration. Key stats at the top offer a quick summary. Interactive controls (search, artist filter) allow users to drill down into the data. The main content is a filterable list for detailed viewing. This structure moves from a broad summary to specific details, guiding the user's discovery process effectively. A dark mode toggle has been added for user comfort. -->
-    <!-- Visualization & Content Choices: 1. Summary Stats: Inform -> Stat Cards (HTML/Tailwind) -> Static display -> Provides immediate, high-level context. 2. Full Song List: Organize/Explore -> Filterable List (HTML/JS) -> Real-time search and dropdown filtering -> Allows users to easily find specific songs or view an artist's entire collection. The chart section was removed per user request. NO SVG/Mermaid used. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        html {
-            scroll-behavior: smooth;
-        }
+        html { scroll-behavior: smooth; }
         body {
             font-family: 'Exo 2', sans-serif;
             background-color: #f8fafc;
-            color: #1e293b;
+            color: #0f172a;
+            overflow-x: hidden;
         }
-        .dark body {
-            background-color: #0f172a;
-            color: #f1f5f9;
+        .dark body { background-color: #0f172a; color: #f1f5f9; }
+        
+        /* Animated Background */
+        .gradient-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(-45deg, #f1f5f9, #e0f2fe, #eff6ff, #f8fafc);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            z-index: -1;
         }
-        ::-webkit-scrollbar {
-            width: 8px;
+        .dark .gradient-bg {
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #312e81, #0f172a);
         }
-        ::-webkit-scrollbar-track {
-            background: #e2e8f0;
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
-        .dark ::-webkit-scrollbar-track {
-            background: #1e293b;
+
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-        ::-webkit-scrollbar-thumb {
-            background: #94a3b8;
-            border-radius: 4px;
+        .dark .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
         }
-        .dark ::-webkit-scrollbar-thumb {
-            background: #475569;
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #64748b;
-        }
-        .dark ::-webkit-scrollbar-thumb:hover {
-            background: #64748b;
-        }
-        .filter-active {
-            background-color: #cffafe !important;
-            border-color: #22d3ee !important;
-        }
-        .dark .filter-active {
-            background-color: #083344 !important;
-            border-color: #06b6d4 !important;
-        }
-        .modal {
-            transition: opacity 0.25s ease;
-        }
+        .song-item { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; }
+        
+        .highlight { background-color: rgba(6, 182, 212, 0.2); color: #0891b2; border-radius: 2px; padding: 0 2px; font-weight: 700; }
+        .dark .highlight { background-color: rgba(34, 211, 238, 0.3); color: #22d3ee; }
+
+        .filter-active { background-color: #06b6d4 !important; color: white !important; border-color: #06b6d4 !important; }
+        
+        /* View Switching */
+        .view-section { display: none; }
+        .view-section.active { display: block; animation: fadeInUp 0.5s ease-out; }
     </style>
 </head>
-<body class="antialiased transition-colors duration-300">
+<body class="antialiased transition-colors duration-500 text-slate-900 dark:text-slate-100">
 
-    <div class="container mx-auto p-4 sm:p-6 md:p-8">
+    <div id="bg-animation" class="gradient-bg"></div>
+
+    <div class="container mx-auto p-4 sm:p-6 md:p-8 relative z-10 flex flex-col min-h-screen">
         
-        <div class="relative text-center mb-12">
-            <h1 class="text-5xl font-bold bg-gradient-to-r from-cyan-400 to-fuchsia-500 text-transparent bg-clip-text pb-2 px-16">Heitzify Songbibliothek</h1>
-            <p class="text-slate-600 dark:text-slate-400 mt-2">Eine interaktive Übersicht deiner Musiksammlung.</p>
-            <button id="theme-toggle" class="absolute top-0 right-0 p-2 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 dark:focus:ring-offset-slate-900 focus:ring-cyan-500" aria-label="Toggle Dark Mode">
-                <svg id="theme-icon-light" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                <svg id="theme-icon-dark" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+        <!-- Header -->
+        <header class="relative text-center mb-8 pt-4">
+            <div class="inline-block mb-2 px-3 py-1 rounded-full bg-cyan-100 border border-cyan-200 text-cyan-800 dark:bg-cyan-500/10 dark:border-cyan-500/20 dark:text-cyan-400 text-xs font-bold tracking-widest uppercase backdrop-blur-sm transition-colors duration-300">
+                UltraStar Deluxe Extension
+            </div>
+            <!-- Clickable Title to go Home -->
+            <h1 onclick="switchView('home')" class="text-5xl md:text-6xl font-bold bg-gradient-to-r from-cyan-600 via-blue-600 to-fuchsia-600 dark:from-cyan-500 dark:via-blue-500 dark:to-fuchsia-500 text-transparent bg-clip-text pb-2 px-4 drop-shadow-sm transition-all duration-300 cursor-pointer hover:opacity-90">
+                Heitzify
+            </h1>
+            <p class="text-slate-600 dark:text-slate-300 mt-2 text-lg font-light">
+                Die moderne Songbibliothek für dein Karaoke-Erlebnis.
+            </p>
+            
+            <button id="theme-toggle" class="absolute top-0 right-0 p-3 rounded-full glass-panel text-slate-800 dark:text-slate-200 hover:scale-110 transition-transform duration-300 shadow-lg focus:outline-none focus:ring-2 focus:ring-cyan-500" aria-label="Toggle Dark Mode">
+                <svg id="theme-icon-light" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                <svg id="theme-icon-dark" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
             </button>
-        </div>
+        </header>
 
-        <main>
-            <section id="stats" class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-                <div class="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg shadow-md text-center transition-colors duration-300">
-                    <h2 class="text-lg font-semibold text-slate-500 dark:text-slate-400">Gesamtzahl Songs</h2>
-                    <p id="total-songs" class="text-4xl font-bold text-cyan-600 dark:text-cyan-400 mt-2">0</p>
-                </div>
-                <div class="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg shadow-md text-center transition-colors duration-300">
-                    <h2 class="text-lg font-semibold text-slate-500 dark:text-slate-400">Einzigartige Künstler</h2>
-                    <p id="unique-artists" class="text-4xl font-bold text-cyan-600 dark:text-cyan-400 mt-2">0</p>
-                </div>
-                <div class="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg shadow-md text-center transition-colors duration-300">
-                    <h2 class="text-lg font-semibold text-slate-500 dark:text-slate-400">Top Künstler</h2>
-                    <p id="top-artist" class="text-2xl sm:text-3xl font-bold text-cyan-600 dark:text-cyan-400 mt-2 truncate">-</p>
-                </div>
-            </section>
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-grow max-w-5xl mx-auto w-full space-y-8">
+            
+            <!-- HOME VIEW -->
+            <div id="home-view" class="view-section active space-y-8">
+                <!-- Stats -->
+                <section id="stats" class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+                    <div class="glass-panel p-6 rounded-2xl text-center transform hover:-translate-y-1 transition-transform duration-300">
+                        <h2 class="text-sm font-bold uppercase tracking-wide text-slate-600 dark:text-slate-400">Songs</h2>
+                        <p id="total-songs" class="text-4xl font-bold text-cyan-600 dark:text-cyan-400 mt-1">0</p>
+                    </div>
+                    <div class="glass-panel p-6 rounded-2xl text-center transform hover:-translate-y-1 transition-transform duration-300">
+                        <h2 class="text-sm font-bold uppercase tracking-wide text-slate-600 dark:text-slate-400">Künstler</h2>
+                        <p id="unique-artists" class="text-4xl font-bold text-fuchsia-600 dark:text-fuchsia-400 mt-1">0</p>
+                    </div>
+                    <div class="glass-panel p-6 rounded-2xl text-center transform hover:-translate-y-1 transition-transform duration-300">
+                        <h2 class="text-sm font-bold uppercase tracking-wide text-slate-600 dark:text-slate-400">Top Favorit</h2>
+                        <p id="top-artist" class="text-2xl md:text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2 truncate">-</p>
+                    </div>
+                </section>
 
-            <section id="song-list-section" class="bg-slate-50 dark:bg-slate-900 p-6 rounded-lg shadow-md transition-colors duration-300">
-                <h2 class="text-2xl font-bold text-slate-700 dark:text-slate-200">Vollständige Songliste</h2>
-                <p class="text-slate-600 dark:text-slate-400 mb-6">Hier findest du alle deine Songs. Du kannst die Liste durchsuchen, um schnell einen bestimmten Titel oder Interpreten zu finden, oder die Auswahl nach einem bestimmten Künstler filtern, um nur dessen Songs anzuzeigen.</p>
-                <div class="flex flex-col md:flex-row gap-4 mb-4 items-center">
-                    <input type="text" id="search-input" placeholder="Suche nach Song oder Künstler..." class="flex-grow w-full md:w-auto p-3 border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition-colors duration-300">
-                    <select id="artist-filter" class="p-3 w-full md:w-56 border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition-all duration-300">
-                        <option value="all">Alle Künstler</option>
-                    </select>
-                    <button id="random-song-btn" class="w-full md:w-auto flex items-center justify-center gap-2 p-3 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors duration-300 font-semibold">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                          <path fill-rule="evenodd" d="M15.33 3.52a.75.75 0 01.428 1.316l-3.033 3.033a1.5 1.5 0 01-2.122 0L7.57 4.836A.75.75 0 018.63 3.77l1.745 1.745a.25.25 0 00.354 0L13.5 2.744a.75.75 0 011.33.428L12.5 5.5h2.75a.75.75 0 010 1.5H12.5l2.33 2.33a.75.75 0 11-1.06 1.06L10.738 7.357a1.5 1.5 0 010-2.122L13.77 2.2a.75.75 0 011.56.54v2.78zm-10 4.15a.75.75 0 11-1.06-1.06L7.303 3.577a1.5 1.5 0 012.122 0l3.033 3.033a.75.75 0 11-1.06 1.06L8.36 4.637a.25.25 0 00-.354 0L5.262 7.382zM4.67 15.17a.75.75 0 01-1.33-.428L5.5 12.36V9.75a.75.75 0 011.5 0V12.5l-2.33 2.33a.75.75 0 01-1.06-1.06l3.033-3.033a1.5 1.5 0 012.122 0l3.033 3.033a.75.75 0 01-1.06 1.06L9.262 12.618a.25.25 0 00-.354 0l-2.745 2.745z" clip-rule="evenodd" />
-                        </svg>
-                        Zufall
-                    </button>
-                </div>
-                 <div class="flex items-center gap-4 mb-6">
-                    <span class="text-sm font-medium text-slate-600 dark:text-slate-400">Sortieren nach:</span>
-                    <div class="flex gap-2">
-                        <button id="sort-by-title" class="sort-btn px-4 py-2 text-sm rounded-md transition-colors duration-300">Titel</button>
-                        <button id="sort-by-artist" class="sort-btn px-4 py-2 text-sm rounded-md transition-colors duration-300">Künstler</button>
+                <!-- List -->
+                <section class="glass-panel rounded-2xl overflow-hidden">
+                    <div class="p-6 md:p-8 border-b border-slate-200 dark:border-slate-700/30">
+                        <h2 class="text-2xl font-bold mb-2 text-slate-900 dark:text-slate-100">Bibliothek durchsuchen</h2>
+                        <div class="flex flex-col gap-4 mt-6">
+                            <div class="flex flex-col md:flex-row gap-3">
+                                <div class="relative flex-grow group">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg class="h-5 w-5 text-slate-400 group-focus-within:text-cyan-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                                    </div>
+                                    <input type="text" id="search-input" placeholder="Titel oder Künstler suchen..." class="w-full pl-10 p-3 bg-white dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent outline-none transition-all duration-300 text-slate-900 dark:text-slate-100 placeholder-slate-400 shadow-sm">
+                                </div>
+                                <select id="artist-filter" class="p-3 bg-white dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none text-slate-900 dark:text-slate-100 w-full md:w-64 transition-all duration-300 cursor-pointer shadow-sm">
+                                    <option value="all">Alle Künstler</option>
+                                </select>
+                                <button id="random-song-btn" class="p-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-300 font-semibold flex items-center justify-center gap-2 whitespace-nowrap shadow-md shadow-cyan-500/20">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M15.33 3.52a.75.75 0 01.428 1.316l-3.033 3.033a1.5 1.5 0 01-2.122 0L7.57 4.836A.75.75 0 018.63 3.77l1.745 1.745a.25.25 0 00.354 0L13.5 2.744a.75.75 0 011.33.428L12.5 5.5h2.75a.75.75 0 010 1.5H12.5l2.33 2.33a.75.75 0 11-1.06 1.06L10.738 7.357a1.5 1.5 0 010-2.122L13.77 2.2a.75.75 0 011.56.54v2.78zm-10 4.15a.75.75 0 11-1.06-1.06L7.303 3.577a1.5 1.5 0 012.122 0l3.033 3.033a.75.75 0 11-1.06 1.06L8.36 4.637a.25.25 0 00-.354 0L5.262 7.382zM4.67 15.17a.75.75 0 01-1.33-.428L5.5 12.36V9.75a.75.75 0 011.5 0V12.5l-2.33 2.33a.75.75 0 01-1.06-1.06l3.033-3.033a1.5 1.5 0 012.122 0l3.033 3.033a.75.75 0 01-1.06 1.06L9.262 12.618a.25.25 0 00-.354 0l-2.745 2.745z" clip-rule="evenodd" /></svg>
+                                    Zufall
+                                </button>
+                            </div>
+                            <div class="flex gap-2">
+                                <button id="sort-by-title" class="px-4 py-1.5 text-sm font-medium rounded-lg transition-all duration-300 border border-transparent">Titel</button>
+                                <button id="sort-by-artist" class="px-4 py-1.5 text-sm font-medium rounded-lg transition-all duration-300 border border-transparent">Künstler</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50/80 dark:bg-slate-900/30 backdrop-blur-sm">
+                        <div class="overflow-y-auto max-h-[60vh] p-4" id="scroll-container">
+                            <ul id="song-list" class="space-y-3"></ul>
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="glass-panel p-6 rounded-2xl border-l-4 border-fuchsia-500">
+                    <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100 mb-3 flex items-center gap-2">
+                        <span class="inline-block w-2 h-2 rounded-full bg-fuchsia-500 animate-pulse"></span> Coming Soon
+                    </h2>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-900/30 dark:text-fuchsia-300 rounded-full text-xs font-medium border border-fuchsia-200 dark:border-fuchsia-800">Disneys High School Musical</span>
+                        <span class="px-3 py-1 bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-900/30 dark:text-fuchsia-300 rounded-full text-xs font-medium border border-fuchsia-200 dark:border-fuchsia-800">Classic Schlager</span>
+                        <span class="px-3 py-1 bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-900/30 dark:text-fuchsia-300 rounded-full text-xs font-medium border border-fuchsia-200 dark:border-fuchsia-800">Rock & Pop Classics</span>
+                    </div>
+                </section>
+            </div>
+
+            <!-- IMPRESSUM VIEW -->
+            <div id="impressum-view" class="view-section hidden">
+                <div class="glass-panel p-8 rounded-2xl shadow-xl max-w-3xl mx-auto">
+                    <h2 class="text-3xl font-bold mb-6 text-slate-800 dark:text-slate-100 border-b border-slate-200 dark:border-slate-700 pb-4">Impressum</h2>
+                    <div class="space-y-4 text-slate-700 dark:text-slate-300">
+                        <p class="font-bold">Angaben gemäß § 5 TMG</p>
+                        <p>Dennis Heitz<br>Postfach 10 14 26<br>33514 Bielefeld</p>
+                        
+                        <p class="font-bold mt-6">Kontakt</p>
+                        <p>E-Mail: <a href="mailto:dennis.heitz1@gmail.com" class="text-cyan-600 dark:text-cyan-400 hover:underline">dennis.heitz1@gmail.com</a></p>
+                        
+                        <p class="font-bold mt-6">Haftung für Inhalte</p>
+                        <p class="text-sm">Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.</p>
+                        <button onclick="switchView('home')" class="mt-8 px-6 py-2 bg-slate-200 dark:bg-slate-700 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">Zurück zur Übersicht</button>
                     </div>
                 </div>
-                <div class="overflow-y-auto max-h-[60vh] pr-2">
-                     <ul id="song-list" class="space-y-2">
-                     </ul>
+            </div>
+
+            <!-- DATENSCHUTZ VIEW -->
+            <div id="datenschutz-view" class="view-section hidden">
+                <div class="glass-panel p-8 rounded-2xl shadow-xl max-w-3xl mx-auto">
+                    <h2 class="text-3xl font-bold mb-6 text-slate-800 dark:text-slate-100 border-b border-slate-200 dark:border-slate-700 pb-4">Datenschutzerklärung</h2>
+                    <div class="space-y-4 text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100">1. Datenschutz auf einen Blick</h3>
+                        <p><strong>Allgemeine Hinweise:</strong> Die folgenden Hinweise geben einen einfachen Überblick darüber, was mit Ihren personenbezogenen Daten passiert, wenn Sie diese Website besuchen.</p>
+                        
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 mt-4">2. Hosting</h3>
+                        <p>Wir hosten die Inhalte unserer Website bei folgendem Anbieter:</p>
+                        <p><strong>GitHub Pages</strong><br>Anbieter ist die GitHub Inc., 88 Colin P Kelly Jr St, San Francisco, CA 94107, USA. Wenn Sie unsere Website besuchen, erfasst GitHub Ihre IP-Adresse und ggf. weitere Informationen in Logfiles, um die Sicherheit und Stabilität der Website zu gewährleisten.</p>
+
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 mt-4">3. Allgemeine Hinweise und Pflichtinformationen</h3>
+                        <p><strong>Verantwortliche Stelle:</strong><br>Dennis Heitz, Postfach 10 14 26, 33514 Bielefeld<br>E-Mail: dennis.heitz1@gmail.com</p>
+
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 mt-4">4. Datenerfassung auf dieser Website</h3>
+                        <p><strong>Cookies & Local Storage:</strong><br>Diese Website verwendet keine Tracking-Cookies von Drittanbietern zu Werbezwecken. Wir nutzen den "Local Storage" Ihres Browsers, um Ihre Einstellungen (z.B. Dark Mode, Cookie-Zustimmung) lokal auf Ihrem Gerät zu speichern. Diese Daten werden nicht an uns übertragen.</p>
+                        
+                        <button onclick="switchView('home')" class="mt-8 px-6 py-2 bg-slate-200 dark:bg-slate-700 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">Zurück zur Übersicht</button>
+                    </div>
                 </div>
-            </section>
-            
-            <section id="coming-soon" class="bg-slate-50 dark:bg-slate-900 p-6 rounded-lg shadow-md transition-colors duration-300 mt-8">
-                <h2 class="text-2xl font-bold text-slate-700 dark:text-slate-200">Coming Soon</h2>
-                <p class="text-slate-600 dark:text-slate-400 mb-6">Geplante Updates und Erweiterungen für die Songbibliothek.</p>
-                <ul class="list-disc list-inside space-y-2 text-slate-700 dark:text-slate-300">
-                    <li>div. Disneys High School Musical</li>
-                    <li>div. Classic Schlager</li>
-                    <li>div. Rock und Pop Classics</li>
-                </ul>
-            </section>
+            </div>
 
         </main>
         
-        <footer class="text-center mt-12 pt-8 border-t border-slate-200 dark:border-slate-800">
-            <p class="text-slate-500 dark:text-slate-400">Heitzify Songbibliothek</p>
-            <p id="footer-song-count" class="text-sm text-slate-400 dark:text-slate-500 mt-1"></p>
-            <p class="text-xs text-slate-400 dark:text-slate-500 mt-6 max-w-2xl mx-auto">
-                 Heitzify ist unsere persönliche Erweiterung für das fantastische Open-Source-Projekt <strong>UltraStar Deluxe</strong>. Als passionierte Mitwirkende des Originals wollen wir eine vereinfachte Erfahrung schaffen: Wir bieten eine handverlesene, stetig wachsende Songbibliothek, die sofort und ohne Umwege für den perfekten Karaoke-Abend bereitsteht.
-            </p>
+        <!-- Footer -->
+        <footer class="text-center mt-16 pb-8 px-4">
+            <div class="max-w-2xl mx-auto border-t border-slate-300/50 dark:border-slate-200/20 pt-8">
+                <p class="text-lg font-bold text-slate-700 dark:text-slate-300 mb-2">Heitzify Songbibliothek</p>
+                <p id="footer-song-count" class="text-sm text-cyan-600 dark:text-cyan-400 font-medium"></p>
+                <p class="text-xs text-slate-500 dark:text-slate-500 mt-4 leading-relaxed">
+                    Heitzify ist unsere persönliche Erweiterung für das fantastische Open-Source-Projekt <strong>UltraStar Deluxe</strong>. Als passionierte Mitwirkende des Originals wollen wir eine vereinfachte Erfahrung schaffen: Wir bieten eine handverlesene, stetig wachsende Songbibliothek, die sofort und ohne Umwege für den perfekten Karaoke-Abend bereitsteht.
+                </p>
+                <!-- Legal Links -->
+                <div class="mt-6 flex justify-center gap-6 text-xs text-slate-500 dark:text-slate-400">
+                    <button onclick="switchView('impressum')" class="hover:text-cyan-500 transition-colors">Impressum</button>
+                    <button onclick="switchView('datenschutz')" class="hover:text-cyan-500 transition-colors">Datenschutz</button>
+                    <button onclick="openCookieSettings()" class="hover:text-cyan-500 transition-colors">Cookie-Einstellungen</button>
+                </div>
+            </div>
         </footer>
     </div>
     
-    <button id="back-to-top" class="hidden fixed bottom-5 right-5 bg-cyan-500 hover:bg-cyan-600 text-white p-3 rounded-full shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 dark:focus:ring-offset-slate-900 focus:ring-cyan-500">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
-      </svg>
+    <!-- Back to Top -->
+    <button id="back-to-top" class="hidden fixed bottom-6 right-6 bg-slate-800 dark:bg-slate-700 text-white dark:text-slate-200 p-3 rounded-full shadow-2xl hover:-translate-y-1 transition-all duration-300 z-40 focus:outline-none ring-4 ring-transparent focus:ring-cyan-500/50">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" /></svg>
     </button>
 
-    <div id="random-song-modal" class="modal hidden fixed inset-0 bg-slate-900 bg-opacity-70 flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none">
-        <div class="bg-slate-50 dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-md relative transform scale-95 transition-all duration-300">
-            <div class="p-6 text-center">
-                <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">Dein zufälliger Song!</h3>
-                <div id="random-song-content" class="my-6">
-                    <p class="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-fuchsia-500 text-transparent bg-clip-text" id="random-song-title">-</p>
-                    <p class="text-lg text-slate-500 dark:text-slate-400 mt-1" id="random-song-artist">-</p>
-                </div>
-                <button id="close-modal-btn" class="mt-4 px-6 py-2 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-md hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors duration-300">Schließen</button>
+    <!-- Cookie Banner -->
+    <div id="cookie-banner" class="fixed bottom-0 left-0 w-full z-50 p-4 md:p-6 hidden">
+        <div class="glass-panel bg-white dark:bg-slate-900 max-w-4xl mx-auto rounded-xl shadow-2xl p-6 md:flex items-center justify-between gap-6 border-t-4 border-cyan-500">
+            <div class="text-sm text-slate-700 dark:text-slate-300 mb-4 md:mb-0">
+                <h4 class="font-bold text-lg mb-1">Privatsphäre-Einstellungen</h4>
+                <p>Wir nutzen Cookies und ähnliche Technologien (Local Storage), um Ihre Einstellungen (z.B. Dark Mode) zu speichern. Diese sind für die Funktion der Website notwendig.</p>
+            </div>
+            <div class="flex gap-3 flex-shrink-0">
+                <button onclick="acceptCookies('essential')" class="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 rounded-lg transition-colors">Nur Notwendige</button>
+                <button onclick="acceptCookies('all')" class="px-4 py-2 text-sm font-medium text-white bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-colors shadow-lg shadow-cyan-500/30">Alle Akzeptieren</button>
             </div>
         </div>
     </div>
 
+    <!-- Random Modal -->
+    <div id="random-song-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="glass-panel bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md transform scale-95 transition-all duration-300 border border-slate-200/20 overflow-hidden relative">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 to-fuchsia-500"></div>
+            <div class="p-8 text-center">
+                <div class="w-16 h-16 bg-cyan-100 dark:bg-cyan-900/30 rounded-full flex items-center justify-center mx-auto mb-4 text-cyan-600 dark:text-cyan-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100 mb-1">Zufallstreffer!</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Wie wäre es mit diesem Song?</p>
+                <div class="py-4 px-2 rounded-xl bg-slate-100 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700/50 mb-6">
+                    <p class="text-2xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 dark:from-cyan-500 dark:to-blue-500 text-transparent bg-clip-text" id="random-song-title">-</p>
+                    <p class="text-md font-medium text-slate-600 dark:text-slate-300 mt-1" id="random-song-artist">-</p>
+                </div>
+                <div class="flex gap-3 justify-center">
+                    <button id="close-modal-btn" class="px-6 py-2.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 rounded-xl transition-colors duration-300 font-medium">Schließen</button>
+                    <button id="reroll-btn" class="px-6 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl transition-colors duration-300 font-medium">Nochmal</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
+        // Global functions for HTML access
+        let switchView;
+        let acceptCookies;
+        let openCookieSettings;
+
         document.addEventListener('DOMContentLoaded', () => {
+            // ... Elements selection (Theme, Scroll, Modal) ...
             const themeToggleBtn = document.getElementById('theme-toggle');
             const lightIcon = document.getElementById('theme-icon-light');
             const darkIcon = document.getElementById('theme-icon-dark');
+            const bgAnimation = document.getElementById('bg-animation');
             const backToTopBtn = document.getElementById('back-to-top');
             const randomSongBtn = document.getElementById('random-song-btn');
             const randomSongModal = document.getElementById('random-song-modal');
             const closeModalBtn = document.getElementById('close-modal-btn');
+            const rerollBtn = document.getElementById('reroll-btn');
             const randomSongTitleEl = document.getElementById('random-song-title');
             const randomSongArtistEl = document.getElementById('random-song-artist');
+            const cookieBanner = document.getElementById('cookie-banner');
 
-            const applyTheme = (theme) => {
-                if (theme === 'dark') {
-                    document.documentElement.classList.add('dark');
-                    lightIcon.classList.add('hidden');
-                    darkIcon.classList.remove('hidden');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                    lightIcon.classList.remove('hidden');
-                    darkIcon.classList.add('hidden');
+            // --- VIEW ROUTING LOGIC ---
+            switchView = (viewName) => {
+                // Hide all views
+                document.querySelectorAll('.view-section').forEach(el => {
+                    el.classList.add('hidden');
+                    el.classList.remove('active');
+                });
+                // Show target view
+                const target = document.getElementById(viewName + '-view');
+                if (target) {
+                    target.classList.remove('hidden');
+                    setTimeout(() => target.classList.add('active'), 10);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             };
 
-            const savedTheme = localStorage.getItem('theme');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            applyTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
+            // --- COOKIE LOGIC ---
+            const checkCookieConsent = () => {
+                const consent = localStorage.getItem('cookieConsent');
+                if (!consent) {
+                    cookieBanner.classList.remove('hidden');
+                }
+            };
+
+            acceptCookies = (type) => {
+                localStorage.setItem('cookieConsent', type);
+                cookieBanner.classList.add('hidden');
+            };
+
+            openCookieSettings = () => {
+                cookieBanner.classList.remove('hidden');
+            };
+
+            // Init Cookie Check
+            checkCookieConsent();
+
+            // ... Theme Logic ...
+            const applyTheme = (theme) => {
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                    bgAnimation.classList.remove('light-mode-bg');
+                    lightIcon.classList.remove('hidden');
+                    darkIcon.classList.add('hidden');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    bgAnimation.classList.add('light-mode-bg');
+                    lightIcon.classList.add('hidden');
+                    darkIcon.classList.remove('hidden');
+                }
+            };
+            const savedTheme = localStorage.getItem('theme') || 'dark'; 
+            applyTheme(savedTheme);
 
             themeToggleBtn.addEventListener('click', () => {
-                const isDark = document.documentElement.classList.toggle('dark');
-                localStorage.setItem('theme', isDark ? 'dark' : 'light');
-                lightIcon.classList.toggle('hidden', isDark);
-                darkIcon.classList.toggle('hidden', !isDark);
+                const isDark = document.documentElement.classList.contains('dark');
+                const newTheme = isDark ? 'light' : 'dark';
+                localStorage.setItem('theme', newTheme);
+                applyTheme(newTheme);
             });
             
+            // ... Scroll Logic ...
             window.addEventListener('scroll', () => {
-                if (window.scrollY > 300) {
-                    backToTopBtn.classList.remove('hidden');
-                } else {
-                    backToTopBtn.classList.add('hidden');
-                }
+                if (window.scrollY > 300) backToTopBtn.classList.remove('hidden');
+                else backToTopBtn.classList.add('hidden');
             });
+            backToTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-            backToTopBtn.addEventListener('click', () => {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-
+            // ... Song Data ...
             const songData = [
                 { artist: "ABBA", title: "Mamma Mia" },
                 { artist: "AnnenMayKantereit", title: "Ausgehen" },
@@ -295,24 +460,37 @@
             const sortByArtistBtn = document.getElementById('sort-by-artist');
             let currentSort = 'title';
 
+            // Sort Buttons Logic
             function updateSortButtons() {
+                const activeClass = "bg-cyan-500 text-white shadow-md shadow-cyan-500/20 border-transparent";
+                const inactiveClass = "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600 border-transparent";
+
                 if (currentSort === 'title') {
-                    sortByTitleBtn.classList.add('bg-cyan-500', 'text-white');
-                    sortByTitleBtn.classList.remove('bg-slate-200', 'dark:bg-slate-700', 'text-slate-700', 'dark:text-slate-200');
-                    sortByArtistBtn.classList.add('bg-slate-200', 'dark:bg-slate-700', 'text-slate-700', 'dark:text-slate-200');
-                    sortByArtistBtn.classList.remove('bg-cyan-500', 'text-white');
+                    sortByTitleBtn.className = `px-4 py-1.5 text-sm font-medium rounded-lg transition-all duration-300 border ${activeClass}`;
+                    sortByArtistBtn.className = `px-4 py-1.5 text-sm font-medium rounded-lg transition-all duration-300 border ${inactiveClass}`;
                 } else {
-                    sortByArtistBtn.classList.add('bg-cyan-500', 'text-white');
-                    sortByArtistBtn.classList.remove('bg-slate-200', 'dark:bg-slate-700', 'text-slate-700', 'dark:text-slate-200');
-                    sortByTitleBtn.classList.add('bg-slate-200', 'dark:bg-slate-700', 'text-slate-700', 'dark:text-slate-200');
-                    sortByTitleBtn.classList.remove('bg-cyan-500', 'text-white');
+                    sortByArtistBtn.className = `px-4 py-1.5 text-sm font-medium rounded-lg transition-all duration-300 border ${activeClass}`;
+                    sortByTitleBtn.className = `px-4 py-1.5 text-sm font-medium rounded-lg transition-all duration-300 border ${inactiveClass}`;
                 }
+            }
+
+            function highlightMatch(text, term) {
+                if (!term) return text;
+                const regex = new RegExp(`(${term})`, 'gi');
+                return text.replace(regex, '<span class="highlight">$1</span>');
             }
 
             function renderSongList(songs) {
                 songListEl.innerHTML = '';
                 if (songs.length === 0) {
-                    songListEl.innerHTML = `<li class="text-slate-500 dark:text-slate-400 text-center p-4">Keine Songs gefunden.</li>`;
+                    songListEl.innerHTML = `
+                        <li class="flex flex-col items-center justify-center p-8 text-center animate-fade-in">
+                            <div class="w-16 h-16 mb-4 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                                <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <p class="text-slate-500 dark:text-slate-400 font-medium">Keine Songs gefunden.</p>
+                            <p class="text-sm text-slate-400 mt-1">Versuche einen anderen Suchbegriff.</p>
+                        </li>`;
                     return;
                 }
 
@@ -324,14 +502,24 @@
                     return a.title.localeCompare(b.title);
                 });
 
+                const searchTerm = searchInputEl.value.toLowerCase();
+
                 sortedSongs.forEach((song, index) => {
                     const li = document.createElement('li');
-                    li.className = 'flex items-center p-3 bg-slate-100 dark:bg-slate-800/[.5] rounded-md hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors duration-200';
+                    li.style.animationDelay = `${index * 30}ms`;
+                    li.className = 'song-item flex items-center p-3 md:p-4 rounded-xl bg-white/80 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-slate-800/60 border border-transparent hover:border-cyan-500/30 shadow-sm hover:shadow-md transition-all duration-300 group cursor-default';
+                    
+                    const displayTitle = highlightMatch(song.title, searchTerm);
+                    const displayArtist = highlightMatch(song.artist, searchTerm);
+
                     li.innerHTML = `
-                        <span class="text-slate-500 dark:text-slate-400 font-medium w-8 text-right mr-4">${index + 1}.</span>
+                        <span class="text-slate-400 font-mono text-xs md:text-sm w-8 md:w-12 text-right mr-4 opacity-60 group-hover:opacity-100 transition-opacity">${index + 1}.</span>
                         <div class="flex-grow">
-                            <p class="font-semibold text-slate-800 dark:text-slate-100">${song.title}</p>
-                            <p class="text-sm text-slate-600 dark:text-slate-400">${song.artist}</p>
+                            <p class="font-bold text-slate-800 dark:text-slate-100 text-sm md:text-base group-hover:text-cyan-700 dark:group-hover:text-cyan-400 transition-colors">${displayTitle}</p>
+                            <p class="text-xs md:text-sm text-slate-600 dark:text-slate-400 font-medium mt-0.5">${displayArtist}</p>
+                        </div>
+                        <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                             <svg class="w-5 h-5 text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg>
                         </div>
                     `;
                     songListEl.appendChild(li);
@@ -342,21 +530,29 @@
                 const totalSongs = songData.length;
                 const artists = songData.map(s => s.artist);
                 const uniqueArtists = [...new Set(artists)];
-                
                 const artistCounts = artists.reduce((acc, artist) => {
                     acc[artist] = (acc[artist] || 0) + 1;
                     return acc;
                 }, {});
-
                 const topArtistEntry = Object.entries(artistCounts).sort((a, b) => b[1] - a[1])[0];
                 
-                document.getElementById('total-songs').textContent = totalSongs;
-                document.getElementById('unique-artists').textContent = uniqueArtists.length;
+                animateValue("total-songs", 0, totalSongs, 1000);
+                animateValue("unique-artists", 0, uniqueArtists.length, 1000);
                 document.getElementById('top-artist').textContent = topArtistEntry ? `${topArtistEntry[0]} (${topArtistEntry[1]})` : '-';
                 document.getElementById('footer-song-count').textContent = `${totalSongs} Songs in der Bibliothek`;
-
-
                 return { uniqueArtists };
+            }
+
+            function animateValue(id, start, end, duration) {
+                const obj = document.getElementById(id);
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    obj.innerHTML = Math.floor(progress * (end - start) + start);
+                    if (progress < 1) window.requestAnimationFrame(step);
+                };
+                window.requestAnimationFrame(step);
             }
 
             function setupFilters(uniqueArtists) {
@@ -384,17 +580,8 @@
                 renderSongList(filteredSongs);
             }
             
-            sortByTitleBtn.addEventListener('click', () => {
-                currentSort = 'title';
-                updateSortButtons();
-                filterAndRender();
-            });
-
-            sortByArtistBtn.addEventListener('click', () => {
-                currentSort = 'artist';
-                updateSortButtons();
-                filterAndRender();
-            });
+            sortByTitleBtn.addEventListener('click', () => { currentSort = 'title'; updateSortButtons(); filterAndRender(); });
+            sortByArtistBtn.addEventListener('click', () => { currentSort = 'artist'; updateSortButtons(); filterAndRender(); });
 
             const { uniqueArtists } = calculateAndDisplayStats();
             setupFilters(uniqueArtists);
@@ -404,23 +591,8 @@
             searchInputEl.addEventListener('input', filterAndRender);
             artistFilterEl.addEventListener('change', filterAndRender);
 
-            function showModal() {
-                randomSongModal.classList.remove('hidden');
-                setTimeout(() => {
-                    randomSongModal.classList.remove('opacity-0', 'pointer-events-none');
-                    randomSongModal.querySelector('div').classList.remove('scale-95');
-                }, 10);
-            }
-
-            function hideModal() {
-                randomSongModal.classList.add('opacity-0');
-                randomSongModal.querySelector('div').classList.add('scale-95');
-                setTimeout(() => {
-                    randomSongModal.classList.add('hidden', 'pointer-events-none');
-                }, 300);
-            }
-
-            randomSongBtn.addEventListener('click', () => {
+            // Modal Logic
+            function pickRandomSong() {
                 const currentSongs = getFilteredSongs();
                 if (currentSongs.length > 0) {
                     const randomIndex = Math.floor(Math.random() * currentSongs.length);
@@ -428,21 +600,33 @@
                     randomSongTitleEl.textContent = randomSong.title;
                     randomSongArtistEl.textContent = randomSong.artist;
                 } else {
-                    randomSongTitleEl.textContent = 'Kein Song gefunden';
-                    randomSongArtistEl.textContent = 'Bitte ändere deine Filterauswahl.';
+                    randomSongTitleEl.textContent = 'Nichts gefunden';
+                    randomSongArtistEl.textContent = 'Passe deine Filter an.';
                 }
-                showModal();
-            });
+            }
 
+            function showModal() {
+                pickRandomSong();
+                randomSongModal.classList.remove('hidden');
+                setTimeout(() => {
+                    randomSongModal.classList.remove('opacity-0', 'pointer-events-none');
+                    randomSongModal.querySelector('.glass-panel').classList.remove('scale-95');
+                    randomSongModal.querySelector('.glass-panel').classList.add('scale-100');
+                }, 10);
+            }
+
+            function hideModal() {
+                randomSongModal.classList.add('opacity-0', 'pointer-events-none');
+                randomSongModal.querySelector('.glass-panel').classList.remove('scale-100');
+                randomSongModal.querySelector('.glass-panel').classList.add('scale-95');
+                setTimeout(() => randomSongModal.classList.add('hidden'), 300);
+            }
+
+            randomSongBtn.addEventListener('click', showModal);
+            rerollBtn.addEventListener('click', pickRandomSong);
             closeModalBtn.addEventListener('click', hideModal);
-            randomSongModal.addEventListener('click', (event) => {
-                if (event.target === randomSongModal) {
-                    hideModal();
-                }
-            });
-
+            randomSongModal.addEventListener('click', (event) => { if (event.target === randomSongModal) hideModal(); });
         });
     </script>
 </body>
 </html>
-
