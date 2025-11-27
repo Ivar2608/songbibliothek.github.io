@@ -88,10 +88,9 @@
         .view-section { display: none; }
         .view-section.active { display: block; animation: fadeInUp 0.5s ease-out; }
         
-        /* Heart Animation */
         .heart-icon { transition: transform 0.2s, color 0.2s; cursor: pointer; }
         .heart-icon:active { transform: scale(1.3); }
-        .heart-active { color: #ec4899; fill: #ec4899; } /* Pink-500 */
+        .heart-active { color: #ec4899; fill: #ec4899; } 
     </style>
 </head>
 <body class="antialiased transition-colors duration-500 text-slate-900 dark:text-slate-100">
@@ -118,8 +117,32 @@
             </button>
         </header>
 
+        <!-- MAIN CONTENT AREA -->
         <main class="flex-grow max-w-5xl mx-auto w-full space-y-8">
+            
+            <!-- HOME VIEW -->
             <div id="home-view" class="view-section active space-y-8">
+                
+                <!-- SONG OF THE DAY FEATURE -->
+                <section id="song-of-day-card" class="glass-panel p-6 rounded-2xl relative overflow-hidden border-l-4 border-yellow-400">
+                    <div class="absolute top-0 right-0 p-4 opacity-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32 text-yellow-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" /></svg>
+                    </div>
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-yellow-600 dark:text-yellow-400 mb-2 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                        Song des Tages
+                    </h3>
+                    <div class="relative z-10">
+                        <p class="text-2xl md:text-3xl font-bold text-slate-800 dark:text-slate-100" id="sod-title">Lade...</p>
+                        <p class="text-lg text-slate-600 dark:text-slate-300" id="sod-artist">...</p>
+                        <div id="sod-tags" class="flex gap-2 mt-3"></div>
+                        <button id="sod-play-btn" class="mt-4 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg flex items-center gap-2 transition-colors text-sm font-bold">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            Jetzt singen
+                        </button>
+                    </div>
+                </section>
+
                 <!-- Stats -->
                 <section id="stats" class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
                     <div class="glass-panel p-6 rounded-2xl text-center transform hover:-translate-y-1 transition-transform duration-300">
@@ -212,8 +235,12 @@
                 <div class="glass-panel p-8 rounded-2xl shadow-xl max-w-3xl mx-auto">
                     <h2 class="text-3xl font-bold mb-6 text-slate-800 dark:text-slate-100 border-b border-slate-200 dark:border-slate-700 pb-4">Datenschutzerklärung</h2>
                     <div class="space-y-4 text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
-                        <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 mt-4">4. Datenerfassung auf dieser Website</h3>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 mt-4">1. Datenerfassung auf dieser Website</h3>
                         <p><strong>Cookies & Local Storage:</strong><br>Wir nutzen den "Local Storage" Ihres Browsers, um Ihre Einstellungen (z.B. Dark Mode, Cookie-Zustimmung) und <strong>Ihre persönliche Favoritenliste (Merkzettel)</strong> lokal auf Ihrem Gerät zu speichern. Diese Daten werden nicht an uns übertragen.</p>
+                        
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 mt-4">2. Externe Links (YouTube)</h3>
+                        <p>Unsere Webseite enthält Links zur Plattform YouTube. Diese sind mit einem "Play"-Symbol gekennzeichnet. Erst wenn Sie auf diesen Link klicken, werden Sie zu YouTube weitergeleitet. Ab diesem Zeitpunkt gelten die Datenschutzbestimmungen von YouTube (Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland). Wir haben keinen Einfluss darauf, welche Daten YouTube erhebt.</p>
+                        
                         <button onclick="switchView('home')" class="mt-8 px-6 py-2 bg-slate-200 dark:bg-slate-700 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">Zurück zur Übersicht</button>
                     </div>
                 </div>
@@ -240,12 +267,10 @@
 
     <script>
         // --- JS LOGIC ---
-        let switchView, acceptCookies, openCookieSettings;
+        let switchView, acceptCookies, openCookieSettings, openYoutube;
         document.addEventListener('DOMContentLoaded', () => {
             // ... Elements ...
             const themeToggleBtn = document.getElementById('theme-toggle');
-            const lightIcon = document.getElementById('theme-icon-light');
-            const darkIcon = document.getElementById('theme-icon-dark');
             const bgAnimation = document.getElementById('bg-animation');
             const backToTopBtn = document.getElementById('back-to-top');
             const randomSongBtn = document.getElementById('random-song-btn');
@@ -261,6 +286,10 @@
             const sortByTitleBtn = document.getElementById('sort-by-title');
             const sortByArtistBtn = document.getElementById('sort-by-artist');
             const showFavoritesBtn = document.getElementById('show-favorites-btn');
+            const sodTitle = document.getElementById('sod-title');
+            const sodArtist = document.getElementById('sod-artist');
+            const sodTags = document.getElementById('sod-tags');
+            const sodPlayBtn = document.getElementById('sod-play-btn');
 
             let currentSort = 'title';
             let showFavoritesOnly = false;
@@ -281,6 +310,8 @@
 
             // --- THEME ---
             const applyTheme = (theme) => {
+                const lightIcon = document.getElementById('theme-icon-light');
+                const darkIcon = document.getElementById('theme-icon-dark');
                 if (theme === 'dark') { document.documentElement.classList.add('dark'); bgAnimation.classList.remove('light-mode-bg'); lightIcon.classList.remove('hidden'); darkIcon.classList.add('hidden'); }
                 else { document.documentElement.classList.remove('dark'); bgAnimation.classList.add('light-mode-bg'); lightIcon.classList.add('hidden'); darkIcon.classList.remove('hidden'); }
             };
@@ -291,105 +322,133 @@
             window.addEventListener('scroll', () => { if (window.scrollY > 300) backToTopBtn.classList.remove('hidden'); else backToTopBtn.classList.add('hidden'); });
             backToTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-            // --- PWA Register ---
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('sw.js').then(reg => console.log('SW registered')).catch(err => console.log('SW failed', err));
-                });
-            }
+            // --- PWA ---
+            if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('sw.js')); }
 
-            // --- DATA ---
+            // --- DATA (Enhanced with Tags) ---
             const songData = [
-                { artist: "ABBA", title: "Mamma Mia" },
-                { artist: "AnnenMayKantereit", title: "Ausgehen" },
-                { artist: "AnnenMayKantereit", title: "Barfuß am Klavier" },
-                { artist: "AnnenMayKantereit", title: "Oft gefragt" },
-                { artist: "AnnenMayKantereit", title: "Pocahontas" },
-                { artist: "Banaroo", title: "Dubi Dam Dam" },
-                { artist: "Billy Joel", title: "Uptown Girl" },
-                { artist: "Coldplay", title: "Speed Of Sound (Album Version)" },
-                { artist: "Disney", title: "Ein Traum wird wahr (Aladdin) [DUET]" },
-                { artist: "Disney", title: "Prinz Ali (Aladdin)" },
-                { artist: "Disney", title: "Nur ein Kuss (Arielle)" },
-                { artist: "Disney", title: "Unter dem Meer (Arielle)" },
-                { artist: "Disney", title: "Katzen brauchen furchtbar viel Musik (Aristocats) [DUET]" },
-                { artist: "Disney", title: "Intro (Chip & Chap)" },
-                { artist: "Disney", title: "Ich wäre gern wie Du (Das Dschungelbuch)" },
-                { artist: "Disney", title: "Ich wäre gern wie Du (Das Dschungelbuch) [DUET]" },
-                { artist: "Disney", title: "Probier's mal mit Gemütlichkeit (Das Dschungelbuch)" },
-                { artist: "Disney", title: "Lass jetzt los (Die Eiskönigin)" },
-                { artist: "Disney", title: "Theme (DuckTales)" },
-                { artist: "Disney", "title": "Druck (Encanto)" },
-                { artist: "Disney", title: "Theme (Gummibärenbande)" },
-                { artist: "Disney", title: "Ich werd's noch beweisen! (Hercules)" },
-                { artist: "Disney", title: "Ich will keinen Mann (Hercules)" },
-                { artist: "Disney", title: "Intro (Käpt'n Balu und seine tollkühne Crew)" },
-                { artist: "Disney", title: "Der ewige Kreis (Der König der Löwen) [DUET]" },
-                { artist: "Disney", title: "Hakuna Matata (Der König der Löwen)" },
-                { artist: "Disney", title: "Hakuna Matata (Der König der Löwen) [DUET]" },
-                { artist: "Disney", title: "Ich will jetzt gleich König sein (Der König der Löwen)" },
-                { artist: "Disney", title: "Kann es wirklich Liebe sein (Der König der Löwen)" },
-                { artist: "Disney", title: "Sei ein Mann (Mulan)" },
-                { artist: "Disney", title: "Das Farbenspiel des Winds (Pocahontas)" },
-                { artist: "Disney", title: "Zwei Welten (Tarzan Musical)" },
-                { artist: "Disney", title: "So ein Mann (Tarzan / Phil Collins)" },
-                { artist: "Disney", title: "Dir gehört mein Herz (Tarzan / Phil Collins & Eva Mattes)" },
-                { artist: "Disney", title: "Du hast 'n Freund in mir (Toy Story)" },
-                { artist: "Disney", title: "Voll gerne (Vaiana / Andreas Bourani)" },
-                { artist: "Disney", title: "Ich bin bereit (Vaiana / Debbie van Dooren)" },
-                { artist: "Disney", title: "Ich bin bereit (Vaiana / Helene Fischer)" },
-                { artist: "DJ BoBo", title: "Chihuahua" },
-                { artist: "DJ Ötzi & Nik P.", title: "Ein Stern (... der deinen Namen trägt)" },
-                { artist: "Echt", title: "Du trägst keine Liebe in dir" },
-                { artist: "Erste Allgemeine Verunsicherung", title: "Ding Dong" },
-                { artist: "Extreme", title: "More Than Words [DUET]" },
-                { artist: "Geier Sturzflug", title: "Bruttosozialprodukt" },
-                { artist: "Helene Fischer", title: "Atemlos durch die Nacht" },
-                { artist: "Helene Fischer", title: "Herzbeben" },
-                { artist: "Hermes House Band", title: "Country Roads" },
-                { artist: "Hoobastank", title: "The Reason" },
-                { artist: "Höhner", title: "Viva Colonia (Da simmer dabei, dat is prima!)" },
-                { artist: "John Denver", title: "Take Me Home, Country Roads" },
-                { artist: "Khaled", title: "Aïcha" },
-                { artist: "Lady Gaga", title: "Paparazzi" },
-                { artist: "Leonard Cohen", title: "Hallelujah" },
-                { artist: "Mark Forster", title: "Übermorgen" },
-                { artist: "Matthias Reim", title: "Verdammt - ich lieb' dich" },
-                { artist: "Mickie Krause", title: "Laudato si" },
-                { artist: "Olaf Henning", title: "Cowboy und Indianer (Komm hol' das Lasso raus)" },
-                { artist: "Oliver Pocher", title: "Schwarz und weiß" },
-                { artist: "Paramore", title: "Still Into You" },
-                { artist: "Peter Maffay", title: "Und es war Sommer" },
-                { artist: "Philipp Dittberner & Marv", title: "Wolke 4" },
-                { artist: "Philipp Poisel", title: "Ich will nur (Live)" },
-                { artist: "Philipp Poisel", title: "Wie soll ein Mensch das ertragen" },
-                { artist: "Pur", title: "Hitmix" },
-                { artist: "Rednex", title: "Cotton Eye Joe" },
-                { artist: "Right Said Fred", title: "You're My Mate" },
-                { artist: "Santiano", title: "Alle die mit uns auf Kaperfahrt fahren" },
-                { artist: "Scorpions", title: "Wind Of Change" },
-                { artist: "Tabaluga & Lilli", title: "Nessaja (Peter Maffay)" },
-                { artist: "Taylor Swift", title: "Anti-Hero" },
-                { artist: "Taylor Swift", title: "Bad Blood" },
-                { artist: "Taylor Swift", title: "Blank Space" },
-                { artist: "Taylor Swift", title: "Cruel Summer" },
-                { artist: "Taylor Swift", title: "I Knew You Were Trouble" },
-                { artist: "Taylor Swift", title: "Karma" },
-                { artist: "Taylor Swift", title: "Miss Americana & The Heartbreak Prince" },
-                { artist: "Taylor Swift feat. Ice Spice", title: "Karma" },
-                { artist: "Wir sind Helden", title: "Denkmal" },
-                { artist: "Wolfgang Petry", title: "Wahsinns (Live)" },
+                { artist: "ABBA", title: "Mamma Mia", tags: ["Pop", "70er", "Oldie"] },
+                { artist: "AnnenMayKantereit", title: "Ausgehen", tags: ["Rock", "Pop", "Deutsch"] },
+                { artist: "AnnenMayKantereit", title: "Barfuß am Klavier", tags: ["Ballade", "Deutsch"] },
+                { artist: "AnnenMayKantereit", title: "Oft gefragt", tags: ["Deutsch", "Rock"] },
+                { artist: "AnnenMayKantereit", title: "Pocahontas", tags: ["Deutsch", "Hit"] },
+                { artist: "Banaroo", title: "Dubi Dam Dam", tags: ["Pop", "Party"] },
+                { artist: "Billy Joel", title: "Uptown Girl", tags: ["Oldie", "Pop"] },
+                { artist: "Coldplay", title: "Speed Of Sound (Album Version)", tags: ["Rock", "Alternative"] },
+                { artist: "Disney", title: "Ein Traum wird wahr (Aladdin) [DUET]", tags: ["Disney", "Duett", "Soundtrack"] },
+                { artist: "Disney", title: "Prinz Ali (Aladdin)", tags: ["Disney", "Soundtrack"] },
+                { artist: "Disney", title: "Nur ein Kuss (Arielle)", tags: ["Disney", "Ballade"] },
+                { artist: "Disney", title: "Unter dem Meer (Arielle)", tags: ["Disney", "Gute Laune"] },
+                { artist: "Disney", title: "Katzen brauchen furchtbar viel Musik (Aristocats) [DUET]", tags: ["Disney", "Duett"] },
+                { artist: "Disney", title: "Intro (Chip & Chap)", tags: ["Disney", "TV-Theme"] },
+                { artist: "Disney", title: "Ich wäre gern wie Du (Das Dschungelbuch)", tags: ["Disney", "Jazz"] },
+                { artist: "Disney", title: "Ich wäre gern wie Du (Das Dschungelbuch) [DUET]", tags: ["Disney", "Duett"] },
+                { artist: "Disney", title: "Probier's mal mit Gemütlichkeit (Das Dschungelbuch)", tags: ["Disney", "Klassiker"] },
+                { artist: "Disney", title: "Lass jetzt los (Die Eiskönigin)", tags: ["Disney", "Hit", "Ballade"] },
+                { artist: "Disney", title: "Theme (DuckTales)", tags: ["Disney", "TV-Theme"] },
+                { artist: "Disney", title: "Druck (Encanto)", tags: ["Disney", "Modern"] },
+                { artist: "Disney", title: "Theme (Gummibärenbande)", tags: ["Disney", "TV-Theme"] },
+                { artist: "Disney", title: "Ich werd's noch beweisen! (Hercules)", tags: ["Disney", "Ballade"] },
+                { artist: "Disney", title: "Ich will keinen Mann (Hercules)", tags: ["Disney", "Pop"] },
+                { artist: "Disney", title: "Intro (Käpt'n Balu und seine tollkühne Crew)", tags: ["Disney", "TV-Theme"] },
+                { artist: "Disney", title: "Der ewige Kreis (Der König der Löwen) [DUET]", tags: ["Disney", "Duett", "Klassiker"] },
+                { artist: "Disney", title: "Hakuna Matata (Der König der Löwen)", tags: ["Disney", "Gute Laune"] },
+                { artist: "Disney", title: "Hakuna Matata (Der König der Löwen) [DUET]", tags: ["Disney", "Duett"] },
+                { artist: "Disney", title: "Ich will jetzt gleich König sein (Der König der Löwen)", tags: ["Disney", "Pop"] },
+                { artist: "Disney", title: "Kann es wirklich Liebe sein (Der König der Löwen)", tags: ["Disney", "Ballade"] },
+                { artist: "Disney", title: "Sei ein Mann (Mulan)", tags: ["Disney", "Power"] },
+                { artist: "Disney", title: "Das Farbenspiel des Winds (Pocahontas)", tags: ["Disney", "Ballade"] },
+                { artist: "Disney", title: "Zwei Welten (Tarzan Musical)", tags: ["Disney", "Musical"] },
+                { artist: "Disney", title: "So ein Mann (Tarzan / Phil Collins)", tags: ["Disney", "Pop"] },
+                { artist: "Disney", title: "Dir gehört mein Herz (Tarzan / Phil Collins & Eva Mattes)", tags: ["Disney", "Ballade"] },
+                { artist: "Disney", title: "Du hast 'n Freund in mir (Toy Story)", tags: ["Disney", "Klassiker"] },
+                { artist: "Disney", title: "Voll gerne (Vaiana / Andreas Bourani)", tags: ["Disney", "Pop"] },
+                { artist: "Disney", title: "Ich bin bereit (Vaiana / Debbie van Dooren)", tags: ["Disney", "Power"] },
+                { artist: "Disney", title: "Ich bin bereit (Vaiana / Helene Fischer)", tags: ["Disney", "Schlager"] },
+                { artist: "DJ BoBo", title: "Chihuahua", tags: ["Party", "Sommer"] },
+                { artist: "DJ Ötzi & Nik P.", title: "Ein Stern (... der deinen Namen trägt)", tags: ["Schlager", "Party"] },
+                { artist: "Echt", title: "Du trägst keine Liebe in dir", tags: ["Deutsch", "90er"] },
+                { artist: "Erste Allgemeine Verunsicherung", title: "Ding Dong", tags: ["Deutsch", "Spaß"] },
+                { artist: "Extreme", title: "More Than Words [DUET]", tags: ["Ballade", "Duett", "Rock"] },
+                { artist: "Geier Sturzflug", title: "Bruttosozialprodukt", tags: ["NDW", "Deutsch"] },
+                { artist: "Helene Fischer", title: "Atemlos durch die Nacht", tags: ["Schlager", "Party"] },
+                { artist: "Helene Fischer", title: "Herzbeben", tags: ["Schlager", "Pop"] },
+                { artist: "Hermes House Band", title: "Country Roads", tags: ["Party", "Cover"] },
+                { artist: "Hoobastank", title: "The Reason", tags: ["Rock", "Ballade"] },
+                { artist: "Höhner", title: "Viva Colonia (Da simmer dabei, dat is prima!)", tags: ["Karneval", "Party"] },
+                { artist: "John Denver", title: "Take Me Home, Country Roads", tags: ["Country", "Oldie"] },
+                { artist: "Khaled", title: "Aïcha", tags: ["Pop", "90er"] },
+                { artist: "Lady Gaga", title: "Paparazzi", tags: ["Pop", "Hit"] },
+                { artist: "Leonard Cohen", title: "Hallelujah", tags: ["Ballade", "Klassiker"] },
+                { artist: "Mark Forster", title: "Übermorgen", tags: ["Deutsch", "Pop"] },
+                { artist: "Matthias Reim", title: "Verdammt - ich lieb' dich", tags: ["Schlager", "Kult"] },
+                { artist: "Mickie Krause", title: "Laudato si", tags: ["Party", "Ballermann"] },
+                { artist: "Olaf Henning", title: "Cowboy und Indianer (Komm hol' das Lasso raus)", tags: ["Party", "Schlager"] },
+                { artist: "Oliver Pocher", title: "Schwarz und weiß", tags: ["Party", "Fußball"] },
+                { artist: "Paramore", title: "Still Into You", tags: ["Rock", "Alternative"] },
+                { artist: "Peter Maffay", title: "Und es war Sommer", tags: ["Schlager", "Klassiker"] },
+                { artist: "Philipp Dittberner & Marv", title: "Wolke 4", tags: ["Deutsch", "Pop"] },
+                { artist: "Philipp Poisel", title: "Ich will nur (Live)", tags: ["Deutsch", "Ballade"] },
+                { artist: "Philipp Poisel", title: "Wie soll ein Mensch das ertragen", tags: ["Deutsch", "Traurig"] },
+                { artist: "Pur", title: "Hitmix", tags: ["Schlager", "Medley"] },
+                { artist: "Rednex", title: "Cotton Eye Joe", tags: ["Party", "90er"] },
+                { artist: "Right Said Fred", title: "You're My Mate", tags: ["Pop", "Gute Laune"] },
+                { artist: "Santiano", title: "Alle die mit uns auf Kaperfahrt fahren", tags: ["Shanty", "Deutsch"] },
+                { artist: "Scorpions", title: "Wind Of Change", tags: ["Rock", "Ballade"] },
+                { artist: "Tabaluga & Lilli", title: "Nessaja (Peter Maffay)", tags: ["Musical", "Deutsch"] },
+                { artist: "Taylor Swift", title: "Anti-Hero", tags: ["Pop", "Aktuell"] },
+                { artist: "Taylor Swift", title: "Bad Blood", tags: ["Pop", "Hit"] },
+                { artist: "Taylor Swift", title: "Blank Space", tags: ["Pop", "Hit"] },
+                { artist: "Taylor Swift", title: "Cruel Summer", tags: ["Pop", "Sommer"] },
+                { artist: "Taylor Swift", title: "I Knew You Were Trouble", tags: ["Pop", "Dubstep"] },
+                { artist: "Taylor Swift", title: "Karma", tags: ["Pop", "Hit"] },
+                { artist: "Taylor Swift", title: "Miss Americana & The Heartbreak Prince", tags: ["Pop"] },
+                { artist: "Taylor Swift feat. Ice Spice", title: "Karma", tags: ["Pop", "Remix"] },
+                { artist: "Wir sind Helden", title: "Denkmal", tags: ["Deutsch", "Rock"] },
+                { artist: "Wolfgang Petry", title: "Wahsinns (Live)", tags: ["Schlager", "Kult"] },
             ];
+
+            // --- YOUTUBE LOGIC ---
+            openYoutube = (artist, title) => {
+                const query = encodeURIComponent(`${artist} ${title} Karaoke`);
+                window.open(`https://www.youtube.com/results?search_query=${query}`, '_blank');
+            };
+
+            // --- SONG OF THE DAY ---
+            const updateSongOfTheDay = () => {
+                const today = new Date().toDateString(); // "Thu Nov 27 2025"
+                // Simple hash function to get a consistent index for the day
+                let hash = 0;
+                for (let i = 0; i < today.length; i++) {
+                    hash = today.charCodeAt(i) + ((hash << 5) - hash);
+                }
+                const index = Math.abs(hash) % songData.length;
+                const dailySong = songData[index];
+
+                sodTitle.textContent = dailySong.title;
+                sodArtist.textContent = dailySong.artist;
+                
+                // Tags
+                sodTags.innerHTML = '';
+                if(dailySong.tags) {
+                    dailySong.tags.forEach(tag => {
+                        const span = document.createElement('span');
+                        span.className = "px-2 py-0.5 bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200 text-xs rounded-full border border-yellow-200 dark:border-yellow-700/50";
+                        span.textContent = tag;
+                        sodTags.appendChild(span);
+                    });
+                }
+
+                sodPlayBtn.onclick = () => openYoutube(dailySong.artist, dailySong.title);
+            };
+            updateSongOfTheDay();
 
             // --- FAVORITES LOGIC ---
             function toggleFavorite(songKey) {
-                if (favorites.includes(songKey)) {
-                    favorites = favorites.filter(k => k !== songKey);
-                } else {
-                    favorites.push(songKey);
-                }
+                if (favorites.includes(songKey)) { favorites = favorites.filter(k => k !== songKey); } 
+                else { favorites.push(songKey); }
                 localStorage.setItem('heitzify_favorites', JSON.stringify(favorites));
-                filterAndRender(); // Re-render to show updated hearts
+                filterAndRender();
             }
 
             showFavoritesBtn.addEventListener('click', () => {
@@ -401,24 +460,16 @@
                 filterAndRender();
             });
 
-            // --- FILTER & RENDER ---
-            function updateSortButtons() {
-                const activeClass = "bg-cyan-500 text-white shadow-md shadow-cyan-500/20 border-transparent";
-                const inactiveClass = "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600 border-transparent";
-                if (currentSort === 'title') {
-                    sortByTitleBtn.className = `px-4 py-1.5 text-sm font-medium rounded-lg transition-all duration-300 border ${activeClass}`;
-                    sortByArtistBtn.className = `px-4 py-1.5 text-sm font-medium rounded-lg transition-all duration-300 border ${inactiveClass}`;
-                } else {
-                    sortByArtistBtn.className = `px-4 py-1.5 text-sm font-medium rounded-lg transition-all duration-300 border ${activeClass}`;
-                    sortByTitleBtn.className = `px-4 py-1.5 text-sm font-medium rounded-lg transition-all duration-300 border ${inactiveClass}`;
-                }
-            }
-
+            // --- RENDER & FILTER ---
             function highlightMatch(text, term) {
                 if (!term) return text;
                 const regex = new RegExp(`(${term})`, 'gi');
                 return text.replace(regex, '<span class="highlight">$1</span>');
             }
+
+            // Expose for HTML
+            window.toggleFav = (key) => toggleFavorite(key);
+            window.playSong = (artist, title) => openYoutube(artist, title);
 
             function renderSongList(songs) {
                 songListEl.innerHTML = '';
@@ -446,18 +497,30 @@
                     
                     const displayTitle = highlightMatch(song.title, searchTerm);
                     const displayArtist = highlightMatch(song.artist, searchTerm);
-
-                    // Heart SVG Logic
                     const heartClass = isFav ? "heart-active" : "text-slate-300 dark:text-slate-600 hover:text-pink-400";
                     const heartFill = isFav ? "currentColor" : "none";
 
+                    // Tag Badges HTML
+                    let tagsHtml = '';
+                    if(song.tags) {
+                        tagsHtml = `<div class="flex flex-wrap gap-1 mt-1">` + 
+                            song.tags.map(tag => `<span class="px-1.5 py-0.5 text-[10px] rounded-md bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-600">${tag}</span>`).join('') +
+                        `</div>`;
+                    }
+
                     li.innerHTML = `
                         <span class="text-slate-400 font-mono text-xs md:text-sm w-8 md:w-12 text-right mr-4 opacity-60 group-hover:opacity-100 transition-opacity">${index + 1}.</span>
-                        <div class="flex-grow">
-                            <p class="font-bold text-slate-800 dark:text-slate-100 text-sm md:text-base group-hover:text-cyan-700 dark:group-hover:text-cyan-400 transition-colors">${displayTitle}</p>
-                            <p class="text-xs md:text-sm text-slate-600 dark:text-slate-400 font-medium mt-0.5">${displayArtist}</p>
+                        <div class="flex-grow min-w-0">
+                            <p class="font-bold text-slate-800 dark:text-slate-100 text-sm md:text-base group-hover:text-cyan-700 dark:group-hover:text-cyan-400 transition-colors truncate pr-2">${displayTitle}</p>
+                            <p class="text-xs md:text-sm text-slate-600 dark:text-slate-400 font-medium mt-0.5 truncate">${displayArtist}</p>
+                            ${tagsHtml}
                         </div>
-                        <div class="ml-2">
+                        <div class="flex items-center gap-3 ml-2 flex-shrink-0">
+                             <button onclick="window.playSong('${song.artist.replace(/'/g, "\\'")}', '${song.title.replace(/'/g, "\\'")}')" class="p-2 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors" title="Auf YouTube suchen">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                                </svg>
+                             </button>
                              <svg onclick="window.toggleFav('${songKey.replace(/'/g, "\\'")}')" class="w-6 h-6 heart-icon ${heartClass}" fill="${heartFill}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                              </svg>
@@ -466,9 +529,6 @@
                     songListEl.appendChild(li);
                 });
             }
-
-            // Expose toggleFav to window so onclick works in innerHTML
-            window.toggleFav = (key) => toggleFavorite(key);
 
             function setupFilters(uniqueArtists) {
                 uniqueArtists.sort((a,b) => a.localeCompare(b)).forEach(artist => {
@@ -486,12 +546,23 @@
                 const artistCounts = artists.reduce((acc, artist) => { acc[artist] = (acc[artist] || 0) + 1; return acc; }, {});
                 const topArtistEntry = Object.entries(artistCounts).sort((a, b) => b[1] - a[1])[0];
                 
-                // Simple animation
-                document.getElementById('total-songs').textContent = totalSongs;
-                document.getElementById('unique-artists').textContent = uniqueArtists.length;
+                animateValue("total-songs", 0, totalSongs, 1000);
+                animateValue("unique-artists", 0, uniqueArtists.length, 1000);
                 document.getElementById('top-artist').textContent = topArtistEntry ? `${topArtistEntry[0]} (${topArtistEntry[1]})` : '-';
                 document.getElementById('footer-song-count').textContent = `${totalSongs} Songs in der Bibliothek`;
                 return { uniqueArtists };
+            }
+
+            function animateValue(id, start, end, duration) {
+                const obj = document.getElementById(id);
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    obj.innerHTML = Math.floor(progress * (end - start) + start);
+                    if (progress < 1) window.requestAnimationFrame(step);
+                };
+                window.requestAnimationFrame(step);
             }
 
             function filterAndRender() {
@@ -508,7 +579,19 @@
                 renderSongList(filteredSongs);
             }
             
-            // Listeners
+            function updateSortButtons() {
+                const activeClass = "bg-cyan-500 text-white shadow-md shadow-cyan-500/20 border-transparent";
+                const inactiveClass = "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600 border-transparent";
+                if (currentSort === 'title') {
+                    sortByTitleBtn.className = `px-4 py-1.5 text-sm font-medium rounded-lg transition-all duration-300 border ${activeClass}`;
+                    sortByArtistBtn.className = `px-4 py-1.5 text-sm font-medium rounded-lg transition-all duration-300 border ${inactiveClass}`;
+                } else {
+                    sortByArtistBtn.className = `px-4 py-1.5 text-sm font-medium rounded-lg transition-all duration-300 border ${activeClass}`;
+                    sortByTitleBtn.className = `px-4 py-1.5 text-sm font-medium rounded-lg transition-all duration-300 border ${inactiveClass}`;
+                }
+            }
+
+            // Bind Events
             sortByTitleBtn.addEventListener('click', () => { currentSort = 'title'; updateSortButtons(); filterAndRender(); });
             sortByArtistBtn.addEventListener('click', () => { currentSort = 'artist'; updateSortButtons(); filterAndRender(); });
             searchInputEl.addEventListener('input', filterAndRender);
@@ -520,9 +603,9 @@
             updateSortButtons();
             filterAndRender();
 
-            // Random Modal
-            function showModal() {
-                // ... same modal logic ...
+            // Random Modal Logic
+            function pickRandomSong() {
+                // ... (Existing logic) ...
                 const songs = songData.filter(song => {
                     const searchTerm = searchInputEl.value.toLowerCase();
                     const selectedArtist = artistFilterEl.value;
@@ -538,6 +621,9 @@
                     randomSongTitleEl.textContent = "Nichts gefunden";
                     randomSongArtistEl.textContent = "Filter anpassen";
                 }
+            }
+            function showModal() {
+                pickRandomSong();
                 randomSongModal.classList.remove('hidden');
                 setTimeout(() => {
                     randomSongModal.classList.remove('opacity-0', 'pointer-events-none');
@@ -552,7 +638,7 @@
                 setTimeout(() => randomSongModal.classList.add('hidden'), 300);
             }
             randomSongBtn.addEventListener('click', showModal);
-            rerollBtn.addEventListener('click', showModal);
+            rerollBtn.addEventListener('click', pickRandomSong);
             closeModalBtn.addEventListener('click', hideModal);
             randomSongModal.addEventListener('click', (e) => { if(e.target === randomSongModal) hideModal(); });
         });
