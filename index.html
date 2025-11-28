@@ -111,7 +111,7 @@
                 Die moderne Songbibliothek für dein Karaoke-Erlebnis.
             </p>
             
-            <!-- VERSION BADGE (New) -->
+            <!-- VERSION BADGE -->
             <div class="mt-4 flex justify-center">
                 <span class="px-3 py-1 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-full text-xs font-mono text-slate-500 dark:text-slate-400 flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
@@ -191,7 +191,9 @@
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><svg class="h-5 w-5 text-slate-400 group-focus-within:text-cyan-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg></div>
                                     <input type="text" id="search-input" placeholder="Titel oder Künstler suchen..." class="w-full pl-10 p-3 bg-white dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent outline-none transition-all duration-300 text-slate-900 dark:text-slate-100 placeholder-slate-400 shadow-sm">
                                 </div>
-                                <select id="artist-filter" class="p-3 bg-white dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none text-slate-900 dark:text-slate-100 w-full md:w-64 transition-all duration-300 cursor-pointer shadow-sm"><option value="all">Alle Künstler</option></select>
+                                <select id="artist-filter" class="p-3 bg-white dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none text-slate-900 dark:text-slate-100 w-full md:w-48 transition-all duration-300 cursor-pointer shadow-sm"><option value="all">Alle Künstler</option></select>
+                                <!-- Tag Filter -->
+                                <select id="tag-filter" class="p-3 bg-white dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none text-slate-900 dark:text-slate-100 w-full md:w-48 transition-all duration-300 cursor-pointer shadow-sm"><option value="all">Alle Tags</option></select>
                                 <button id="random-song-btn" class="p-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-300 font-semibold flex items-center justify-center gap-2 whitespace-nowrap shadow-md shadow-cyan-500/20"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M15.33 3.52a.75.75 0 01.428 1.316l-3.033 3.033a1.5 1.5 0 01-2.122 0L7.57 4.836A.75.75 0 018.63 3.77l1.745 1.745a.25.25 0 00.354 0L13.5 2.744a.75.75 0 011.33.428L12.5 5.5h2.75a.75.75 0 010 1.5H12.5l2.33 2.33a.75.75 0 11-1.06 1.06L10.738 7.357a1.5 1.5 0 010-2.122L13.77 2.2a.75.75 0 011.56.54v2.78zm-10 4.15a.75.75 0 11-1.06-1.06L7.303 3.577a1.5 1.5 0 012.122 0l3.033 3.033a.75.75 0 11-1.06 1.06L8.36 4.637a.25.25 0 00-.354 0L5.262 7.382zM4.67 15.17a.75.75 0 01-1.33-.428L5.5 12.36V9.75a.75.75 0 011.5 0V12.5l-2.33 2.33a.75.75 0 01-1.06-1.06l3.033-3.033a1.5 1.5 0 012.122 0l3.033 3.033a.75.75 0 01-1.06 1.06L9.262 12.618a.25.25 0 00-.354 0l-2.745 2.745z" clip-rule="evenodd" /></svg>Zufall</button>
                             </div>
                             <div class="flex gap-2">
@@ -344,6 +346,7 @@
             const songListEl = document.getElementById('song-list');
             const searchInputEl = document.getElementById('search-input');
             const artistFilterEl = document.getElementById('artist-filter');
+            const tagFilterEl = document.getElementById('tag-filter');
             const sortByTitleBtn = document.getElementById('sort-by-title');
             const sortByArtistBtn = document.getElementById('sort-by-artist');
             const showFavoritesBtn = document.getElementById('show-favorites-btn');
@@ -407,16 +410,11 @@
                 { artist: "Coldplay", title: "Speed Of Sound (Album Version)", tags: ["Rock", "Alternative"] },
                 { artist: "Dean Martin", title: "Let It Snow! Let It Snow! Let It Snow!", tags: ["Weihnachtslied", "Oldie"] },
                 { artist: "Dion", title: "The Wanderer", tags: ["Oldie", "Rock 'n' Roll"] },
-                { artist: "Disney", title: "Ein Traum wird wahr (Aladdin) [DUET]", tags: ["Disney", "Duett", "Soundtrack"] },
-                { artist: "Disney", title: "Ein Traum wird wahr (Aladdin) [DUET] (Peter Fessler & Sabine Hettlich)", tags: ["Disney", "Duett", "Soundtrack"] },
                 { artist: "Disney", title: "Prinz Ali (Aladdin)", tags: ["Disney", "Soundtrack"] },
                 { artist: "Disney", title: "Nur ein Kuss (Arielle)", tags: ["Disney", "Ballade"] },
                 { artist: "Disney", title: "Unter dem Meer (Arielle)", tags: ["Disney", "Gute Laune"] },
-                { artist: "Disney", title: "Katzen brauchen furchtbar viel Musik (Aristocats)", tags: ["Disney", "Klassiker"] },
-                { artist: "Disney", title: "Katzen brauchen furchtbar viel Musik (Aristocats) [DUET]", tags: ["Disney", "Duett"] },
                 { artist: "Disney", title: "Intro (Chip & Chap)", tags: ["Disney", "TV-Theme"] },
                 { artist: "Disney", title: "Ich wäre gern wie Du (Das Dschungelbuch)", tags: ["Disney", "Jazz"] },
-                { artist: "Disney", title: "Ich wäre gern wie Du (Das Dschungelbuch) [DUET]", tags: ["Disney", "Duett"] },
                 { artist: "Disney", title: "Probier's mal mit Gemütlichkeit (Das Dschungelbuch)", tags: ["Disney", "Klassiker"] },
                 { artist: "Disney", title: "Lass jetzt los (Die Eiskönigin)", tags: ["Disney", "Hit", "Ballade"] },
                 { artist: "Disney", title: "Willst du einen Schneemann bauen (Die Eiskönigin)", tags: ["Disney", "Film"] },
@@ -448,9 +446,7 @@
                 { artist: "Disney", title: "Right Here, Right Now (High School Musical 3)", tags: ["Disney", "Musical", "Duett"] },
                 { artist: "Disney", title: "The Boys Are Back (High School Musical 3)", tags: ["Disney", "Musical"] },
                 { artist: "Disney", title: "Intro (Käpt'n Balu und seine tollkühne Crew)", tags: ["Disney", "TV-Theme"] },
-                { artist: "Disney", title: "Der ewige Kreis (Der König der Löwen) [DUET]", tags: ["Disney", "Duett", "Klassiker"] },
                 { artist: "Disney", title: "Hakuna Matata (Der König der Löwen)", tags: ["Disney", "Gute Laune"] },
-                { artist: "Disney", title: "Hakuna Matata (Der König der Löwen) [DUET]", tags: ["Disney", "Duett"] },
                 { artist: "Disney", title: "Ich will jetzt gleich König sein (Der König der Löwen)", tags: ["Disney", "Pop"] },
                 { artist: "Disney", title: "Kann es wirklich Liebe sein (Der König der Löwen)", tags: ["Disney", "Ballade"] },
                 { artist: "Disney", title: "Sei ein Mann (Mulan)", tags: ["Disney", "Power"] },
@@ -466,7 +462,6 @@
                 { artist: "DJ Ötzi & Nik P.", title: "Ein Stern (... der deinen Namen trägt)", tags: ["Schlager", "Party"] },
                 { artist: "Echt", title: "Du trägst keine Liebe in dir", tags: ["Deutsch", "90er"] },
                 { artist: "Erste Allgemeine Verunsicherung", title: "Ding Dong", tags: ["Deutsch", "Spaß"] },
-                { artist: "Extreme", title: "More Than Words [DUET]", tags: ["Ballade", "Duett", "Rock"] },
                 { artist: "Fool's Garden", title: "Lemon Tree", tags: ["Pop", "90er"] },
                 { artist: "Frank Sinatra", title: "Fly Me To The Moon", tags: ["Jazz", "Klassiker"] },
                 { artist: "Frank Sinatra", title: "Let It Snow! Let It Snow! Let It Snow!", tags: ["Weihnachtslied", "Jazz"] },
@@ -519,7 +514,7 @@
                 { artist: "Wir sind Helden", title: "Denkmal", tags: ["Deutsch", "Rock"] },
                 { artist: "Wolfgang Petry", title: "Wahsinns (Live)", tags: ["Schlager", "Kult"] },
             ];
-
+            
             // --- YOUTUBE LOGIC ---
             openYoutube = (artist, title) => {
                 const query = encodeURIComponent(`${artist} ${title} Karaoke`);
@@ -637,6 +632,20 @@
                 });
             }
 
+            // Tag Logic
+            function setupTagFilters(uniqueTags) {
+                // Clear existing (except first 'All' option)
+                while (tagFilterEl.options.length > 1) {
+                    tagFilterEl.remove(1);
+                }
+                uniqueTags.forEach(tag => {
+                    const option = document.createElement('option');
+                    option.value = tag;
+                    option.textContent = tag;
+                    tagFilterEl.appendChild(option);
+                });
+            }
+
             function setupFilters(uniqueArtists) {
                 uniqueArtists.sort((a,b) => a.localeCompare(b)).forEach(artist => {
                     const option = document.createElement('option');
@@ -650,6 +659,10 @@
                 const totalSongs = songData.length;
                 const artists = songData.map(s => s.artist);
                 const uniqueArtists = [...new Set(artists)];
+                // Extract unique tags
+                const allTags = songData.flatMap(s => s.tags || []);
+                const uniqueTags = [...new Set(allTags)].sort();
+
                 const artistCounts = artists.reduce((acc, artist) => { acc[artist] = (acc[artist] || 0) + 1; return acc; }, {});
                 const topArtistEntry = Object.entries(artistCounts).sort((a, b) => b[1] - a[1])[0];
                 
@@ -657,7 +670,8 @@
                 animateValue("unique-artists", 0, uniqueArtists.length, 1000);
                 document.getElementById('top-artist').textContent = topArtistEntry ? `${topArtistEntry[0]} (${topArtistEntry[1]})` : '-';
                 document.getElementById('footer-song-count').textContent = `${totalSongs} Songs in der Bibliothek`;
-                return { uniqueArtists };
+                
+                return { uniqueArtists, uniqueTags };
             }
 
             function animateValue(id, start, end, duration) {
@@ -675,13 +689,17 @@
             function filterAndRender() {
                 const searchTerm = searchInputEl.value.toLowerCase();
                 const selectedArtist = artistFilterEl.value;
+                const selectedTag = tagFilterEl.value;
+
                 artistFilterEl.classList.toggle('filter-active', selectedArtist !== 'all');
+                tagFilterEl.classList.toggle('filter-active', selectedTag !== 'all');
 
                 const filteredSongs = songData.filter(song => {
                     const matchesSearch = song.title.toLowerCase().includes(searchTerm) || song.artist.toLowerCase().includes(searchTerm);
                     const matchesArtist = selectedArtist === 'all' || song.artist === selectedArtist;
+                    const matchesTag = selectedTag === 'all' || (song.tags && song.tags.includes(selectedTag));
                     const matchesFav = showFavoritesOnly ? favorites.includes(`${song.artist}-${song.title}`) : true;
-                    return matchesSearch && matchesArtist && matchesFav;
+                    return matchesSearch && matchesArtist && matchesTag && matchesFav;
                 });
                 renderSongList(filteredSongs);
             }
@@ -703,21 +721,30 @@
             sortByArtistBtn.addEventListener('click', () => { currentSort = 'artist'; updateSortButtons(); filterAndRender(); });
             searchInputEl.addEventListener('input', filterAndRender);
             artistFilterEl.addEventListener('change', filterAndRender);
+            tagFilterEl.addEventListener('change', filterAndRender);
 
             // Init
-            const { uniqueArtists } = calculateAndDisplayStats();
+            const { uniqueArtists, uniqueTags } = calculateAndDisplayStats();
             setupFilters(uniqueArtists);
+            setupTagFilters(uniqueTags);
             updateSortButtons();
             filterAndRender();
 
             // Random Modal Logic
             function pickRandomSong() {
-                // ... (Existing logic) ...
+                const searchTerm = searchInputEl.value.toLowerCase();
+                const selectedArtist = artistFilterEl.value;
+                const selectedTag = tagFilterEl.value;
+
                 const songs = songData.filter(song => {
-                    const searchTerm = searchInputEl.value.toLowerCase();
-                    const selectedArtist = artistFilterEl.value;
-                    return (selectedArtist === 'all' || song.artist === selectedArtist) && 
-                           (song.title.toLowerCase().includes(searchTerm) || song.artist.toLowerCase().includes(searchTerm));
+                    const matchesSearch = song.title.toLowerCase().includes(searchTerm) || song.artist.toLowerCase().includes(searchTerm);
+                    const matchesArtist = selectedArtist === 'all' || song.artist === selectedArtist;
+                    const matchesTag = selectedTag === 'all' || (song.tags && song.tags.includes(selectedTag));
+                    // Note: Random ignores favorites filter to encourage discovery, unless explicitly desired otherwise? 
+                    // Let's keep it consistent with the list view:
+                    const matchesFav = showFavoritesOnly ? favorites.includes(`${song.artist}-${song.title}`) : true;
+                    
+                    return matchesSearch && matchesArtist && matchesTag && matchesFav;
                 });
                 
                 if(songs.length > 0) {
