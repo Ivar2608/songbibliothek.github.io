@@ -19,21 +19,20 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Exo 2', 'sans-serif'],
+                        // FIX: Google Fonts entfernt. Nutzung von System-Schriften für DSGVO-Konformität.
+                        sans: ['ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- FIX: Google Fonts Link entfernt, um IP-Übertragung an Google zu verhindern -->
     
     <style>
         html { scroll-behavior: smooth; }
         body {
-            font-family: 'Exo 2', sans-serif;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: #f8fafc;
             color: #0f172a;
             overflow-x: hidden;
@@ -132,7 +131,7 @@
 
             <!-- Right Side Controls -->
             <div class="flex items-center gap-3">
-                <!-- Theme Toggle (Visible always) -->
+                <!-- Theme Toggle -->
                 <button id="theme-toggle-nav" class="p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
                     <svg id="nav-icon-light" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                     <svg id="nav-icon-dark" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
@@ -150,18 +149,13 @@
 
     <!-- MOBILE MENU OVERLAY -->
     <div id="mobile-menu" class="fixed inset-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl menu-closed flex flex-col items-center justify-center gap-8 text-center">
-        <!-- Close Button -->
         <button id="close-menu-btn" class="absolute top-4 right-4 p-2 text-slate-500 hover:text-slate-800 dark:hover:text-white">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
-
         <h2 class="text-3xl font-bold text-slate-800 dark:text-white mb-4">Menü</h2>
-        
         <button onclick="switchView('home'); toggleMenu()" class="text-2xl font-medium text-slate-600 dark:text-slate-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors">Bibliothek</button>
         <button onclick="switchView('downloads'); toggleMenu()" class="text-2xl font-medium text-slate-600 dark:text-slate-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors">Downloads</button>
-        
         <div class="w-16 h-1 bg-slate-200 dark:bg-slate-700 rounded-full my-4"></div>
-        
         <div class="flex flex-col gap-4 text-sm text-slate-500">
             <button onclick="switchView('impressum'); toggleMenu()" class="hover:text-cyan-500">Impressum</button>
             <button onclick="switchView('datenschutz'); toggleMenu()" class="hover:text-cyan-500">Datenschutz</button>
@@ -169,10 +163,10 @@
         </div>
     </div>
 
-    <!-- CONTENT PADDING (because of fixed navbar) -->
+    <!-- CONTENT -->
     <div class="pt-24 container mx-auto p-4 sm:p-6 md:p-8 relative z-10 flex flex-col min-h-screen">
         
-        <!-- Header Content (Title etc) -->
+        <!-- Header Content -->
         <header class="relative text-center mb-8">
             <div class="inline-block mb-2 px-3 py-1 rounded-full bg-cyan-100 border border-cyan-200 text-cyan-800 dark:bg-cyan-500/10 dark:border-cyan-500/20 dark:text-cyan-400 text-xs font-bold tracking-widest uppercase backdrop-blur-sm transition-colors duration-300">
                 UltraStar Deluxe Extension
@@ -185,15 +179,13 @@
             </p>
         </header>
 
-        <!-- MAIN CONTENT AREA -->
         <main class="flex-grow max-w-5xl mx-auto w-full space-y-8">
-            
             <!-- HOME VIEW -->
             <div id="home-view" class="view-section active space-y-8">
-                <!-- Song of Day & Stats & List -->
+                <!-- ... (Song of Day and Stats are same as before) ... -->
                 <section id="song-of-day-card" class="glass-panel p-6 rounded-2xl relative overflow-hidden border-l-4 border-yellow-400">
                     <div class="absolute top-0 right-0 p-4 opacity-10"><svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32 text-yellow-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" /></svg></div>
-                    <h3 class="text-sm font-bold uppercase tracking-wider text-yellow-600 dark:text-yellow-400 mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>Song des Tages</h3>
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-yellow-600 dark:text-yellow-400 mb-2 flex items-center gap-2">Song des Tages</h3>
                     <div class="relative z-10">
                         <p class="text-2xl md:text-3xl font-bold text-slate-800 dark:text-slate-100" id="sod-title">Lade...</p>
                         <p class="text-lg text-slate-600 dark:text-slate-300" id="sod-artist">...</p>
@@ -248,62 +240,105 @@
                 </section>
             </div>
 
-            <!-- DOWNLOADS VIEW -->
+            <!-- DOWNLOADS VIEW (UPDATED & LEGAL COMPLIANT) -->
             <div id="downloads-view" class="view-section hidden">
                 <div class="glass-panel p-8 rounded-2xl shadow-xl max-w-3xl mx-auto">
                     <h2 class="text-3xl font-bold mb-6 text-slate-800 dark:text-slate-100 border-b border-slate-200 dark:border-slate-700 pb-4">Downloads</h2>
-                    <p class="text-slate-600 dark:text-slate-300 mb-8">Hier findest du in Zukunft die Links zum Herunterladen der UltraStar Deluxe Software und der aktualisierten Song-Pakete.</p>
                     
-                    <div class="space-y-6">
+                    <!-- LEGAL WARNING BOX -->
+                    <div class="mb-8 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl flex gap-4 items-start">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600 dark:text-red-400 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                         <div>
+                             <h4 class="font-bold text-red-800 dark:text-red-200">Wichtiger Hinweis zur rechtlichen Prüfung</h4>
+                             <p class="text-sm text-red-700 dark:text-red-300 mt-1">
+                                 Die Verteilung urheberrechtlich geschützter Inhalte ohne Lizenz ist nicht gestattet. 
+                                 Aufgrund einer aktuellen rechtlichen Prüfung der Seite sind die direkten Download-Links für Songpakete 
+                                 vorübergehend <strong>deaktiviert</strong>. Wir bitten um Verständnis.
+                             </p>
+                         </div>
+                    </div>
+
+                    <p class="text-slate-600 dark:text-slate-300 mb-8">Status der Download-Pakete:</p>
+                    
+                    <div class="space-y-6 opacity-75 grayscale">
+                        <!-- Main Software Download (Disabled) -->
                         <div class="bg-white/50 dark:bg-slate-800/50 p-6 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                             <div>
                                 <div class="flex items-center gap-3 mb-1">
                                     <h3 class="font-bold text-lg text-slate-800 dark:text-slate-100">Heitzify UltraStar Paket</h3>
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800">v1.1</span>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-600 border border-gray-200">Prüfung</span>
                                 </div>
-                                <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Das komplette Paket inklusive Software & Songs.</p>
-                                <p class="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1 font-mono"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>Stand: 28.11.2025</p>
+                                <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Software & Songs</p>
                             </div>
-                            <a href="https://drive.google.com/drive/folders/1oKK6dnhseenuEKGopc15DfZK2g84ZSXy?usp=sharing" target="_blank" class="px-6 py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-medium w-full sm:w-auto text-center shadow-lg shadow-cyan-500/20 transition-all transform hover:scale-105 flex items-center justify-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>Download</a>
+                            <button class="px-6 py-2.5 bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-lg cursor-not-allowed font-medium w-full sm:w-auto text-center" disabled>
+                                Nicht verfügbar
+                            </button>
                         </div>
+
+                        <!-- Song Update Download (Disabled) -->
                         <div class="bg-white/50 dark:bg-slate-800/50 p-6 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                             <div>
                                 <div class="flex items-center gap-3 mb-1">
                                     <h3 class="font-bold text-lg text-slate-800 dark:text-slate-100">Songbibliothek Update</h3>
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800">v1.1</span>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-600 border border-gray-200">Prüfung</span>
                                 </div>
-                                <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Nur die neuen Lieder für dein bestehendes Spiel.</p>
-                                <p class="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1 font-mono"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>Stand: 28.11.2025</p>
+                                <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Nur neue Songs</p>
                             </div>
-                            <a href="https://drive.google.com/drive/folders/1QwVTrN9BqlEkIeP4UTQx3SFrDQ_7aK_2?usp=sharing" target="_blank" class="px-6 py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-medium w-full sm:w-auto text-center shadow-lg shadow-cyan-500/20 transition-all transform hover:scale-105 flex items-center justify-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>Download</a>
+                            <button class="px-6 py-2.5 bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-lg cursor-not-allowed font-medium w-full sm:w-auto text-center" disabled>
+                                Nicht verfügbar
+                            </button>
                         </div>
                     </div>
-                    <div class="mt-8 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg text-sm text-yellow-800 dark:text-yellow-200 flex gap-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
-                        <p><strong>Hinweis:</strong> Die Downloads werden über Google Drive bereitgestellt. Bitte beachte unsere Datenschutzerklärung bezüglich externer Links.</p>
-                    </div>
+                    
                     <button onclick="switchView('home')" class="mt-8 px-6 py-2 bg-slate-200 dark:bg-slate-700 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">Zurück zur Übersicht</button>
                 </div>
             </div>
 
-            <!-- IMPRESSUM VIEW -->
+            <!-- IMPRESSUM VIEW (UPDATED) -->
             <div id="impressum-view" class="view-section hidden">
                 <div class="glass-panel p-8 rounded-2xl shadow-xl max-w-3xl mx-auto">
                     <h2 class="text-3xl font-bold mb-6 text-slate-800 dark:text-slate-100 border-b border-slate-200 dark:border-slate-700 pb-4">Impressum</h2>
                     <div class="space-y-4 text-slate-700 dark:text-slate-300">
-                        <p class="font-bold">Angaben gemäß § 5 TMG</p><p>Dennis Heitz<br>Postfach 10 14 26<br>33514 Bielefeld</p><p class="font-bold mt-6">Kontakt</p><p>E-Mail: <a href="mailto:dennis.heitz1@gmail.com" class="text-cyan-600 dark:text-cyan-400 hover:underline">dennis.heitz1@gmail.com</a></p>
+                        <p class="font-bold">Angaben gemäß § 5 TMG</p>
+                        <p>Dennis Heitz<br>
+                        [Straße und Hausnummer ergänzen - Pflichtangabe!]<br>
+                        33514 Bielefeld<br>
+                        Postfach 10 14 26</p>
+                        
+                        <p class="font-bold mt-6">Kontakt</p>
+                        <p>E-Mail: <a href="mailto:dennis.heitz1@gmail.com" class="text-cyan-600 dark:text-cyan-400 hover:underline">dennis.heitz1@gmail.com</a></p>
+                        
+                        <p class="font-bold mt-6">Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</p>
+                        <p>Dennis Heitz<br>Postfach 10 14 26<br>33514 Bielefeld</p>
+
                         <button onclick="switchView('home')" class="mt-8 px-6 py-2 bg-slate-200 dark:bg-slate-700 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">Zurück zur Übersicht</button>
                     </div>
                 </div>
             </div>
 
-            <!-- DATENSCHUTZ VIEW -->
+            <!-- DATENSCHUTZ VIEW (EXPANDED) -->
             <div id="datenschutz-view" class="view-section hidden">
                 <div class="glass-panel p-8 rounded-2xl shadow-xl max-w-3xl mx-auto">
                     <h2 class="text-3xl font-bold mb-6 text-slate-800 dark:text-slate-100 border-b border-slate-200 dark:border-slate-700 pb-4">Datenschutzerklärung</h2>
                     <div class="space-y-4 text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
-                        <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 mt-4">1. Datenerfassung auf dieser Website</h3><p><strong>Cookies & Local Storage:</strong><br>Wir nutzen den "Local Storage" Ihres Browsers, um Ihre Einstellungen (z.B. Dark Mode, Cookie-Zustimmung) und <strong>Ihre persönliche Favoritenliste (Merkzettel)</strong> lokal auf Ihrem Gerät zu speichern.</p>
-                        <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 mt-4">2. Externe Links</h3><p>Links zu YouTube und Google Drive leiten Sie zu den jeweiligen Anbietern weiter. Es gelten deren Datenschutzbestimmungen.</p>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 mt-4">1. Hosting (GitHub Pages)</h3>
+                        <p>Diese Website wird bei <strong>GitHub Inc.</strong> (88 Colin P Kelly Jr St, San Francisco, CA 94107, USA) gehostet. Beim Besuch der Website erfasst GitHub automatisch Informationen in sogenannten Server-Log-Files, die Ihr Browser automatisch übermittelt (z.B. IP-Adresse, Browsertyp, Referrer URL, Zeitstempel). Dies dient der Sicherheit und Stabilität der Website (Art. 6 Abs. 1 lit. f DSGVO). Weitere Informationen finden Sie in der <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement" target="_blank" class="underline">Datenschutzerklärung von GitHub</a>.</p>
+
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 mt-4">2. Lokale Speicherung (Local Storage)</h3>
+                        <p>Wir speichern keine Cookies auf Ihrem Endgerät, die an uns übertragen werden. Wir nutzen jedoch den <strong>Local Storage</strong> Ihres Browsers, um folgende Einstellungen lokal zu speichern:
+                        <ul class="list-disc list-inside ml-4">
+                            <li>Ihre bevorzugte Ansicht (Dark Mode / Light Mode)</li>
+                            <li>Ihre persönliche Favoritenliste (Merkzettel)</li>
+                        </ul>
+                        Diese Daten verbleiben auf Ihrem Gerät und werden nicht an Dritte weitergegeben.</p>
+                        
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 mt-4">3. Externe Links</h3>
+                        <p><strong>YouTube:</strong> Unsere Webseite enthält Links zur Plattform YouTube. Erst wenn Sie aktiv auf einen "Play"-Button klicken, werden Sie zu YouTube weitergeleitet. Ab diesem Zeitpunkt gelten die Datenschutzbestimmungen von YouTube (Google).</p>
+                        <p><strong>Google Drive:</strong> Für eventuelle Downloads verweisen wir auf Google Drive. Bei Klick auf diese Links verlassen Sie unser Angebot. Es gelten die Datenschutzbestimmungen von Google.</p>
+
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 mt-4">4. Schriftarten</h3>
+                        <p>Um Ihre Daten zu schützen, binden wir keine Schriftarten von externen Servern (wie Google Fonts) ein. Stattdessen nutzen wir die auf Ihrem Gerät installierten Systemschriftarten.</p>
+                        
                         <button onclick="switchView('home')" class="mt-8 px-6 py-2 bg-slate-200 dark:bg-slate-700 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">Zurück zur Übersicht</button>
                     </div>
                 </div>
@@ -321,12 +356,15 @@
         </footer>
     </div>
     
+    <!-- Back to Top -->
     <button id="back-to-top" class="hidden fixed bottom-6 right-6 bg-slate-800 dark:bg-slate-700 text-white dark:text-slate-200 p-3 rounded-full shadow-2xl hover:-translate-y-1 transition-all duration-300 z-40 focus:outline-none ring-4 ring-transparent focus:ring-cyan-500/50"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" /></svg></button>
-    <div id="cookie-banner" class="fixed bottom-0 left-0 w-full z-50 p-4 md:p-6 hidden"><div class="glass-panel bg-white dark:bg-slate-900 max-w-4xl mx-auto rounded-xl shadow-2xl p-6 md:flex items-center justify-between gap-6 border-t-4 border-cyan-500"><div class="text-sm text-slate-700 dark:text-slate-300 mb-4 md:mb-0"><h4 class="font-bold text-lg mb-1">Privatsphäre-Einstellungen</h4><p>Wir nutzen Cookies und Local Storage für Funktionen wie die Merkliste.</p></div><div class="flex gap-3 flex-shrink-0"><button onclick="acceptCookies('essential')" class="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-200 dark:bg-slate-800 rounded-lg">Nur Notwendige</button><button onclick="acceptCookies('all')" class="px-4 py-2 text-sm font-medium text-white bg-cyan-600 hover:bg-cyan-700 rounded-lg">Alle Akzeptieren</button></div></div></div>
+    
+    <!-- Random Modal -->
     <div id="random-song-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none transition-all duration-300"><div class="glass-panel bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md transform scale-95 transition-all duration-300 border border-slate-200/20 overflow-hidden relative"><div class="p-8 text-center"><h3 class="text-xl font-bold text-slate-800 dark:text-slate-100 mb-1">Zufallstreffer!</h3><div class="py-4 px-2 rounded-xl bg-slate-100 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700/50 mb-6"><p class="text-2xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 dark:from-cyan-500 dark:to-blue-500 text-transparent bg-clip-text" id="random-song-title">-</p><p class="text-md font-medium text-slate-600 dark:text-slate-300 mt-1" id="random-song-artist">-</p></div><div class="flex gap-3 justify-center"><button id="close-modal-btn" class="px-6 py-2.5 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-xl">Schließen</button><button id="reroll-btn" class="px-6 py-2.5 bg-cyan-500 text-white rounded-xl">Nochmal</button></div></div></div></div>
 
+    <!-- JS Logic -->
     <script>
-        let switchView, acceptCookies, openCookieSettings, openYoutube, toggleMenu;
+        let switchView, openCookieSettings, openYoutube, toggleMenu;
         document.addEventListener('DOMContentLoaded', () => {
             const themeToggleBtn = document.getElementById('theme-toggle-nav');
             const lightIcon = document.getElementById('nav-icon-light');
@@ -339,7 +377,6 @@
             const rerollBtn = document.getElementById('reroll-btn');
             const randomSongTitleEl = document.getElementById('random-song-title');
             const randomSongArtistEl = document.getElementById('random-song-artist');
-            const cookieBanner = document.getElementById('cookie-banner');
             const songListEl = document.getElementById('song-list');
             const searchInputEl = document.getElementById('search-input');
             const artistFilterEl = document.getElementById('artist-filter');
@@ -354,14 +391,12 @@
             const sodTags = document.getElementById('sod-tags');
             const sodPlayBtn = document.getElementById('sod-play-btn');
             
-            // Menu Logic
             const menuBtn = document.getElementById('menu-btn');
             const mobileMenu = document.getElementById('mobile-menu');
             const closeMenuBtn = document.getElementById('close-menu-btn');
             
             toggleMenu = () => {
-                const isClosed = mobileMenu.classList.contains('menu-closed');
-                if(isClosed) {
+                if(mobileMenu.classList.contains('menu-closed')) {
                     mobileMenu.classList.remove('menu-closed');
                     mobileMenu.classList.add('menu-open');
                 } else {
@@ -381,13 +416,16 @@
             switchView = (viewName) => {
                 document.querySelectorAll('.view-section').forEach(el => { el.classList.add('hidden'); el.classList.remove('active'); });
                 const target = document.getElementById(viewName + '-view');
-                if (target) { target.classList.remove('hidden'); setTimeout(() => target.classList.add('active'), 10); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+                if (target) { 
+                    target.classList.remove('hidden'); 
+                    setTimeout(() => target.classList.add('active'), 10); 
+                    window.scrollTo({ top: 0, behavior: 'smooth' }); 
+                }
             };
-
-            const checkCookieConsent = () => { if (!localStorage.getItem('cookieConsent')) cookieBanner.classList.remove('hidden'); };
-            acceptCookies = (type) => { localStorage.setItem('cookieConsent', type); cookieBanner.classList.add('hidden'); };
-            openCookieSettings = () => { cookieBanner.classList.remove('hidden'); };
-            checkCookieConsent();
+            
+            // Cookie Settings placeholder function since banner is removed/simplified per request to reduce complexity, 
+            // but logic remains for future.
+            openCookieSettings = () => { alert("Wir nutzen nur technisch notwendigen lokalen Speicher."); };
 
             const applyTheme = (theme) => {
                 if (theme === 'dark') { document.documentElement.classList.add('dark'); bgAnimation.classList.remove('light-mode-bg'); lightIcon.classList.remove('hidden'); darkIcon.classList.add('hidden'); }
