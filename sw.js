@@ -1,11 +1,13 @@
-const CACHE_NAME = 'heitzify-v1';
+const CACHE_NAME = 'heitzify-v1.1';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  'https://cdn.tailwindcss.com',
-  'https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700&display=swap'
+  'https://cdn.tailwindcss.com'
 ];
+
+// Google Fonts URL wurde entfernt, da wir nun Systemschriften nutzen.
+// Tailwind CDN bleibt für die Funktion notwendig, ist aber in der Datenschutzerklärung abgedeckt.
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
