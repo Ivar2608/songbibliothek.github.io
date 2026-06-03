@@ -452,7 +452,16 @@
     <script>
         let switchView, acceptCookies, openCookieSettings, toggleMenu, playSong;
         let songData = [];
-        let favorites = JSON.parse(localStorage.getItem('heitzify_favorites')) || [];
+        let favorites = [];
+        
+        // Robustes Laden der Favoriten aus dem LocalStorage gegen Parsing-Fehler absichern
+        try {
+            favorites = JSON.parse(localStorage.getItem('heitzify_favorites')) || [];
+        } catch (e) {
+            console.error("Fehler beim Laden der Favoriten, Setze zurück.", e);
+            favorites = [];
+        }
+        
         let currentSort = 'title';
         let showFavoritesOnly = false;
 
@@ -485,6 +494,7 @@
                 const target = document.getElementById(viewName + '-view');
                 if (target) { target.classList.remove('hidden'); setTimeout(() => target.classList.add('active'), 10); window.scrollTo({ top: 0, behavior: 'smooth' }); }
             };
+            window.switchView = switchView; // Explizit global verfügbar machen
 
             // Menü-Toggling (Behoben und abgesichert)
             toggleMenu = () => {
@@ -498,6 +508,7 @@
                     }
                 }
             };
+            window.toggleMenu = toggleMenu; // Explizit global verfügbar machen
 
             // Click-Listener für das Menü registrieren (Hat vorher völlig gefehlt!)
             if (menuBtn) menuBtn.addEventListener('click', toggleMenu);
@@ -508,6 +519,8 @@
             const checkCookieConsent = () => { if (cookieBanner && !localStorage.getItem('cookieConsent')) cookieBanner.classList.remove('hidden'); };
             acceptCookies = (type) => { localStorage.setItem('cookieConsent', type); if(cookieBanner) cookieBanner.classList.add('hidden'); };
             openCookieSettings = () => { if(cookieBanner) cookieBanner.classList.remove('hidden'); };
+            window.acceptCookies = acceptCookies;
+            window.openCookieSettings = openCookieSettings;
             checkCookieConsent();
 
             // --- THEME LOGIC ---
@@ -530,6 +543,21 @@
             if(themeToggleBtn) {
                 themeToggleBtn.addEventListener('click', () => { const isDark = document.documentElement.classList.contains('dark'); const newTheme = isDark ? 'light' : 'dark'; localStorage.setItem('theme', newTheme); applyTheme(newTheme); });
             }
+
+            // Netzwerk-Status Überwachung für besseres UX bei YouTube-Suchen
+            const updateOnlineStatus = () => {
+                const indicator = document.querySelector('.animate-pulse');
+                if (indicator) {
+                    if (navigator.onLine) {
+                        indicator.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]";
+                    } else {
+                        indicator.className = "w-2 h-2 rounded-full bg-rose-500 animate-pulse shadow-[0_0_8px_rgba(244,63,94,0.8)]";
+                    }
+                }
+            };
+            window.addEventListener('online', updateOnlineStatus);
+            window.addEventListener('offline', updateOnlineStatus);
+            updateOnlineStatus();
 
             window.addEventListener('scroll', () => { if (backToTopBtn) { if (window.scrollY > 400) backToTopBtn.classList.remove('hidden'); else backToTopBtn.classList.add('hidden'); } });
             if(backToTopBtn) backToTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
@@ -617,7 +645,7 @@
                 });
             }
 
-            // --- RENDERING ---
+            // --- RENDERING & REGEX PROTECT ---
             function getDecade(year) { if(!year) return null; return Math.floor(year / 10) * 10 + 'er'; }
             
             const getGenreSvg = (genre) => {
@@ -629,9 +657,15 @@
                 return `<svg class="${baseClass}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg>`;
             };
 
+            // Hilfsfunktion zum Maskieren von Regex-Sonderzeichen in der Suchleiste
+            function escapeRegExp(string) {
+                return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            }
+
             function highlightMatch(text, term) {
                 if (!term) return text;
-                const regex = new RegExp(`(${term})`, 'gi');
+                const escapedTerm = escapeRegExp(term);
+                const regex = new RegExp(`(${escapedTerm})`, 'gi');
                 return text.toString().replace(regex, '<span class="highlight">$1</span>');
             }
 
@@ -649,6 +683,9 @@
                 });
 
                 const searchTerm = searchInputEl ? searchInputEl.value.toLowerCase() : '';
+
+                // Erstelle ein DocumentFragment für optimiertes, flüssiges Zeichnen ohne Reflow-Ruckler
+                const fragment = document.createDocumentFragment();
 
                 sortedSongs.forEach((song, index) => {
                     const songKey = `${song.artist}-${song.title}`;
@@ -688,8 +725,10 @@
                              <svg onclick="window.toggleFav('${songKey.replace(/'/g, "\\'")}')" class="w-6 h-6 heart-icon ${heartClass}" fill="${heartFill}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
                         </div>
                     `;
-                    songListEl.appendChild(li);
+                    fragment.appendChild(li); // Element an virtuellen Container anhängen
                 });
+
+                songListEl.appendChild(fragment); // Einmaliges Rendern im echten DOM
             }
 
             function setupFilters(selectEl, items, defaultText) {
