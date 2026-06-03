@@ -2,102 +2,85 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Heitzify Songbibliothek</title>
     
-    <!-- PWA Manifest -->
+    <!-- PWA & Meta -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
     <link rel="apple-touch-icon" href="icon.png">
     
+    <!-- FOUC FIX: Verhindert weißes Flackern beim Laden im Dark Mode -->
+    <script>
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Tailwind Config -->
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
-                    },
-                    colors: {
-                        slate: {
-                            850: '#151f32',
-                            900: '#0f172a',
-                            950: '#020617',
-                        }
-                    },
-                    animation: {
-                        'blob': 'blob 7s infinite',
-                        'fade-in-up': 'fadeInUp 0.5s ease-out forwards',
-                    },
-                    keyframes: {
-                        blob: {
-                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
-                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
-                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
-                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
-                        },
-                        fadeInUp: {
-                            '0%': { opacity: '0', transform: 'translateY(15px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
-                        }
-                    }
+                    fontFamily: { sans: ['Exo 2', 'sans-serif'] },
                 }
             }
         }
     </script>
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
-        html { scroll-behavior: smooth; }
+        html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
         body {
-            background-color: #f8fafc;
-            color: #0f172a;
+            font-family: 'Exo 2', sans-serif;
+            background-color: #f8fafc; color: #0f172a;
             overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent;
         }
         .dark body { background-color: #020617; color: #f8fafc; }
         
-        /* Modern Glow Background */
-        .bg-glow-container {
+        /* Hintergrund */
+        .gradient-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            overflow: hidden; z-index: -1; pointer-events: none;
-            background: #f8fafc;
+            background: linear-gradient(-45deg, #f1f5f9, #e0f2fe, #eff6ff, #f8fafc);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            z-index: -1;
         }
-        .dark .bg-glow-container { background: #020617; }
-        
-        .glow-blob {
-            position: absolute; filter: blur(90px); opacity: 0.6; border-radius: 50%;
-            animation: blob 10s infinite alternate;
+        .dark .gradient-bg {
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #312e81, #0f172a);
         }
-        .dark .glow-blob { opacity: 0.15; }
-        .glow-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: #22d3ee; animation-delay: 0s; }
-        .glow-2 { top: 40%; right: -10%; width: 40vw; height: 40vw; background: #818cf8; animation-delay: 2s; }
-        .glow-3 { bottom: -20%; left: 20%; width: 60vw; height: 60vw; background: #e879f9; animation-delay: 4s; }
+        @keyframes gradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-        /* Premium Glass Panels */
+        /* Glassmorphism */
         .glass-panel {
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
         .dark .glass-panel {
-            background: rgba(15, 23, 42, 0.5);
+            background: rgba(15, 23, 42, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
-
         .nav-glass {
-            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(226, 232, 240, 0.8);
         }
         .dark .nav-glass {
             background: rgba(2, 6, 23, 0.85); border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* Sleek Scrollbar */
+        /* Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -105,52 +88,60 @@
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         .dark ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-        .song-item { opacity: 0; }
-        .highlight { background-color: rgba(6, 182, 212, 0.2); color: #0891b2; border-radius: 4px; padding: 0 2px; font-weight: 600; }
-        .dark .highlight { background-color: rgba(34, 211, 238, 0.2); color: #22d3ee; }
-        .filter-active { background-color: #06b6d4 !important; color: white !important; border-color: #06b6d4 !important; }
+        /* Custom Dropdown Arrow */
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3e%3c/svg%3e");
+            background-position: right 0.75rem center;
+            background-repeat: no-repeat;
+            background-size: 1em;
+            padding-right: 2.5rem;
+        }
+        .dark select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3e%3c/svg%3e");
+        }
+
+        /* UI Utilities */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .song-item { opacity: 0; animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .highlight { background-color: rgba(6, 182, 212, 0.2); color: #0891b2; border-radius: 4px; padding: 0 2px; font-weight: 700; }
+        .dark .highlight { background-color: rgba(34, 211, 238, 0.3); color: #22d3ee; }
+        .filter-active { background-color: #06b6d4 !important; color: white !important; border-color: #06b6d4 !important; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3e%3c/svg%3e") !important;}
         .view-section { display: none; }
         .view-section.active { display: block; animation: fadeInUp 0.4s ease-out forwards; }
         
-        .heart-icon { transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), fill 0.2s; cursor: pointer; }
+        .heart-icon { transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), fill 0.2s, color 0.2s; cursor: pointer; }
         .heart-icon:active { transform: scale(1.4); }
         .heart-active { color: #ec4899; fill: #ec4899; } 
 
         .spinner {
-            border: 3px solid rgba(6, 182, 212, 0.2);
-            width: 40px; height: 40px; border-radius: 50%;
-            border-left-color: #06b6d4;
-            animation: spin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            border: 3px solid rgba(6, 182, 212, 0.2); width: 40px; height: 40px; border-radius: 50%;
+            border-left-color: #06b6d4; animation: spin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        #mobile-menu { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease; }
+        #mobile-menu { transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease; }
         .menu-open { transform: translateX(0%); opacity: 1; pointer-events: auto; }
         .menu-closed { transform: translateX(100%); opacity: 0; pointer-events: none; }
     </style>
 </head>
 <body class="antialiased transition-colors duration-500">
 
-    <!-- Glowing Background -->
-    <div class="bg-glow-container">
-        <div class="glow-blob glow-1"></div>
-        <div class="glow-blob glow-2"></div>
-        <div class="glow-blob glow-3"></div>
-    </div>
+    <div class="gradient-bg"></div>
 
     <!-- NAVBAR -->
     <nav class="fixed top-0 left-0 w-full z-50 nav-glass shadow-sm transition-all duration-300">
         <div class="container mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3 cursor-pointer group" onclick="switchView('home')">
-                <div class="w-9 h-9 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-cyan-500/30 group-hover:scale-105 transition-transform duration-300">H</div>
+                <div class="w-9 h-9 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center text-white font-extrabold text-lg shadow-lg shadow-cyan-500/30 group-hover:scale-105 transition-transform duration-300">H</div>
                 <span class="text-xl font-bold tracking-tight text-slate-800 dark:text-white">Heitzify</span>
             </div>
             <div class="flex items-center gap-2">
-                <button id="theme-toggle-nav" class="p-2.5 rounded-full text-slate-500 hover:text-cyan-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-cyan-400 dark:hover:bg-slate-800 transition-all focus:outline-none">
+                <button id="theme-toggle-nav" class="p-2.5 rounded-xl text-slate-500 hover:text-cyan-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-cyan-400 dark:hover:bg-slate-800/50 transition-all focus:outline-none">
                     <svg id="nav-icon-light" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                     <svg id="nav-icon-dark" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
                 </button>
-                <button id="menu-btn" class="p-2.5 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none">
+                <button id="menu-btn" class="p-2.5 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors focus:outline-none">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7" /></svg>
                 </button>
             </div>
@@ -162,40 +153,40 @@
         <button id="close-menu-btn" class="absolute top-5 right-5 p-3 rounded-full text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 dark:hover:text-white transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
-        <div class="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl shadow-xl shadow-cyan-500/30 mb-2">H</div>
-        <h2 class="text-3xl font-bold text-slate-800 dark:text-white mb-4">Heitzify</h2>
+        <div class="w-16 h-16 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-3xl flex items-center justify-center text-white font-bold text-3xl shadow-xl shadow-cyan-500/30 mb-2">H</div>
+        <h2 class="text-4xl font-extrabold text-slate-800 dark:text-white mb-2 tracking-tight">Heitzify</h2>
         
-        <button onclick="switchView('home'); toggleMenu()" class="text-2xl font-semibold text-slate-600 dark:text-slate-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors flex items-center gap-3">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg> Bibliothek
+        <div class="w-10 h-1 bg-slate-200 dark:bg-slate-800 rounded-full my-4"></div>
+        
+        <button onclick="switchView('home'); toggleMenu()" class="text-2xl font-semibold text-slate-700 dark:text-slate-200 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors flex items-center gap-3">
+            <svg class="w-6 h-6 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg> Bibliothek
         </button>
-        <button onclick="switchView('downloads'); toggleMenu()" class="text-2xl font-semibold text-slate-600 dark:text-slate-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors flex items-center gap-3">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg> Downloads
+        <button onclick="switchView('downloads'); toggleMenu()" class="text-2xl font-semibold text-slate-700 dark:text-slate-200 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors flex items-center gap-3">
+            <svg class="w-6 h-6 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg> Downloads
         </button>
         
-        <div class="w-16 h-1 bg-slate-200 dark:bg-slate-800 rounded-full my-4"></div>
-        
-        <div class="flex flex-col gap-4 text-sm font-medium text-slate-500 dark:text-slate-400">
-            <button onclick="switchView('impressum'); toggleMenu()" class="hover:text-cyan-500">Impressum</button>
-            <button onclick="switchView('datenschutz'); toggleMenu()" class="hover:text-cyan-500">Datenschutz</button>
-            <button onclick="openCookieSettings(); toggleMenu()" class="hover:text-cyan-500">Cookie-Einstellungen</button>
+        <div class="flex flex-col gap-5 mt-8 text-sm font-medium text-slate-500 dark:text-slate-400">
+            <button onclick="switchView('impressum'); toggleMenu()" class="hover:text-cyan-500 transition-colors">Impressum</button>
+            <button onclick="switchView('datenschutz'); toggleMenu()" class="hover:text-cyan-500 transition-colors">Datenschutz</button>
+            <button onclick="openCookieSettings(); toggleMenu()" class="hover:text-cyan-500 transition-colors">Cookie-Einstellungen</button>
         </div>
     </div>
 
     <!-- MAIN CONTENT -->
-    <div class="pt-28 container mx-auto p-4 sm:p-6 md:p-8 relative z-10 flex flex-col min-h-screen">
+    <div class="pt-24 container mx-auto p-4 sm:p-6 md:p-8 relative z-10 flex flex-col min-h-screen">
         
         <header class="relative text-center mb-10">
-            <div class="inline-block mb-3 px-3 py-1 rounded-full bg-cyan-50 dark:bg-cyan-500/10 border border-cyan-200 dark:border-cyan-500/20 text-cyan-700 dark:text-cyan-400 text-xs font-bold tracking-widest uppercase shadow-sm">
+            <div class="inline-block mb-3 px-4 py-1.5 rounded-full bg-white/50 dark:bg-slate-800/50 border border-slate-200/50 dark:border-slate-700/50 text-cyan-700 dark:text-cyan-400 text-xs font-bold tracking-widest uppercase shadow-sm backdrop-blur-md">
                 UltraStar Deluxe Extension
             </div>
-            <h1 class="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-blue-600 dark:from-cyan-400 dark:to-blue-500 pb-2 drop-shadow-sm">
+            <h1 class="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 via-blue-600 to-fuchsia-600 dark:from-cyan-400 dark:via-blue-500 dark:to-fuchsia-400 pb-2 drop-shadow-sm tracking-tight">
                 Heitzify
             </h1>
-            <p class="text-slate-500 dark:text-slate-400 mt-3 text-lg md:text-xl font-light max-w-2xl mx-auto">
+            <p class="text-slate-600 dark:text-slate-400 mt-3 text-lg md:text-xl font-medium max-w-2xl mx-auto">
                 Dein Hub für die beste Karaokeparty.
             </p>
-            <div class="mt-4 flex justify-center">
-                <span class="px-3 py-1.5 bg-white/60 dark:bg-slate-800/60 backdrop-blur-md border border-slate-200 dark:border-slate-700/50 rounded-full text-xs font-mono text-slate-600 dark:text-slate-300 flex items-center gap-2 shadow-sm">
+            <div class="mt-5 flex justify-center">
+                <span class="px-3 py-1.5 bg-white/60 dark:bg-slate-800/60 backdrop-blur-md border border-slate-200/50 dark:border-slate-700/50 rounded-full text-xs font-mono text-slate-600 dark:text-slate-300 flex items-center gap-2 shadow-sm">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
                     Version v1.1 (28.11.2025)
                 </span>
@@ -205,12 +196,11 @@
         <main class="flex-grow max-w-5xl mx-auto w-full space-y-8">
             
             <!-- HOME VIEW -->
-            <div id="home-view" class="view-section active space-y-6 md:space-y-8">
+            <div id="home-view" class="view-section active space-y-8">
                 
-                <!-- Song of the Day -->
-                <section id="song-of-day-card" class="glass-panel p-6 md:p-8 rounded-3xl relative overflow-hidden border border-amber-200/50 dark:border-amber-500/20 shadow-xl shadow-amber-500/5">
-                    <div class="absolute top-0 right-0 p-6 opacity-[0.03] dark:opacity-[0.05] pointer-events-none transform rotate-12">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-48 w-48 text-amber-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" /></svg>
+                <section id="song-of-day-card" class="glass-panel p-6 md:p-8 rounded-3xl relative overflow-hidden shadow-xl shadow-amber-500/5 border-l-4 border-amber-400">
+                    <div class="absolute -top-10 -right-10 p-6 opacity-[0.04] dark:opacity-[0.06] pointer-events-none transform rotate-12">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-64 w-64 text-amber-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" /></svg>
                     </div>
                     <div class="relative z-10 flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
                         <div>
@@ -218,142 +208,134 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
                                 Empfehlung des Tages
                             </h3>
-                            <p class="text-2xl md:text-4xl font-bold text-slate-800 dark:text-white" id="sod-title">Lade...</p>
+                            <p class="text-3xl md:text-4xl font-extrabold text-slate-800 dark:text-white tracking-tight" id="sod-title">Lade...</p>
                             <p class="text-lg text-slate-600 dark:text-slate-300 mt-1 font-medium" id="sod-artist">...</p>
                             <div id="sod-tags" class="flex flex-wrap gap-2 mt-4"></div>
                         </div>
-                        <button id="sod-play-btn" class="w-full md:w-auto px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl flex items-center justify-center gap-2 transition-all transform hover:scale-105 font-bold shadow-lg shadow-amber-500/30">
+                        <button id="sod-play-btn" class="w-full md:w-auto px-6 py-3 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-white rounded-xl flex items-center justify-center gap-2 transition-all transform hover:scale-105 font-bold shadow-lg shadow-amber-500/30">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                             Jetzt singen
                         </button>
                     </div>
                 </section>
 
-                <!-- Stats Grid -->
                 <section id="stats" class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
                     <div class="glass-panel p-6 rounded-3xl text-center transform hover:-translate-y-1 transition-transform duration-300">
                         <h2 class="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-1">Songs</h2>
-                        <p id="total-songs" class="text-4xl font-extrabold text-cyan-600 dark:text-cyan-400">0</p>
+                        <p id="total-songs" class="text-4xl font-black text-cyan-600 dark:text-cyan-400">0</p>
                     </div>
                     <div class="glass-panel p-6 rounded-3xl text-center transform hover:-translate-y-1 transition-transform duration-300">
                         <h2 class="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-1">Künstler</h2>
-                        <p id="unique-artists" class="text-4xl font-extrabold text-indigo-500 dark:text-indigo-400">0</p>
+                        <p id="unique-artists" class="text-4xl font-black text-fuchsia-500 dark:text-fuchsia-400">0</p>
                     </div>
                     <div class="glass-panel p-6 rounded-3xl text-center transform hover:-translate-y-1 transition-transform duration-300">
                         <h2 class="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-1">Top Favorit</h2>
-                        <p id="top-artist" class="text-2xl md:text-3xl font-extrabold text-blue-500 dark:text-blue-400 mt-2 truncate">-</p>
+                        <p id="top-artist" class="text-2xl md:text-3xl font-black text-blue-500 dark:text-blue-400 mt-2 truncate">-</p>
                     </div>
                 </section>
 
-                <!-- Library Section -->
-                <section class="glass-panel rounded-3xl overflow-hidden shadow-lg border border-slate-200/50 dark:border-slate-800/50">
-                    <div class="p-6 md:p-8 border-b border-slate-200 dark:border-slate-800/60 bg-white/30 dark:bg-slate-900/30">
+                <section class="glass-panel rounded-3xl overflow-hidden shadow-xl">
+                    <div class="p-6 md:p-8 border-b border-slate-200/50 dark:border-slate-700/30 bg-white/40 dark:bg-slate-900/40">
                         <div class="flex justify-between items-center mb-6">
                             <div>
-                                <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Bibliothek</h2>
-                                <p class="text-sm text-slate-500 dark:text-slate-400">Finde deinen nächsten Hit.</p>
+                                <h2 class="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Bibliothek</h2>
+                                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Finde deinen nächsten Hit.</p>
                             </div>
-                            <button id="show-favorites-btn" class="p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:text-pink-500 dark:hover:text-pink-400 hover:border-pink-300 dark:hover:border-pink-500/50 bg-white/50 dark:bg-slate-800/50 transition-all shadow-sm" title="Nur Favoriten anzeigen">
+                            <button id="show-favorites-btn" class="p-3 rounded-xl border border-slate-300/50 dark:border-slate-600/50 text-slate-500 dark:text-slate-400 hover:text-pink-500 hover:bg-pink-50 dark:hover:bg-pink-900/20 hover:border-pink-300 dark:hover:border-pink-800/50 transition-all shadow-sm bg-white/50 dark:bg-slate-800/50" title="Nur Favoriten anzeigen">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
                             </button>
                         </div>
                         
-                        <!-- Search & Filters -->
-                        <div class="flex flex-col gap-4">
+                        <div class="flex flex-col gap-5">
                             <div class="relative group">
                                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                     <svg class="h-5 w-5 text-slate-400 group-focus-within:text-cyan-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                                 </div>
-                                <input type="text" id="search-input" placeholder="Titel oder Künstler suchen..." class="w-full pl-11 p-3.5 bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent outline-none transition-all duration-300 text-slate-800 dark:text-slate-100 placeholder-slate-400 shadow-sm font-medium">
+                                <input type="text" id="search-input" placeholder="Titel oder Künstler suchen..." class="w-full pl-11 p-3.5 bg-white/70 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-700/50 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent outline-none transition-all duration-300 text-slate-800 dark:text-slate-100 placeholder-slate-400 shadow-sm font-medium backdrop-blur-sm">
                             </div>
                             
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                <select id="artist-filter" class="p-3 bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none text-slate-700 dark:text-slate-200 transition-all duration-300 cursor-pointer shadow-sm text-sm font-medium appearance-none"><option value="all">Künstler (Alle)</option></select>
-                                <select id="genre-filter" class="p-3 bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none text-slate-700 dark:text-slate-200 transition-all duration-300 cursor-pointer shadow-sm text-sm font-medium appearance-none"><option value="all">Genre (Alle)</option></select>
-                                <select id="language-filter" class="p-3 bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none text-slate-700 dark:text-slate-200 transition-all duration-300 cursor-pointer shadow-sm text-sm font-medium appearance-none"><option value="all">Sprache (Alle)</option></select>
-                                <select id="decade-filter" class="p-3 bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none text-slate-700 dark:text-slate-200 transition-all duration-300 cursor-pointer shadow-sm text-sm font-medium appearance-none"><option value="all">Jahrzehnt (Alle)</option></select>
+                                <select id="artist-filter" class="p-3 bg-white/70 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-700/50 rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none text-slate-700 dark:text-slate-200 transition-all duration-300 cursor-pointer shadow-sm text-sm font-medium backdrop-blur-sm"><option value="all">Künstler (Alle)</option></select>
+                                <select id="genre-filter" class="p-3 bg-white/70 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-700/50 rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none text-slate-700 dark:text-slate-200 transition-all duration-300 cursor-pointer shadow-sm text-sm font-medium backdrop-blur-sm"><option value="all">Genre (Alle)</option></select>
+                                <select id="tag-filter" class="p-3 bg-white/70 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-700/50 rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none text-slate-700 dark:text-slate-200 transition-all duration-300 cursor-pointer shadow-sm text-sm font-medium backdrop-blur-sm"><option value="all">Tags (Alle)</option></select>
+                                <select id="decade-filter" class="p-3 bg-white/70 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-700/50 rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none text-slate-700 dark:text-slate-200 transition-all duration-300 cursor-pointer shadow-sm text-sm font-medium backdrop-blur-sm"><option value="all">Jahrzehnt (Alle)</option></select>
                             </div>
 
                             <div class="flex justify-between items-center mt-2">
                                 <div class="flex bg-slate-200/50 dark:bg-slate-800/50 p-1 rounded-xl">
-                                    <button id="sort-by-title" class="px-4 py-1.5 text-sm font-semibold rounded-lg transition-all duration-300">Titel</button>
-                                    <button id="sort-by-artist" class="px-4 py-1.5 text-sm font-semibold rounded-lg transition-all duration-300">Künstler</button>
+                                    <button id="sort-by-title" class="px-5 py-2 text-sm font-bold rounded-lg transition-all duration-300">Titel</button>
+                                    <button id="sort-by-artist" class="px-5 py-2 text-sm font-bold rounded-lg transition-all duration-300">Künstler</button>
                                 </div>
-                                <button id="random-song-btn" class="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-300 font-bold flex items-center gap-2 shadow-cyan-500/25 text-sm">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M15.33 3.52a.75.75 0 01.428 1.316l-3.033 3.033a1.5 1.5 0 01-2.122 0L7.57 4.836A.75.75 0 018.63 3.77l1.745 1.745a.25.25 0 00.354 0L13.5 2.744a.75.75 0 011.33.428L12.5 5.5h2.75a.75.75 0 010 1.5H12.5l2.33 2.33a.75.75 0 11-1.06 1.06L10.738 7.357a1.5 1.5 0 010-2.122L13.77 2.2a.75.75 0 011.56.54v2.78zm-10 4.15a.75.75 0 11-1.06-1.06L7.303 3.577a1.5 1.5 0 012.122 0l3.033 3.033a.75.75 0 11-1.06 1.06L8.36 4.637a.25.25 0 00-.354 0L5.262 7.382zM4.67 15.17a.75.75 0 01-1.33-.428L5.5 12.36V9.75a.75.75 0 011.5 0V12.5l-2.33 2.33a.75.75 0 01-1.06-1.06l3.033-3.033a1.5 1.5 0 012.122 0l3.033 3.033a.75.75 0 01-1.06 1.06L9.262 12.618a.25.25 0 00-.354 0l-2.745 2.745z" clip-rule="evenodd" /></svg>
-                                    Zufall
-                                </button>
+                                <button id="random-song-btn" class="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white rounded-xl hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 font-bold flex items-center gap-2 shadow-cyan-500/25 text-sm"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M15.33 3.52a.75.75 0 01.428 1.316l-3.033 3.033a1.5 1.5 0 01-2.122 0L7.57 4.836A.75.75 0 018.63 3.77l1.745 1.745a.25.25 0 00.354 0L13.5 2.744a.75.75 0 011.33.428L12.5 5.5h2.75a.75.75 0 010 1.5H12.5l2.33 2.33a.75.75 0 11-1.06 1.06L10.738 7.357a1.5 1.5 0 010-2.122L13.77 2.2a.75.75 0 011.56.54v2.78zm-10 4.15a.75.75 0 11-1.06-1.06L7.303 3.577a1.5 1.5 0 012.122 0l3.033 3.033a.75.75 0 11-1.06 1.06L8.36 4.637a.25.25 0 00-.354 0L5.262 7.382zM4.67 15.17a.75.75 0 01-1.33-.428L5.5 12.36V9.75a.75.75 0 011.5 0V12.5l-2.33 2.33a.75.75 0 01-1.06-1.06l3.033-3.033a1.5 1.5 0 012.122 0l3.033 3.033a.75.75 0 01-1.06 1.06L9.262 12.618a.25.25 0 00-.354 0l-2.745 2.745z" clip-rule="evenodd" /></svg>Zufall</button>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="bg-white/40 dark:bg-slate-900/40">
+                    <div class="bg-white/20 dark:bg-slate-900/20 backdrop-blur-md relative min-h-[300px]">
                         <div class="overflow-y-auto max-h-[65vh] p-3 md:p-6" id="scroll-container">
                             <ul id="song-list" class="space-y-3">
-                                <!-- Loading Spinner -->
-                                <li class="flex flex-col items-center justify-center p-16">
-                                    <div class="spinner mb-4"></div>
-                                    <p class="text-slate-500 dark:text-slate-400 font-medium animate-pulse">Lade Datenbank...</p>
+                                <li class="flex flex-col items-center justify-center py-20 animate-fade-in">
+                                    <div class="spinner mb-5"></div>
+                                    <p class="text-slate-500 dark:text-slate-400 font-medium">Synchronisiere Datenbank...</p>
                                 </li>
                             </ul>
                         </div>
+                    </div>
+                </section>
+                
+                <section class="glass-panel p-6 rounded-3xl border-l-4 border-fuchsia-500">
+                    <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100 mb-3 flex items-center gap-2">
+                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-fuchsia-500 animate-pulse shadow-[0_0_8px_rgba(217,70,239,0.8)]"></span> Coming Soon
+                    </h2>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-white/60 dark:bg-slate-800/60 text-fuchsia-700 dark:text-fuchsia-300 rounded-lg text-xs font-bold border border-fuchsia-200 dark:border-fuchsia-800/50 shadow-sm">Classic Schlager</span>
+                        <span class="px-3 py-1 bg-white/60 dark:bg-slate-800/60 text-fuchsia-700 dark:text-fuchsia-300 rounded-lg text-xs font-bold border border-fuchsia-200 dark:border-fuchsia-800/50 shadow-sm">Rock & Pop Classics</span>
                     </div>
                 </section>
             </div>
 
             <!-- DOWNLOADS VIEW -->
             <div id="downloads-view" class="view-section hidden">
-                <div class="glass-panel p-6 md:p-10 rounded-3xl shadow-xl max-w-3xl mx-auto border border-slate-200/50 dark:border-slate-700/50">
-                    <h2 class="text-3xl font-extrabold mb-6 text-slate-800 dark:text-white pb-4 border-b border-slate-200 dark:border-slate-800">Downloads</h2>
+                <div class="glass-panel p-8 rounded-3xl shadow-xl max-w-3xl mx-auto">
+                    <h2 class="text-3xl font-extrabold mb-6 text-slate-800 dark:text-white pb-4 border-b border-slate-200/50 dark:border-slate-700/50">Downloads</h2>
                     
-                    <!-- Legal Warning Box -->
-                    <div class="mb-8 p-5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 rounded-2xl flex gap-4 items-start shadow-inner">
-                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <div class="mb-8 p-5 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-2xl flex gap-4 items-start shadow-sm">
+                         <div class="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                         </div>
                          <div>
-                             <h4 class="font-bold text-blue-900 dark:text-blue-200">Rechtlicher Hinweis</h4>
-                             <p class="text-sm text-blue-800 dark:text-blue-300 mt-1 leading-relaxed">
-                                 Dies ist ein reines privates Informationsverzeichnis. Downloads erfolgen über externe Links (Google Drive). Bitte beachte die lokalen Urheberrechtsbestimmungen bezüglich der Nutzung von Karaoke-Dateien.
+                             <h4 class="font-bold text-red-900 dark:text-red-200 text-lg">Wichtiger Hinweis zur rechtlichen Prüfung</h4>
+                             <p class="text-sm text-red-700 dark:text-red-300/80 mt-1.5 leading-relaxed font-medium">
+                                 Die Verteilung urheberrechtlich geschützter Inhalte ohne Lizenz ist nicht gestattet. 
+                                 Aufgrund einer aktuellen rechtlichen Prüfung sind die direkten Download-Links für Songpakete 
+                                 vorübergehend <strong>deaktiviert</strong>. Wir bitten um Verständnis.
                              </p>
                          </div>
                     </div>
 
+                    <p class="text-slate-500 dark:text-slate-400 mb-6 font-medium tracking-wide uppercase text-xs">Status der Download-Pakete</p>
+                    
                     <div class="space-y-4">
-                        <!-- Main Software Download -->
-                        <div class="bg-white/80 dark:bg-slate-800/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="bg-white/40 dark:bg-slate-800/40 p-5 rounded-2xl border border-slate-200/50 dark:border-slate-700/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 grayscale opacity-60">
                             <div>
-                                <div class="flex items-center gap-3 mb-1.5">
+                                <div class="flex items-center gap-3 mb-1">
                                     <h3 class="font-bold text-lg text-slate-800 dark:text-slate-100">Heitzify UltraStar Paket</h3>
-                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800/50 uppercase tracking-wide">v1.1</span>
+                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300">Prüfung</span>
                                 </div>
-                                <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Das komplette Paket: Software & alle Songs.</p>
-                                <p class="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1.5 font-mono">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                                    Stand: 28.11.2025
-                                </p>
+                                <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Komplette Software & Songs</p>
                             </div>
-                            <a href="https://drive.google.com/drive/folders/1oKK6dnhseenuEKGopc15DfZK2g84ZSXy?usp=sharing" target="_blank" class="px-6 py-3 bg-slate-800 hover:bg-slate-900 dark:bg-cyan-600 dark:hover:bg-cyan-500 text-white rounded-xl font-bold w-full sm:w-auto text-center shadow-lg transition-transform transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                                Google Drive
-                            </a>
+                            <button class="px-6 py-3 bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-xl cursor-not-allowed font-bold w-full sm:w-auto text-center" disabled>Nicht verfügbar</button>
                         </div>
 
-                        <!-- Song Update Download -->
-                        <div class="bg-white/80 dark:bg-slate-800/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="bg-white/40 dark:bg-slate-800/40 p-5 rounded-2xl border border-slate-200/50 dark:border-slate-700/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 grayscale opacity-60">
                             <div>
-                                <div class="flex items-center gap-3 mb-1.5">
+                                <div class="flex items-center gap-3 mb-1">
                                     <h3 class="font-bold text-lg text-slate-800 dark:text-slate-100">Songbibliothek Update</h3>
-                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/50 uppercase tracking-wide">v1.1</span>
+                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300">Prüfung</span>
                                 </div>
-                                <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Nur die Lieder-Ordner zum manuellen Einfügen.</p>
-                                <p class="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1.5 font-mono">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                                    Stand: 28.11.2025
-                                </p>
+                                <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Nur neue Songs</p>
                             </div>
-                            <a href="https://drive.google.com/drive/folders/1QwVTrN9BqlEkIeP4UTQx3SFrDQ_7aK_2?usp=sharing" target="_blank" class="px-6 py-3 bg-slate-800 hover:bg-slate-900 dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white rounded-xl font-bold w-full sm:w-auto text-center shadow-lg transition-transform transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                                Google Drive
-                            </a>
+                            <button class="px-6 py-3 bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-xl cursor-not-allowed font-bold w-full sm:w-auto text-center" disabled>Nicht verfügbar</button>
                         </div>
                     </div>
                 </div>
@@ -361,16 +343,24 @@
 
             <!-- IMPRESSUM VIEW -->
             <div id="impressum-view" class="view-section hidden">
-                <div class="glass-panel p-8 rounded-3xl shadow-xl max-w-2xl mx-auto border border-slate-200/50 dark:border-slate-700/50">
-                    <h2 class="text-3xl font-extrabold mb-6 text-slate-800 dark:text-white pb-4 border-b border-slate-200 dark:border-slate-800">Impressum</h2>
-                    <div class="space-y-6 text-slate-600 dark:text-slate-300">
+                <div class="glass-panel p-8 md:p-10 rounded-3xl shadow-xl max-w-3xl mx-auto">
+                    <h2 class="text-3xl font-extrabold mb-8 text-slate-800 dark:text-white border-b border-slate-200/50 dark:border-slate-700/50 pb-4">Impressum</h2>
+                    <div class="space-y-8 text-slate-600 dark:text-slate-300">
                         <div>
-                            <p class="font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider text-xs mb-2">Angaben gemäß § 5 TMG</p>
-                            <p class="text-lg">Dennis Heitz<br>Postfach 10 14 26<br>33514 Bielefeld</p>
+                            <p class="font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider text-xs mb-2 opacity-70">Angaben gemäß § 5 TMG</p>
+                            <p class="text-lg leading-relaxed">Dennis Heitz<br>Am Ehrenkamp 25<br>33659 Bielefeld</p>
                         </div>
                         <div>
-                            <p class="font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider text-xs mb-2">Kontakt</p>
-                            <p>E-Mail: <a href="mailto:dennis.heitz1@gmail.com" class="text-cyan-600 dark:text-cyan-400 hover:underline font-medium">dennis.heitz1@gmail.com</a></p>
+                            <p class="font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider text-xs mb-2 opacity-70">Kontakt</p>
+                            <a href="mailto:dennis.heitz1@gmail.com" class="text-lg text-cyan-600 dark:text-cyan-400 hover:text-cyan-500 font-medium transition-colors">dennis.heitz1@gmail.com</a>
+                        </div>
+                        <div>
+                            <p class="font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider text-xs mb-2 opacity-70">Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</p>
+                            <p class="text-lg leading-relaxed">Dennis Heitz<br>Am Ehrenkamp 25<br>33659 Bielefeld</p>
+                        </div>
+                        <div class="pt-4 border-t border-slate-200/50 dark:border-slate-700/50">
+                            <p class="font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider text-xs mb-2 opacity-70">EU-Streitschlichtung</p>
+                            <p class="text-sm leading-relaxed">Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: <a href="https://ec.europa.eu/consumers/odr" target="_blank" class="text-cyan-600 dark:text-cyan-400 hover:underline">https://ec.europa.eu/consumers/odr</a>.<br>Unsere E-Mail-Adresse finden Sie oben im Impressum.</p>
                         </div>
                     </div>
                 </div>
@@ -378,20 +368,22 @@
 
             <!-- DATENSCHUTZ VIEW -->
             <div id="datenschutz-view" class="view-section hidden">
-                <div class="glass-panel p-8 rounded-3xl shadow-xl max-w-3xl mx-auto border border-slate-200/50 dark:border-slate-700/50">
-                    <h2 class="text-3xl font-extrabold mb-6 text-slate-800 dark:text-white pb-4 border-b border-slate-200 dark:border-slate-800">Datenschutz</h2>
+                <div class="glass-panel p-8 md:p-10 rounded-3xl shadow-xl max-w-3xl mx-auto">
+                    <h2 class="text-3xl font-extrabold mb-8 text-slate-800 dark:text-white border-b border-slate-200/50 dark:border-slate-700/50 pb-4">Datenschutzerklärung</h2>
                     <div class="space-y-6 text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
-                        <div>
-                            <h3 class="text-lg font-bold text-slate-800 dark:text-slate-200 mb-2">1. Datenerfassung auf dieser Website</h3>
-                            <p><strong>Cookies & Local Storage:</strong> Wir nutzen den "Local Storage" Ihres Browsers, um Ihre Einstellungen (Dark Mode, Cookie-Zustimmung) und <strong>Ihre persönliche Favoritenliste</strong> lokal auf Ihrem Gerät zu speichern. Diese Daten werden <em>nicht</em> an uns übertragen.</p>
+                        <div class="p-5 bg-white/50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50 shadow-sm">
+                            <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2">1. Hosting (GitHub Pages)</h3>
+                            <p>Diese Website wird bei <strong>GitHub Inc.</strong> gehostet. Beim Besuch erfasst GitHub automatisch Informationen in Server-Log-Files zur Sicherheit und Stabilität der Website (Art. 6 Abs. 1 lit. f DSGVO).</p>
                         </div>
-                        <div>
-                            <h3 class="text-lg font-bold text-slate-800 dark:text-slate-200 mb-2">2. Externe Links (YouTube & Google Drive)</h3>
-                            <p>Unsere Webseite verlinkt auf YouTube (Karaoke-Suche) und Google Drive (Downloads). Wenn Sie diese Links anklicken, verlassen Sie unsere Website. Ab diesem Zeitpunkt gelten die Datenschutzbestimmungen der jeweiligen Anbieter (Google Ireland Limited). Wir erfassen diese Klicks nicht.</p>
+
+                        <div class="p-5 bg-white/50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50 shadow-sm">
+                            <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2">2. Lokale Speicherung (Local Storage)</h3>
+                            <p>Wir speichern keine Cookies auf Ihrem Endgerät, die an uns übertragen werden. Wir nutzen jedoch den <strong>Local Storage</strong> Ihres Browsers, um Einstellungen (Dark Mode) und Ihre Favoritenliste lokal zu speichern. Diese Daten verbleiben auf Ihrem Gerät.</p>
                         </div>
-                        <div>
-                            <h3 class="text-lg font-bold text-slate-800 dark:text-slate-200 mb-2">3. Hosting (GitHub Pages)</h3>
-                            <p>Die Seite liegt auf Servern von GitHub Inc. GitHub erfasst Standard-Verbindungsdaten (IP-Adresse, Browser) in Logfiles zur Sicherheit.</p>
+                        
+                        <div class="p-5 bg-white/50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50 shadow-sm">
+                            <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2">3. Externe Links</h3>
+                            <p>Unsere Webseite enthält Links zur Plattform YouTube. Erst wenn Sie aktiv auf einen "Play"-Button klicken, werden Sie weitergeleitet. Ab diesem Zeitpunkt gelten die Datenschutzbestimmungen von YouTube (Google).</p>
                         </div>
                     </div>
                 </div>
@@ -399,34 +391,34 @@
         </main>
         
         <!-- Footer -->
-        <footer class="text-center mt-20 pb-12 px-4">
-            <div class="max-w-2xl mx-auto border-t border-slate-200 dark:border-slate-800 pt-10">
-                <div class="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-xl mx-auto mb-4 opacity-50">H</div>
+        <footer class="text-center mt-20 pb-12 px-4 relative z-10">
+            <div class="max-w-2xl mx-auto border-t border-slate-300/30 dark:border-slate-700/50 pt-10">
+                <div class="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-xl mx-auto mb-4 opacity-50 shadow-inner">H</div>
                 <p class="text-xl font-extrabold text-slate-800 dark:text-slate-200 mb-1 tracking-tight">Heitzify Songbibliothek</p>
                 <p id="footer-song-count" class="text-sm text-cyan-600 dark:text-cyan-500 font-semibold uppercase tracking-widest"></p>
-                <p class="text-sm text-slate-500 dark:text-slate-400 mt-6 leading-relaxed">
-                    Ein privates Projekt für <strong>UltraStar Deluxe</strong>. Heitzify ist unsere persönliche Erweiterung, entwickelt von aktiven Mitwirkenden des Open-Source-Originals.
-                </p>
-                <div class="mt-8 flex justify-center gap-6 text-sm font-medium text-slate-400 dark:text-slate-500">
+                <div class="mt-8 flex justify-center gap-6 text-sm font-medium text-slate-500 dark:text-slate-400">
                     <button onclick="switchView('impressum')" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">Impressum</button>
                     <button onclick="switchView('datenschutz')" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">Datenschutz</button>
                     <button onclick="openCookieSettings()" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">Cookies</button>
                 </div>
+                <p class="text-xs text-slate-400 dark:text-slate-500/70 mt-8">
+                    Ein Privates-Projekt für UltraStar Deluxe.<br>Heitzify ist unsere persönliche Erweiterung.
+                </p>
             </div>
         </footer>
     </div>
     
     <!-- Floating Action Buttons & Modals -->
-    <button id="back-to-top" class="hidden fixed bottom-6 right-6 bg-slate-900 dark:bg-white text-white dark:text-slate-900 p-3.5 rounded-2xl shadow-2xl shadow-slate-900/20 dark:shadow-white/20 hover:-translate-y-1.5 transition-all duration-300 z-40 focus:outline-none"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" /></svg></button>
+    <button id="back-to-top" class="hidden fixed bottom-6 right-6 bg-slate-900 dark:bg-white text-white dark:text-slate-900 p-3.5 rounded-2xl shadow-2xl shadow-slate-900/20 hover:-translate-y-1.5 transition-all duration-300 z-40 focus:outline-none"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" /></svg></button>
     
     <div id="cookie-banner" class="fixed bottom-0 left-0 w-full z-50 p-4 hidden">
         <div class="glass-panel bg-white/95 dark:bg-slate-900/95 max-w-4xl mx-auto rounded-2xl shadow-2xl p-6 md:flex items-center justify-between gap-6 border-t-4 border-cyan-500">
             <div class="text-sm text-slate-700 dark:text-slate-300 mb-4 md:mb-0">
                 <h4 class="font-bold text-lg mb-1 text-slate-900 dark:text-white">Privatsphäre & Speicherung</h4>
-                <p>Wir speichern Einstellungen (Dark Mode) und deine Favoritenliste lokal in deinem Browser. Es werden keine Daten an uns gesendet.</p>
+                <p>Wir speichern ausschließlich Einstellungen (Dark Mode) und deine Favoritenliste lokal in deinem Browser. Es werden keine Daten an uns gesendet.</p>
             </div>
             <div class="flex gap-3 flex-shrink-0">
-                <button onclick="acceptCookies('all')" class="px-5 py-2.5 text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 dark:bg-cyan-600 dark:hover:bg-cyan-500 rounded-xl transition-all shadow-md">Verstanden</button>
+                <button onclick="acceptCookies('all')" class="px-6 py-3 text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 dark:bg-cyan-600 dark:hover:bg-cyan-500 rounded-xl transition-all shadow-lg">Verstanden</button>
             </div>
         </div>
     </div>
@@ -455,18 +447,22 @@
         </div>
     </div>
 
-    <!-- JS APP LOGIC -->
+    <!-- MAIN APP LOGIC -->
     <script>
-        let switchView, acceptCookies, openCookieSettings, openYoutube, toggleMenu;
+        let switchView, acceptCookies, openCookieSettings, toggleMenu, playSong;
+        let songData = [];
+        let favorites = JSON.parse(localStorage.getItem('heitzify_favorites')) || [];
+        let currentSort = 'title';
+        let showFavoritesOnly = false;
+
         document.addEventListener('DOMContentLoaded', () => {
             // Elements
             const themeToggleBtn = document.getElementById('theme-toggle-nav');
             const lightIcon = document.getElementById('nav-icon-light');
             const darkIcon = document.getElementById('nav-icon-dark');
+            const bgAnimation = document.getElementById('bg-animation');
             const backToTopBtn = document.getElementById('back-to-top');
-            const randomSongBtn = document.getElementById('random-song-btn');
-            const randomSongModal = document.getElementById('random-song-modal');
-            const cookieBanner = document.getElementById('cookie-banner');
+            
             const songListEl = document.getElementById('song-list');
             const searchInputEl = document.getElementById('search-input');
             const artistFilterEl = document.getElementById('artist-filter');
@@ -476,38 +472,15 @@
             const sortByTitleBtn = document.getElementById('sort-by-title');
             const sortByArtistBtn = document.getElementById('sort-by-artist');
             const showFavoritesBtn = document.getElementById('show-favorites-btn');
-            const menuBtn = document.getElementById('menu-btn');
-            const mobileMenu = document.getElementById('mobile-menu');
 
-            let currentSort = 'title';
-            let showFavoritesOnly = false;
-            let favorites = JSON.parse(localStorage.getItem('heitzify_favorites')) || [];
-            let songData = [];
-
-            // SVG Icons Map for Pro-Look instead of Emojis
-            const getGenreSvg = (genre) => {
-                const baseClass = "w-5 h-5 text-cyan-600 dark:text-cyan-400";
-                // Disney (Castle/Star)
-                if(genre === 'Disney' || genre === 'Film' || genre === 'Musical' || genre === 'Soundtrack') {
-                    return `<svg class="${baseClass}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>`;
-                }
-                // Party / Hit
-                if(genre === 'Party' || genre === 'Hit' || genre === 'Schlager' || genre === 'Gute Laune') {
-                    return `<svg class="${baseClass}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
-                }
-                // Rock / Alternative
-                if(genre === 'Rock' || genre === 'Alternative' || genre === 'Power') {
-                    return `<svg class="${baseClass}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>`;
-                }
-                // Christmas
-                if(genre === 'Weihnachtslied') {
-                    return `<svg class="${baseClass}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>`;
-                }
-                // Default Note
-                return `<svg class="${baseClass}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg>`;
+            // --- VIEW LOGIC ---
+            switchView = (viewName) => {
+                document.querySelectorAll('.view-section').forEach(el => { el.classList.add('hidden'); el.classList.remove('active'); });
+                const target = document.getElementById(viewName + '-view');
+                if (target) { target.classList.remove('hidden'); setTimeout(() => target.classList.add('active'), 10); window.scrollTo({ top: 0, behavior: 'smooth' }); }
             };
 
-            // Mobile Menu
+            const mobileMenu = document.getElementById('mobile-menu');
             toggleMenu = () => {
                 if(mobileMenu.classList.contains('menu-closed')) {
                     mobileMenu.classList.remove('menu-closed');
@@ -517,53 +490,29 @@
                     mobileMenu.classList.remove('menu-open');
                 }
             };
-            menuBtn.addEventListener('click', toggleMenu);
-            document.getElementById('close-menu-btn').addEventListener('click', toggleMenu);
 
-            // View Switching
-            switchView = (viewName) => {
-                document.querySelectorAll('.view-section').forEach(el => { el.classList.add('hidden'); el.classList.remove('active'); });
-                const target = document.getElementById(viewName + '-view');
-                if (target) { 
-                    target.classList.remove('hidden'); 
-                    setTimeout(() => target.classList.add('active'), 10); 
-                    window.scrollTo({ top: 0, behavior: 'smooth' }); 
-                }
-            };
-
-            // Cookies
-            if (!localStorage.getItem('cookieConsent')) cookieBanner.classList.remove('hidden');
+            // --- COOKIE LOGIC ---
+            const cookieBanner = document.getElementById('cookie-banner');
+            const checkCookieConsent = () => { if (!localStorage.getItem('cookieConsent')) cookieBanner.classList.remove('hidden'); };
             acceptCookies = (type) => { localStorage.setItem('cookieConsent', type); cookieBanner.classList.add('hidden'); };
             openCookieSettings = () => { cookieBanner.classList.remove('hidden'); };
+            checkCookieConsent();
 
-            // Theme
+            // --- THEME LOGIC ---
             const applyTheme = (theme) => {
-                if (theme === 'dark') { 
-                    document.documentElement.classList.add('dark'); 
-                    lightIcon.classList.remove('hidden'); darkIcon.classList.add('hidden'); 
-                } else { 
-                    document.documentElement.classList.remove('dark'); 
-                    lightIcon.classList.add('hidden'); darkIcon.classList.remove('hidden'); 
-                }
+                if (theme === 'dark') { document.documentElement.classList.add('dark'); bgAnimation.classList.remove('light-mode-bg'); lightIcon.classList.remove('hidden'); darkIcon.classList.add('hidden'); }
+                else { document.documentElement.classList.remove('dark'); bgAnimation.classList.add('light-mode-bg'); lightIcon.classList.add('hidden'); darkIcon.classList.remove('hidden'); }
             };
-            applyTheme(localStorage.getItem('theme') || 'dark');
-            themeToggleBtn.addEventListener('click', () => { 
-                const isDark = document.documentElement.classList.contains('dark'); 
-                const newTheme = isDark ? 'light' : 'dark'; 
-                localStorage.setItem('theme', newTheme); applyTheme(newTheme); 
-            });
+            const savedTheme = localStorage.getItem('theme') || 'dark'; applyTheme(savedTheme);
+            themeToggleBtn.addEventListener('click', () => { const isDark = document.documentElement.classList.contains('dark'); const newTheme = isDark ? 'light' : 'dark'; localStorage.setItem('theme', newTheme); applyTheme(newTheme); });
 
-            // Scroll Top
-            window.addEventListener('scroll', () => { 
-                if (window.scrollY > 400) backToTopBtn.classList.remove('hidden'); 
-                else backToTopBtn.classList.add('hidden'); 
-            });
+            window.addEventListener('scroll', () => { if (window.scrollY > 400) backToTopBtn.classList.remove('hidden'); else backToTopBtn.classList.add('hidden'); });
             backToTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-            // PWA
+            // --- PWA ---
             if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('sw.js')); }
 
-            // Logic
+            // --- DATA INITIALIZATION ---
             function initializeApp(songs) {
                 songData = songs;
                 const { uniqueArtists, uniqueGenres, uniqueLanguages, uniqueDecades } = calculateAndDisplayStats();
@@ -576,15 +525,21 @@
                 updateSongOfTheDay();
             }
 
-            fetch('songs.json')
-                .then(res => { if (!res.ok) throw new Error("Fehler"); return res.json(); })
+            // WICHTIG: Cache Busting String für den Fetch!
+            fetch('songs.json?t=' + new Date().getTime())
+                .then(response => { if (!response.ok) throw new Error("Netzwerkfehler"); return response.json(); })
                 .then(data => initializeApp(data))
-                .catch(err => { songListEl.innerHTML = `<li class="p-8 text-center text-red-500 font-bold">Ladefehler.<br><span class="text-sm font-normal text-slate-500">Stelle sicher, dass songs.json vorhanden ist.</span></li>`; });
+                .catch(error => { 
+                    console.error('Fehler:', error); 
+                    songListEl.innerHTML = `<li class="p-8 text-center text-red-500 font-bold">Fehler beim Laden der Songs.<br><span class="text-sm font-normal text-slate-500">Stelle sicher, dass die songs.json existiert.</span></li>`; 
+                });
 
-            openYoutube = (artist, title) => { 
+            // --- ACTIONS ---
+            playSong = (artist, title) => {
                 const query = encodeURIComponent(`${artist} ${title} Karaoke`);
-                window.open(`https://www.youtube.com/results?search_query=${query}`, '_blank'); 
+                window.open(`https://www.youtube.com/results?search_query=${query}`, '_blank');
             };
+            window.playSong = playSong; // Expose to window
 
             const updateSongOfTheDay = () => {
                 if (!songData.length) return;
@@ -598,13 +553,19 @@
                 
                 const sodTags = document.getElementById('sod-tags');
                 sodTags.innerHTML = '';
-                [dailySong.genre, dailySong.language, dailySong.year].filter(Boolean).forEach(tag => {
+                // Robust tag handling (in case properties are missing)
+                const tags = [];
+                if(dailySong.genre) tags.push(dailySong.genre);
+                if(dailySong.language) tags.push(dailySong.language);
+                if(dailySong.year) tags.push(dailySong.year.toString());
+                
+                tags.forEach(tag => {
                     const span = document.createElement('span');
-                    span.className = "px-2.5 py-1 bg-amber-100/50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-xs font-bold rounded-md border border-amber-200 dark:border-amber-700/50";
+                    span.className = "px-2.5 py-1 bg-amber-100/50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-xs font-bold rounded-md border border-amber-200 dark:border-amber-700/50 shadow-sm";
                     span.textContent = tag;
                     sodTags.appendChild(span);
                 });
-                document.getElementById('sod-play-btn').onclick = () => openYoutube(dailySong.artist, dailySong.title);
+                document.getElementById('sod-play-btn').onclick = () => playSong(dailySong.artist, dailySong.title);
             };
 
             window.toggleFav = (key) => {
@@ -613,16 +574,28 @@
                 localStorage.setItem('heitzify_favorites', JSON.stringify(favorites));
                 filterAndRender();
             };
-            window.playSong = (artist, title) => openYoutube(artist, title);
 
             showFavoritesBtn.addEventListener('click', () => {
                 showFavoritesOnly = !showFavoritesOnly;
                 showFavoritesBtn.classList.toggle('bg-pink-100');
-                showFavoritesBtn.classList.toggle('dark:bg-pink-900/30');
+                showFavoritesBtn.classList.toggle('dark:bg-pink-900/20');
                 showFavoritesBtn.classList.toggle('text-pink-600');
-                showFavoritesBtn.classList.toggle('border-pink-500');
+                showFavoritesBtn.classList.toggle('border-pink-300');
+                showFavoritesBtn.classList.toggle('dark:border-pink-800/50');
                 filterAndRender();
             });
+
+            // --- RENDERING ---
+            function getDecade(year) { if(!year) return null; return Math.floor(year / 10) * 10 + 'er'; }
+            
+            const getGenreSvg = (genre) => {
+                const baseClass = "w-5 h-5 text-cyan-600 dark:text-cyan-400";
+                if(genre === 'Disney' || genre === 'Film' || genre === 'Musical' || genre === 'Soundtrack') return `<svg class="${baseClass}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>`;
+                if(genre === 'Party' || genre === 'Hit' || genre === 'Schlager' || genre === 'Gute Laune' || genre === 'NDW') return `<svg class="${baseClass}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+                if(genre === 'Rock' || genre === 'Alternative' || genre === 'Power' || genre === 'Rock \'n\' Roll') return `<svg class="${baseClass}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>`;
+                if(genre === 'Weihnachtslied') return `<svg class="${baseClass}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>`;
+                return `<svg class="${baseClass}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg>`;
+            };
 
             function highlightMatch(text, term) {
                 if (!term) return text;
@@ -633,12 +606,12 @@
             function renderSongList(songs) {
                 songListEl.innerHTML = '';
                 if (songs.length === 0) {
-                    songListEl.innerHTML = `<li class="flex flex-col items-center justify-center p-12 text-center"><div class="w-16 h-16 mb-4 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center"><svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div><p class="text-slate-500 dark:text-slate-400 font-medium">Keine Songs gefunden.</p></li>`;
+                    songListEl.innerHTML = `<li class="flex flex-col items-center justify-center p-12 text-center animate-fade-in"><div class="w-16 h-16 mb-4 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center"><svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div><p class="text-slate-500 dark:text-slate-400 font-medium">Keine Songs gefunden.</p></li>`;
                     return;
                 }
 
                 const sortedSongs = [...songs].sort((a, b) => {
-                    if (currentSort === 'artist') return a.artist.localeCompare(b.artist);
+                    if (currentSort === 'artist') { const ac = a.artist.localeCompare(b.artist); if (ac !== 0) return ac; }
                     return a.title.localeCompare(b.title);
                 });
 
@@ -649,23 +622,25 @@
                     const isFav = favorites.includes(songKey);
                     const li = document.createElement('li');
                     
-                    // Limit animation delay for huge lists to prevent massive lag
-                    li.style.animationDelay = `${Math.min(index * 20, 800)}ms`;
+                    li.style.animationDelay = `${Math.min(index * 20, 500)}ms`;
                     li.className = 'song-item flex items-center p-3.5 md:p-5 rounded-2xl bg-white/70 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-slate-800/80 border border-slate-100 dark:border-transparent hover:border-cyan-200 dark:hover:border-cyan-500/30 shadow-sm hover:shadow-md transition-all duration-300 group cursor-default';
                     
                     const displayTitle = highlightMatch(song.title, searchTerm);
                     const displayArtist = highlightMatch(song.artist, searchTerm);
                     const heartClass = isFav ? "heart-active" : "text-slate-300 dark:text-slate-600 hover:text-pink-400";
                     const heartFill = isFav ? "currentColor" : "none";
-                    
                     const svgIcon = getGenreSvg(song.genre);
-                    const tags = [song.genre, song.language, song.year].filter(Boolean);
-                    const tagsHtml = `<div class="flex flex-wrap gap-1.5 mt-1.5">` + 
-                        tags.map(tag => `<span class="px-2 py-0.5 text-[10px] font-semibold tracking-wide uppercase rounded-md bg-slate-200/50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-400">${tag}</span>`).join('') + `</div>`;
+                    
+                    const tags = [];
+                    if(song.genre) tags.push(song.genre);
+                    if(song.language) tags.push(song.language);
+                    if(song.year) tags.push(song.year.toString());
+
+                    const tagsHtml = `<div class="flex flex-wrap gap-1.5 mt-1.5">` + tags.map(tag => `<span class="px-2 py-0.5 text-[10px] font-semibold tracking-wide uppercase rounded-md bg-slate-200/50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-400">${tag}</span>`).join('') + `</div>`;
 
                     li.innerHTML = `
                         <span class="text-slate-400 dark:text-slate-500 font-mono text-xs md:text-sm w-6 md:w-10 text-right mr-4 opacity-50">${index + 1}.</span>
-                        <div class="mr-4 w-10 h-10 flex items-center justify-center bg-cyan-50 dark:bg-slate-800 rounded-xl shadow-sm border border-cyan-100 dark:border-slate-700/50 group-hover:scale-110 transition-transform">
+                        <div class="mr-4 w-10 h-10 flex items-center justify-center bg-cyan-50 dark:bg-slate-800 rounded-xl shadow-sm border border-cyan-100 dark:border-slate-700/50 group-hover:scale-110 transition-transform flex-shrink-0">
                             ${svgIcon}
                         </div>
                         <div class="flex-grow min-w-0">
@@ -677,9 +652,7 @@
                              <button onclick="window.playSong('${song.artist.replace(/'/g, "\\'")}', '${song.title.replace(/'/g, "\\'")}')" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-white hover:bg-cyan-500 dark:hover:bg-cyan-500 transition-all shadow-sm" title="Auf YouTube suchen">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
                              </button>
-                             <button onclick="window.toggleFav('${songKey.replace(/'/g, "\\'")}')" class="p-2.5 rounded-xl bg-transparent hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-all">
-                                 <svg class="w-6 h-6 heart-icon ${heartClass}" fill="${heartFill}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
-                             </button>
+                             <svg onclick="window.toggleFav('${songKey.replace(/'/g, "\\'")}')" class="w-6 h-6 heart-icon ${heartClass}" fill="${heartFill}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
                         </div>
                     `;
                     songListEl.appendChild(li);
@@ -693,13 +666,12 @@
             }
             
             function calculateAndDisplayStats() {
-                const getDec = y => Math.floor(y / 10) * 10 + 'er';
                 const totalSongs = songData.length;
                 const artists = songData.map(s => s.artist);
                 const uniqueArtists = [...new Set(artists)];
                 const uniqueGenres = [...new Set(songData.map(s => s.genre).filter(Boolean))];
                 const uniqueLanguages = [...new Set(songData.map(s => s.language).filter(Boolean))];
-                const uniqueDecades = [...new Set(songData.map(s => getDec(s.year)).filter(Boolean))];
+                const uniqueDecades = [...new Set(songData.map(s => getDecade(s.year)).filter(Boolean))];
                 
                 const ac = artists.reduce((acc, a) => { acc[a] = (acc[a] || 0) + 1; return acc; }, {});
                 const top = Object.entries(ac).sort((a, b) => b[1] - a[1])[0];
@@ -713,7 +685,6 @@
             }
 
             function filterAndRender() {
-                const getDec = y => Math.floor(y / 10) * 10 + 'er';
                 const st = searchInputEl.value.toLowerCase();
                 const sa = artistFilterEl.value;
                 const sg = genreFilterEl.value;
@@ -727,7 +698,7 @@
                     const mArtist = sa === 'all' || s.artist === sa;
                     const mGenre = sg === 'all' || s.genre === sg;
                     const mLang = sl === 'all' || s.language === sl;
-                    const mDec = sd === 'all' || getDec(s.year) === sd;
+                    const mDec = sd === 'all' || getDecade(s.year) === sd;
                     const mFav = showFavoritesOnly ? favorites.includes(`${s.artist}-${s.title}`) : true;
                     return mSearch && mArtist && mGenre && mLang && mDec && mFav;
                 });
@@ -735,10 +706,10 @@
             }
             
             function updateSortButtons() {
-                const a = "bg-slate-800 dark:bg-cyan-500 text-white shadow-md";
+                const a = "bg-slate-900 dark:bg-cyan-500 text-white shadow-md";
                 const i = "bg-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white";
-                if (currentSort === 'title') { sortByTitleBtn.className = `px-4 py-1.5 text-sm font-semibold rounded-lg transition-all ${a}`; sortByArtistBtn.className = `px-4 py-1.5 text-sm font-semibold rounded-lg transition-all ${i}`; } 
-                else { sortByArtistBtn.className = `px-4 py-1.5 text-sm font-semibold rounded-lg transition-all ${a}`; sortByTitleBtn.className = `px-4 py-1.5 text-sm font-semibold rounded-lg transition-all ${i}`; }
+                if (currentSort === 'title') { sortByTitleBtn.className = `px-5 py-2 text-sm font-bold rounded-xl transition-all duration-300 ${a}`; sortByArtistBtn.className = `px-5 py-2 text-sm font-bold rounded-xl transition-all duration-300 ${i}`; } 
+                else { sortByArtistBtn.className = `px-5 py-2 text-sm font-bold rounded-xl transition-all duration-300 ${a}`; sortByTitleBtn.className = `px-5 py-2 text-sm font-bold rounded-xl transition-all duration-300 ${i}`; }
             }
 
             sortByTitleBtn.addEventListener('click', () => { currentSort = 'title'; updateSortButtons(); filterAndRender(); });
@@ -749,25 +720,31 @@
             languageFilterEl.addEventListener('change', filterAndRender);
             decadeFilterEl.addEventListener('change', filterAndRender);
 
-            // Random Modal Logic
+            // Modal Logic
+            const randomSongModal = document.getElementById('random-song-modal');
+            const randomSongBtn = document.getElementById('random-song-btn');
+            const rerollBtn = document.getElementById('reroll-btn');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            
             function showModal() {
-                const getDec = y => Math.floor(y / 10) * 10 + 'er';
                 const st = searchInputEl.value.toLowerCase();
                 const sa = artistFilterEl.value;
                 const sg = genreFilterEl.value;
                 const sl = languageFilterEl.value;
                 const sd = decadeFilterEl.value;
                 const songs = songData.filter(s => {
-                    return (sa === 'all' || s.artist === sa) && (sg === 'all' || s.genre === sg) && (sl === 'all' || s.language === sl) && (sd === 'all' || getDec(s.year) === sd) && (s.title.toLowerCase().includes(st) || s.artist.toLowerCase().includes(st));
+                    return (sa === 'all' || s.artist === sa) && (sg === 'all' || s.genre === sg) && (sl === 'all' || s.language === sl) && (sd === 'all' || getDecade(s.year) === sd) && (s.title.toLowerCase().includes(st) || s.artist.toLowerCase().includes(st));
                 });
+                
                 if(songs.length > 0) {
                     const r = songs[Math.floor(Math.random() * songs.length)];
-                    randomSongTitleEl.textContent = r.title;
-                    randomSongArtistEl.textContent = r.artist;
+                    document.getElementById('random-song-title').textContent = r.title;
+                    document.getElementById('random-song-artist').textContent = r.artist;
                 } else {
-                    randomSongTitleEl.textContent = "Nichts gefunden";
-                    randomSongArtistEl.textContent = "Filter anpassen";
+                    document.getElementById('random-song-title').textContent = "Nichts gefunden";
+                    document.getElementById('random-song-artist').textContent = "Filter anpassen";
                 }
+                
                 randomSongModal.classList.remove('hidden');
                 setTimeout(() => {
                     randomSongModal.classList.remove('opacity-0', 'pointer-events-none');
@@ -779,11 +756,11 @@
                 randomSongModal.classList.add('opacity-0', 'pointer-events-none');
                 randomSongModal.querySelector('.glass-panel').classList.remove('scale-100');
                 randomSongModal.querySelector('.glass-panel').classList.add('scale-95');
-                setTimeout(() => randomSongModal.classList.add('hidden'), 300);
+                setTimeout(() => randomSongModal.classList.add('hidden'), 400);
             }
             randomSongBtn.addEventListener('click', showModal);
             rerollBtn.addEventListener('click', showModal);
-            document.getElementById('close-modal-btn').addEventListener('click', hideModal);
+            closeModalBtn.addEventListener('click', hideModal);
             randomSongModal.addEventListener('click', (e) => { if(e.target === randomSongModal) hideModal(); });
         });
     </script>
