@@ -127,7 +127,8 @@
 </head>
 <body class="antialiased transition-colors duration-500">
 
-    <div class="gradient-bg"></div>
+    <!-- Behoben: ID bg-animation hinzugefügt, um JS-Crash zu verhindern -->
+    <div id="bg-animation" class="gradient-bg"></div>
 
     <!-- NAVBAR -->
     <nav class="fixed top-0 left-0 w-full z-50 nav-glass shadow-sm transition-all duration-300">
@@ -473,6 +474,11 @@
             const sortByArtistBtn = document.getElementById('sort-by-artist');
             const showFavoritesBtn = document.getElementById('show-favorites-btn');
 
+            // Neu: Menü Elemente zugewiesen
+            const menuBtn = document.getElementById('menu-btn');
+            const closeMenuBtn = document.getElementById('close-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+
             // --- VIEW LOGIC ---
             switchView = (viewName) => {
                 document.querySelectorAll('.view-section').forEach(el => { el.classList.add('hidden'); el.classList.remove('active'); });
@@ -480,34 +486,53 @@
                 if (target) { target.classList.remove('hidden'); setTimeout(() => target.classList.add('active'), 10); window.scrollTo({ top: 0, behavior: 'smooth' }); }
             };
 
-            const mobileMenu = document.getElementById('mobile-menu');
+            // Menü-Toggling (Behoben und abgesichert)
             toggleMenu = () => {
-                if(mobileMenu.classList.contains('menu-closed')) {
-                    mobileMenu.classList.remove('menu-closed');
-                    mobileMenu.classList.add('menu-open');
-                } else {
-                    mobileMenu.classList.add('menu-closed');
-                    mobileMenu.classList.remove('menu-open');
+                if (mobileMenu) {
+                    if (mobileMenu.classList.contains('menu-closed')) {
+                        mobileMenu.classList.remove('menu-closed');
+                        mobileMenu.classList.add('menu-open');
+                    } else {
+                        mobileMenu.classList.add('menu-closed');
+                        mobileMenu.classList.remove('menu-open');
+                    }
                 }
             };
 
+            // Click-Listener für das Menü registrieren (Hat vorher völlig gefehlt!)
+            if (menuBtn) menuBtn.addEventListener('click', toggleMenu);
+            if (closeMenuBtn) closeMenuBtn.addEventListener('click', toggleMenu);
+
             // --- COOKIE LOGIC ---
             const cookieBanner = document.getElementById('cookie-banner');
-            const checkCookieConsent = () => { if (!localStorage.getItem('cookieConsent')) cookieBanner.classList.remove('hidden'); };
-            acceptCookies = (type) => { localStorage.setItem('cookieConsent', type); cookieBanner.classList.add('hidden'); };
-            openCookieSettings = () => { cookieBanner.classList.remove('hidden'); };
+            const checkCookieConsent = () => { if (cookieBanner && !localStorage.getItem('cookieConsent')) cookieBanner.classList.remove('hidden'); };
+            acceptCookies = (type) => { localStorage.setItem('cookieConsent', type); if(cookieBanner) cookieBanner.classList.add('hidden'); };
+            openCookieSettings = () => { if(cookieBanner) cookieBanner.classList.remove('hidden'); };
             checkCookieConsent();
 
             // --- THEME LOGIC ---
             const applyTheme = (theme) => {
-                if (theme === 'dark') { document.documentElement.classList.add('dark'); bgAnimation.classList.remove('light-mode-bg'); lightIcon.classList.remove('hidden'); darkIcon.classList.add('hidden'); }
-                else { document.documentElement.classList.remove('dark'); bgAnimation.classList.add('light-mode-bg'); lightIcon.classList.add('hidden'); darkIcon.classList.remove('hidden'); }
+                // Absicherung für bgAnimation
+                const bgAnimEl = bgAnimation || document.querySelector('.gradient-bg');
+                if (theme === 'dark') { 
+                    document.documentElement.classList.add('dark'); 
+                    if(bgAnimEl) bgAnimEl.classList.remove('light-mode-bg'); 
+                    if(lightIcon) lightIcon.classList.remove('hidden'); 
+                    if(darkIcon) darkIcon.classList.add('hidden'); 
+                } else { 
+                    document.documentElement.classList.remove('dark'); 
+                    if(bgAnimEl) bgAnimEl.classList.add('light-mode-bg'); 
+                    if(lightIcon) lightIcon.classList.add('hidden'); 
+                    if(darkIcon) darkIcon.classList.remove('hidden'); 
+                }
             };
             const savedTheme = localStorage.getItem('theme') || 'dark'; applyTheme(savedTheme);
-            themeToggleBtn.addEventListener('click', () => { const isDark = document.documentElement.classList.contains('dark'); const newTheme = isDark ? 'light' : 'dark'; localStorage.setItem('theme', newTheme); applyTheme(newTheme); });
+            if(themeToggleBtn) {
+                themeToggleBtn.addEventListener('click', () => { const isDark = document.documentElement.classList.contains('dark'); const newTheme = isDark ? 'light' : 'dark'; localStorage.setItem('theme', newTheme); applyTheme(newTheme); });
+            }
 
-            window.addEventListener('scroll', () => { if (window.scrollY > 400) backToTopBtn.classList.remove('hidden'); else backToTopBtn.classList.add('hidden'); });
-            backToTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+            window.addEventListener('scroll', () => { if (backToTopBtn) { if (window.scrollY > 400) backToTopBtn.classList.remove('hidden'); else backToTopBtn.classList.add('hidden'); } });
+            if(backToTopBtn) backToTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
             // --- PWA ---
             if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('sw.js')); }
@@ -525,13 +550,14 @@
                 updateSongOfTheDay();
             }
 
-            // WICHTIG: Cache Busting String für den Fetch!
             fetch('songs.json')
                 .then(response => { if (!response.ok) throw new Error("Netzwerkfehler"); return response.json(); })
                 .then(data => initializeApp(data))
                 .catch(error => { 
                     console.error('Fehler:', error); 
-                    songListEl.innerHTML = `<li class="p-8 text-center text-red-500 font-bold">Fehler beim Laden der Songs.<br><span class="text-sm font-normal text-slate-500">Stelle sicher, dass die songs.json existiert.</span></li>`; 
+                    if (songListEl) {
+                        songListEl.innerHTML = `<li class="p-8 text-center text-red-500 font-bold">Fehler beim Laden der Songs.<br><span class="text-sm font-normal text-slate-500">Stelle sicher, dass die songs.json existiert.</span></li>`; 
+                    }
                 });
 
             // --- ACTIONS ---
@@ -548,24 +574,28 @@
                 for (let i = 0; i < today.length; i++) hash = today.charCodeAt(i) + ((hash << 5) - hash);
                 const dailySong = songData[Math.abs(hash) % songData.length];
                 
-                document.getElementById('sod-title').textContent = dailySong.title;
-                document.getElementById('sod-artist').textContent = dailySong.artist;
+                const sodTitleEl = document.getElementById('sod-title');
+                const sodArtistEl = document.getElementById('sod-artist');
+                if(sodTitleEl) sodTitleEl.textContent = dailySong.title;
+                if(sodArtistEl) sodArtistEl.textContent = dailySong.artist;
                 
                 const sodTags = document.getElementById('sod-tags');
-                sodTags.innerHTML = '';
-                // Robust tag handling (in case properties are missing)
-                const tags = [];
-                if(dailySong.genre) tags.push(dailySong.genre);
-                if(dailySong.language) tags.push(dailySong.language);
-                if(dailySong.year) tags.push(dailySong.year.toString());
-                
-                tags.forEach(tag => {
-                    const span = document.createElement('span');
-                    span.className = "px-2.5 py-1 bg-amber-100/50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-xs font-bold rounded-md border border-amber-200 dark:border-amber-700/50 shadow-sm";
-                    span.textContent = tag;
-                    sodTags.appendChild(span);
-                });
-                document.getElementById('sod-play-btn').onclick = () => playSong(dailySong.artist, dailySong.title);
+                if(sodTags) {
+                    sodTags.innerHTML = '';
+                    const tags = [];
+                    if(dailySong.genre) tags.push(dailySong.genre);
+                    if(dailySong.language) tags.push(dailySong.language);
+                    if(dailySong.year) tags.push(dailySong.year.toString());
+                    
+                    tags.forEach(tag => {
+                        const span = document.createElement('span');
+                        span.className = "px-2.5 py-1 bg-amber-100/50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-xs font-bold rounded-md border border-amber-200 dark:border-amber-700/50 shadow-sm";
+                        span.textContent = tag;
+                        sodTags.appendChild(span);
+                    });
+                }
+                const sodPlayBtn = document.getElementById('sod-play-btn');
+                if(sodPlayBtn) sodPlayBtn.onclick = () => playSong(dailySong.artist, dailySong.title);
             };
 
             window.toggleFav = (key) => {
@@ -575,15 +605,17 @@
                 filterAndRender();
             };
 
-            showFavoritesBtn.addEventListener('click', () => {
-                showFavoritesOnly = !showFavoritesOnly;
-                showFavoritesBtn.classList.toggle('bg-pink-100');
-                showFavoritesBtn.classList.toggle('dark:bg-pink-900/20');
-                showFavoritesBtn.classList.toggle('text-pink-600');
-                showFavoritesBtn.classList.toggle('border-pink-300');
-                showFavoritesBtn.classList.toggle('dark:border-pink-800/50');
-                filterAndRender();
-            });
+            if(showFavoritesBtn) {
+                showFavoritesBtn.addEventListener('click', () => {
+                    showFavoritesOnly = !showFavoritesOnly;
+                    showFavoritesBtn.classList.toggle('bg-pink-100');
+                    showFavoritesBtn.classList.toggle('dark:bg-pink-900/20');
+                    showFavoritesBtn.classList.toggle('text-pink-600');
+                    showFavoritesBtn.classList.toggle('border-pink-300');
+                    showFavoritesBtn.classList.toggle('dark:border-pink-800/50');
+                    filterAndRender();
+                });
+            }
 
             // --- RENDERING ---
             function getDecade(year) { if(!year) return null; return Math.floor(year / 10) * 10 + 'er'; }
@@ -604,6 +636,7 @@
             }
 
             function renderSongList(songs) {
+                if(!songListEl) return;
                 songListEl.innerHTML = '';
                 if (songs.length === 0) {
                     songListEl.innerHTML = `<li class="flex flex-col items-center justify-center p-12 text-center animate-fade-in"><div class="w-16 h-16 mb-4 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center"><svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div><p class="text-slate-500 dark:text-slate-400 font-medium">Keine Songs gefunden.</p></li>`;
@@ -615,7 +648,7 @@
                     return a.title.localeCompare(b.title);
                 });
 
-                const searchTerm = searchInputEl.value.toLowerCase();
+                const searchTerm = searchInputEl ? searchInputEl.value.toLowerCase() : '';
 
                 sortedSongs.forEach((song, index) => {
                     const songKey = `${song.artist}-${song.title}`;
@@ -660,6 +693,7 @@
             }
 
             function setupFilters(selectEl, items, defaultText) {
+                if(!selectEl) return;
                 while (selectEl.options.length > 1) { selectEl.remove(1); }
                 selectEl.options[0].text = defaultText;
                 items.sort().forEach(item => { const opt = document.createElement('option'); opt.value = item; opt.textContent = item; selectEl.appendChild(opt); });
@@ -676,22 +710,30 @@
                 const ac = artists.reduce((acc, a) => { acc[a] = (acc[a] || 0) + 1; return acc; }, {});
                 const top = Object.entries(ac).sort((a, b) => b[1] - a[1])[0];
                 
-                document.getElementById('total-songs').textContent = totalSongs;
-                document.getElementById('unique-artists').textContent = uniqueArtists.length;
-                document.getElementById('top-artist').textContent = top ? `${top[0]} (${top[1]})` : '-';
-                document.getElementById('footer-song-count').textContent = `${totalSongs} Songs in der Datenbank`;
+                const totalSongsEl = document.getElementById('total-songs');
+                const uniqueArtistsEl = document.getElementById('unique-artists');
+                const topArtistEl = document.getElementById('top-artist');
+                const footerSongCountEl = document.getElementById('footer-song-count');
+
+                if(totalSongsEl) totalSongsEl.textContent = totalSongs;
+                if(uniqueArtistsEl) uniqueArtistsEl.textContent = uniqueArtists.length;
+                if(topArtistEl) topArtistEl.textContent = top ? `${top[0]} (${top[1]})` : '-';
+                if(footerSongCountEl) footerSongCountEl.textContent = `${totalSongs} Songs in der Datenbank`;
                 
                 return { uniqueArtists, uniqueGenres, uniqueLanguages, uniqueDecades };
             }
 
             function filterAndRender() {
-                const st = searchInputEl.value.toLowerCase();
-                const sa = artistFilterEl.value;
-                const sg = genreFilterEl.value;
-                const sl = languageFilterEl.value;
-                const sd = decadeFilterEl.value;
+                const st = searchInputEl ? searchInputEl.value.toLowerCase() : '';
+                const sa = artistFilterEl ? artistFilterEl.value : 'all';
+                const sg = genreFilterEl ? genreFilterEl.value : 'all';
+                const sl = languageFilterEl ? languageFilterEl.value : 'all';
+                const sd = decadeFilterEl ? decadeFilterEl.value : 'all';
                 
-                [artistFilterEl, genreFilterEl, languageFilterEl, decadeFilterEl].forEach(el => el.classList.toggle('filter-active', el.value !== 'all'));
+                if(artistFilterEl) artistFilterEl.classList.toggle('filter-active', sa !== 'all');
+                if(genreFilterEl) genreFilterEl.classList.toggle('filter-active', sg !== 'all');
+                if(languageFilterEl) languageFilterEl.classList.toggle('filter-active', sl !== 'all');
+                if(decadeFilterEl) decadeFilterEl.classList.toggle('filter-active', sd !== 'all');
                 
                 const filtered = songData.filter(s => {
                     const mSearch = s.title.toLowerCase().includes(st) || s.artist.toLowerCase().includes(st);
@@ -708,17 +750,22 @@
             function updateSortButtons() {
                 const a = "bg-slate-900 dark:bg-cyan-500 text-white shadow-md";
                 const i = "bg-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white";
-                if (currentSort === 'title') { sortByTitleBtn.className = `px-5 py-2 text-sm font-bold rounded-xl transition-all duration-300 ${a}`; sortByArtistBtn.className = `px-5 py-2 text-sm font-bold rounded-xl transition-all duration-300 ${i}`; } 
-                else { sortByArtistBtn.className = `px-5 py-2 text-sm font-bold rounded-xl transition-all duration-300 ${a}`; sortByTitleBtn.className = `px-5 py-2 text-sm font-bold rounded-xl transition-all duration-300 ${i}`; }
+                if (currentSort === 'title') { 
+                    if(sortByTitleBtn) sortByTitleBtn.className = `px-5 py-2 text-sm font-bold rounded-xl transition-all duration-300 ${a}`; 
+                    if(sortByArtistBtn) sortByArtistBtn.className = `px-5 py-2 text-sm font-bold rounded-xl transition-all duration-300 ${i}`; 
+                } else { 
+                    if(sortByArtistBtn) sortByArtistBtn.className = `px-5 py-2 text-sm font-bold rounded-xl transition-all duration-300 ${a}`; 
+                    if(sortByTitleBtn) sortByTitleBtn.className = `px-5 py-2 text-sm font-bold rounded-xl transition-all duration-300 ${i}`; 
+                }
             }
 
-            sortByTitleBtn.addEventListener('click', () => { currentSort = 'title'; updateSortButtons(); filterAndRender(); });
-            sortByArtistBtn.addEventListener('click', () => { currentSort = 'artist'; updateSortButtons(); filterAndRender(); });
-            searchInputEl.addEventListener('input', filterAndRender);
-            artistFilterEl.addEventListener('change', filterAndRender);
-            genreFilterEl.addEventListener('change', filterAndRender);
-            languageFilterEl.addEventListener('change', filterAndRender);
-            decadeFilterEl.addEventListener('change', filterAndRender);
+            if(sortByTitleBtn) sortByTitleBtn.addEventListener('click', () => { currentSort = 'title'; updateSortButtons(); filterAndRender(); });
+            if(sortByArtistBtn) sortByArtistBtn.addEventListener('click', () => { currentSort = 'artist'; updateSortButtons(); filterAndRender(); });
+            if(searchInputEl) searchInputEl.addEventListener('input', filterAndRender);
+            if(artistFilterEl) artistFilterEl.addEventListener('change', filterAndRender);
+            if(genreFilterEl) genreFilterEl.addEventListener('change', filterAndRender);
+            if(languageFilterEl) languageFilterEl.addEventListener('change', filterAndRender);
+            if(decadeFilterEl) decadeFilterEl.addEventListener('change', filterAndRender);
 
             // Modal Logic
             const randomSongModal = document.getElementById('random-song-modal');
@@ -727,11 +774,12 @@
             const closeModalBtn = document.getElementById('close-modal-btn');
             
             function showModal() {
-                const st = searchInputEl.value.toLowerCase();
-                const sa = artistFilterEl.value;
-                const sg = genreFilterEl.value;
-                const sl = languageFilterEl.value;
-                const sd = decadeFilterEl.value;
+                if(!randomSongModal) return;
+                const st = searchInputEl ? searchInputEl.value.toLowerCase() : '';
+                const sa = artistFilterEl ? artistFilterEl.value : 'all';
+                const sg = genreFilterEl ? genreFilterEl.value : 'all';
+                const sl = languageFilterEl ? languageFilterEl.value : 'all';
+                const sd = decadeFilterEl ? decadeFilterEl.value : 'all';
                 const songs = songData.filter(s => {
                     return (sa === 'all' || s.artist === sa) && (sg === 'all' || s.genre === sg) && (sl === 'all' || s.language === sl) && (sd === 'all' || getDecade(s.year) === sd) && (s.title.toLowerCase().includes(st) || s.artist.toLowerCase().includes(st));
                 });
@@ -748,20 +796,27 @@
                 randomSongModal.classList.remove('hidden');
                 setTimeout(() => {
                     randomSongModal.classList.remove('opacity-0', 'pointer-events-none');
-                    randomSongModal.querySelector('.glass-panel').classList.remove('scale-95');
-                    randomSongModal.querySelector('.glass-panel').classList.add('scale-100');
+                    const modalPanel = randomSongModal.querySelector('.glass-panel');
+                    if(modalPanel) {
+                        modalPanel.classList.remove('scale-95');
+                        modalPanel.classList.add('scale-100');
+                    }
                 }, 10);
             }
             function hideModal() {
+                if(!randomSongModal) return;
                 randomSongModal.classList.add('opacity-0', 'pointer-events-none');
-                randomSongModal.querySelector('.glass-panel').classList.remove('scale-100');
-                randomSongModal.querySelector('.glass-panel').classList.add('scale-95');
+                const modalPanel = randomSongModal.querySelector('.glass-panel');
+                if(modalPanel) {
+                    modalPanel.classList.remove('scale-100');
+                    modalPanel.classList.add('scale-95');
+                }
                 setTimeout(() => randomSongModal.classList.add('hidden'), 400);
             }
-            randomSongBtn.addEventListener('click', showModal);
-            rerollBtn.addEventListener('click', showModal);
-            closeModalBtn.addEventListener('click', hideModal);
-            randomSongModal.addEventListener('click', (e) => { if(e.target === randomSongModal) hideModal(); });
+            if(randomSongBtn) randomSongBtn.addEventListener('click', showModal);
+            if(rerollBtn) rerollBtn.addEventListener('click', showModal);
+            if(closeModalBtn) closeModalBtn.addEventListener('click', hideModal);
+            if(randomSongModal) randomSongModal.addEventListener('click', (e) => { if(e.target === randomSongModal) hideModal(); });
         });
     </script>
 </body>
