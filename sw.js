@@ -1,10 +1,10 @@
-const CACHE_NAME = 'heitzify-final-v2';
+const CACHE_NAME = 'heitzify-final-v3';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
   'https://cdn.tailwindcss.com',
-  'https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;800&display=swap'
+  'https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&display=swap'
 ];
 
 self.addEventListener('install', (e) => {
