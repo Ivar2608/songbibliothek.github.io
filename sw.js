@@ -1,15 +1,15 @@
-const CACHE_NAME = 'heitzify-v2.0'; // Versions-Upgrade zwingt Handys zum Update!
+const CACHE_NAME = 'heitzify-final-v1';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
   'https://cdn.tailwindcss.com',
-  'https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700&display=swap'
+  'https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;800&display=swap'
 ];
 
 self.addEventListener('install', (e) => {
   self.skipWaiting();
-  e.waitUntil(https://github.com/Ivar2608/songbibliothek.github.io/blob/main/sw.js
+  e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
 });
@@ -25,7 +25,7 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  // WICHTIG: Immer zuerst im Internet nach der neuesten songs.json suchen!
+  // Für die Song-Datenbank IMMER zuerst das Netzwerk fragen, damit neue Songs sofort erscheinen
   if (e.request.url.includes('songs.json')) {
     e.respondWith(
       fetch(e.request).then(response => {
@@ -36,7 +36,7 @@ self.addEventListener('fetch', (e) => {
       }).catch(() => caches.match(e.request))
     );
   } else {
-    // Für Bilder, HTML und CSS: Immer aus dem schnellen Cache laden.
+    // Für alle anderen Dateien den Cache nutzen
     e.respondWith(
       caches.match(e.request).then(response => {
         return response || fetch(e.request);
