@@ -29,10 +29,12 @@ self.addEventListener('fetch', (e) => {
   if (e.request.url.includes('songs.json')) {
     e.respondWith(
       fetch(e.request).then(response => {
-        return caches.open(CACHE_NAME).then(cache => {
-          cache.put(e.request, response.clone());
-          return response;
-        });
+        // Behoben: Nur fehlerfreie Server-Antworten in den Offline-Cache schreiben (verhindert verunreinigte Leercaches)
+        if (response.status === 200) {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(e.request, responseClone));
+        }
+        return response;
       }).catch(() => caches.match(e.request))
     );
   } else {
