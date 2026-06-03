@@ -1,4 +1,4 @@
-const CACHE_NAME = 'heitzify-final-v1';
+const CACHE_NAME = 'heitzify-final-v2';
 const ASSETS = [
   './',
   './index.html',
