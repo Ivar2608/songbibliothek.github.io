@@ -12,7 +12,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <!-- Browser-Tab-Icons & Apple-Touch-Vorbereitung (Taskleiste und Homescreen) -->
-    <link rel="icon" type="image/png" href="logo.png" sizes="32x32">
     <link rel="icon" type="image/png" href="icon.png" sizes="192x192">
     <link rel="apple-touch-icon" href="icon.png">
     
@@ -55,6 +54,7 @@
             color: #1D1D1F;
             overflow-x: hidden;
             transition: background-color 0.5s cubic-bezier(0.16, 1, 0.3, 1), color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            padding-bottom: calc(env(safe-area-inset-bottom) + 2rem);
         }
         
         .dark body { 
@@ -72,6 +72,7 @@
             opacity: 0.04;
             pointer-events: none;
             z-index: -1;
+            will-change: opacity;
         }
         .dark .apple-blur-glow {
             opacity: 0.08;
@@ -109,6 +110,7 @@
             backdrop-filter: blur(20px) saturate(190%);
             -webkit-backdrop-filter: blur(20px) saturate(190%);
             border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            padding-top: env(safe-area-inset-top);
         }
         
         .dark .nav-apple {
@@ -160,6 +162,7 @@
         /* Menü Übergang */
         #mobile-menu {
             transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease-out;
+            padding-top: calc(env(safe-area-inset-top) + 1.5rem);
         }
         .menu-open { transform: translateY(0); opacity: 1; pointer-events: auto; }
         .menu-closed { transform: translateY(-100%); opacity: 0; pointer-events: none; }
@@ -198,14 +201,14 @@
         }
     </style>
 </head>
-<body class="antialiased transition-colors duration-500 min-h-screen flex flex-col pb-safe">
+<body class="antialiased transition-colors duration-500 min-h-screen flex flex-col">
 
     <!-- Ambient Glow Spheres -->
     <div class="apple-blur-glow top-10 left-10 bg-blue-500/10"></div>
     <div class="apple-blur-glow bottom-20 right-10 bg-indigo-500/10"></div>
 
     <!-- BACKDROP MOBILE MENU OVERLAY (iOS style, click to close easily) -->
-    <div id="mobile-menu-overlay" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300"></div>
+    <div id="mobile-menu-overlay" onclick="window.toggleMenu()" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300"></div>
 
     <!-- NAVIGATION BAR -->
     <nav class="fixed top-0 left-0 w-full z-50 nav-apple transition-all duration-300">
@@ -213,39 +216,39 @@
             <div class="flex items-center gap-2.5 cursor-pointer group" onclick="switchView('home')">
                 <!-- NAVBAR LOGO MIT ERWEITERTEM AUTO-FALLBACK -->
                 <div class="relative w-7 h-7 flex-shrink-0">
-                    <img src="logo.png" alt="Logo" class="absolute inset-0 w-full h-full object-contain rounded-lg hidden" id="nav-logo-img" onload="this.classList.remove('hidden'); document.getElementById('nav-logo-fallback').classList.add('hidden')" onerror="this.remove(); document.getElementById('nav-logo-fallback').classList.remove('hidden')">
-                    <div id="nav-logo-fallback" class="w-full h-full bg-black dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-black font-extrabold text-sm shadow-sm transition-transform duration-300 group-hover:scale-105">H</div>
+                    <img src="icon.png" alt="Logo" class="absolute inset-0 w-full h-full object-contain rounded-lg hidden" id="nav-logo-img" onload="this.classList.remove('hidden'); document.getElementById('nav-logo-fallback').classList.add('hidden')" onerror="this.remove(); document.getElementById('nav-logo-fallback').classList.remove('hidden')">
+                    <div id="nav-logo-fallback" class="w-full h-full bg-black dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-black font-extrabold text-sm shadow-sm">H</div>
                 </div>
                 <span class="text-md font-bold tracking-tight text-slate-800 dark:text-white transition-colors duration-300">Heitzify</span>
             </div>
             
             <div class="flex items-center gap-1.5">
                 <!-- Theme Switcher -->
-                <button id="theme-toggle-nav" onclick="window.toggleTheme()" class="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-black dark:hover:text-white transition-all focus:outline-none" title="Farbschema wechseln">
+                <button id="theme-toggle-nav" onclick="window.toggleTheme()" class="p-2.5 rounded-xl text-slate-500 dark:text-slate-400 hover:text-black dark:hover:text-white transition-all focus:outline-none min-w-[44px] min-h-[44px] flex items-center justify-center" title="Farbschema wechseln">
                     <svg id="nav-icon-light" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                     <svg id="nav-icon-dark" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
                 </button>
                 
                 <!-- Menu Button -->
-                <button id="menu-btn" class="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100/50 dark:hover:bg-white/5 transition-colors focus:outline-none" title="Hauptmenü">
+                <button id="menu-btn" onclick="window.toggleMenu()" class="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100/50 dark:hover:bg-white/5 transition-colors focus:outline-none min-w-[44px] min-h-[44px] flex items-center justify-center" title="Hauptmenü">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-16 6h16" /></svg>
                 </button>
             </div>
         </div>
     </nav>
 
-    <!-- MOBILE NAVIGATION DROPDOWN (Clean Top Panel) -->
+    <!-- MOBILE NAVIGATION DROPDOWN -->
     <div id="mobile-menu" class="fixed inset-x-0 top-0 z-[60] bg-white/98 dark:bg-black/98 backdrop-blur-3xl menu-closed border-b border-slate-200 dark:border-white/[0.06] p-6 shadow-2xl flex flex-col gap-6">
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-2.5">
-                <!-- MOBILE MENU LOGO MIT AUTO-FALLBACK -->
+                <!-- MOBILE MENU LOGO -->
                 <div class="relative w-7 h-7 flex-shrink-0">
-                    <img src="logo.png" alt="Logo" class="absolute inset-0 w-full h-full object-contain rounded-lg hidden" id="menu-logo-img" onload="this.classList.remove('hidden'); document.getElementById('menu-logo-fallback').classList.add('hidden')" onerror="this.remove(); document.getElementById('menu-logo-fallback').classList.remove('hidden')">
+                    <img src="icon.png" alt="Logo" class="absolute inset-0 w-full h-full object-contain rounded-lg hidden" id="menu-logo-img" onload="this.classList.remove('hidden'); document.getElementById('menu-logo-fallback').classList.add('hidden')" onerror="this.remove(); document.getElementById('menu-logo-fallback').classList.remove('hidden')">
                     <div id="menu-logo-fallback" class="w-full h-full bg-black dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-black font-extrabold text-sm">H</div>
                 </div>
                 <span class="text-sm font-bold text-slate-800 dark:text-white">Heitzify</span>
             </div>
-            <button id="close-menu-btn" class="p-1.5 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+            <button id="close-menu-btn" onclick="window.toggleMenu()" class="p-1.5 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
         </div>
@@ -275,7 +278,7 @@
         <header class="relative text-center mb-10 flex flex-col items-center">
             <!-- HEADER LOGO MIT AUTO-FALLBACK -->
             <div class="relative w-16 h-16 mb-4 flex-shrink-0 group">
-                <img src="logo.png" alt="Heitzify Logo" class="absolute inset-0 w-full h-full object-contain rounded-2xl hidden shadow-lg" id="header-logo-img" onload="this.classList.remove('hidden'); document.getElementById('header-logo-fallback').classList.add('hidden')" onerror="this.remove(); document.getElementById('header-logo-fallback').classList.remove('hidden')">
+                <img src="icon.png" alt="Heitzify Logo" class="absolute inset-0 w-full h-full object-contain rounded-2xl hidden shadow-lg" id="header-logo-img" onload="this.classList.remove('hidden'); document.getElementById('header-logo-fallback').classList.add('hidden')" onerror="this.remove(); document.getElementById('header-logo-fallback').classList.remove('hidden')">
                 <div id="header-logo-fallback" class="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center text-white dark:text-black font-extrabold text-2xl shadow-md group-hover:scale-105 transition-transform duration-300">H</div>
             </div>
 
@@ -286,7 +289,7 @@
             <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white pb-0.5">
                 Heitzify
             </h1>
-            <p class="text-slate-500 dark:text-slate-400 mt-1.5 text-xs sm:text-sm font-medium max-w-md mx-auto leading-relaxed">
+            <p class="text-slate-500 dark:text-slate-400 mt-1.5 text-xs sm:text-sm font-medium max-w-md mx-auto leading-relaxed px-2">
                 Finde und starte deine Lieblings-Karaokesongs im Handumdrehen.
             </p>
             
@@ -323,7 +326,7 @@
                         </div>
                     </div>
                     
-                    <button id="sod-play-btn" class="w-full sm:w-auto px-4 py-2 bg-black dark:bg-white text-white dark:text-black rounded-xl flex items-center justify-center gap-1.5 transition-all font-bold text-xs">
+                    <button id="sod-play-btn" class="w-full sm:w-auto px-5 py-3 bg-black dark:bg-white text-white dark:text-black rounded-xl flex items-center justify-center gap-1.5 transition-all font-bold text-xs min-h-[44px]">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                         Jetzt singen
                     </button>
@@ -348,7 +351,7 @@
                 <!-- CENTRAL AUDIO DIRECTORY / CONTAINER -->
                 <section class="apple-panel rounded-2xl overflow-hidden shadow-xl flex flex-col">
                     <!-- Clean Search & Filter Control Area -->
-                    <div class="p-5 sm:p-6 border-b border-slate-200 dark:border-white/[0.06] bg-slate-50/20 dark:bg-white/[0.01]">
+                    <div class="p-4 sm:p-6 border-b border-slate-200 dark:border-white/[0.06] bg-slate-50/20 dark:bg-white/[0.01]">
                         <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-5">
                             <div>
                                 <h2 class="text-lg font-bold text-slate-800 dark:text-white tracking-tight">Mediathek</h2>
@@ -357,7 +360,7 @@
                             
                             <!-- Favorites Toggle Pill -->
                             <div class="flex">
-                                <button id="show-favorites-btn" class="px-3.5 py-1.5 rounded-full border border-slate-200 dark:border-white/[0.06] text-slate-500 dark:text-slate-400 hover:text-rose-500 hover:bg-rose-500/5 transition-all flex items-center gap-1.5 text-xs bg-white/50 dark:bg-white/5 font-semibold" title="Favoriten filtern">
+                                <button id="show-favorites-btn" class="px-4 py-2 rounded-full border border-slate-200 dark:border-white/[0.06] text-slate-500 dark:text-slate-400 hover:text-rose-500 hover:bg-rose-500/5 transition-all flex items-center gap-1.5 text-xs bg-white/50 dark:bg-white/5 font-semibold min-h-[44px]" title="Favoriten filtern">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
                                     Favoriten
                                 </button>
@@ -371,27 +374,27 @@
                                 <div class="absolute left-3.5 text-slate-500 dark:text-slate-400 pointer-events-none">
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                                 </div>
-                                <input type="text" id="search-input" placeholder="Titel, Interpret, Genre..." class="w-full pl-10 pr-9 py-2.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/[0.06] rounded-xl focus:ring-2 focus:ring-blue-600/20 focus:border-transparent outline-none transition-all text-slate-800 dark:text-slate-100 placeholder-apple-gray text-xs font-semibold">
-                                <button id="search-clear" class="absolute right-3.5 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hidden" title="Leeren">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                                <input type="text" id="search-input" placeholder="Titel, Interpret, Genre..." class="w-full pl-10 pr-10 py-3 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/[0.06] rounded-xl focus:ring-2 focus:ring-blue-600/20 focus:border-transparent outline-none transition-all text-slate-800 dark:text-slate-100 placeholder-slate-400 text-xs font-semibold min-h-[44px]">
+                                <button id="search-clear" class="absolute right-3.5 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hidden min-w-[44px] min-h-[44px] flex items-center justify-center" title="Leeren">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                                 </button>
                             </div>
                             
                             <!-- iOS Style Select Grid -->
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-                                <select id="artist-filter" class="p-2 bg-white dark:bg-[#1C1C1E] border border-slate-200 dark:border-white/[0.06] rounded-lg text-[11px] font-bold text-slate-700 dark:text-slate-300 outline-none cursor-pointer focus:border-blue-600"></select>
-                                <select id="genre-filter" class="p-2 bg-white dark:bg-[#1C1C1E] border border-slate-200 dark:border-white/[0.06] rounded-lg text-[11px] font-bold text-slate-700 dark:text-slate-300 outline-none cursor-pointer focus:border-blue-600"></select>
-                                <select id="language-filter" class="p-2 bg-white dark:bg-[#1C1C1E] border border-slate-200 dark:border-white/[0.06] rounded-lg text-[11px] font-bold text-slate-700 dark:text-slate-300 outline-none cursor-pointer focus:border-blue-600"></select>
-                                <select id="decade-filter" class="p-2 bg-white dark:bg-[#1C1C1E] border border-slate-200 dark:border-white/[0.06] rounded-lg text-[11px] font-bold text-slate-700 dark:text-slate-300 outline-none cursor-pointer focus:border-blue-600"></select>
+                            <div class="grid grid-cols-2 lg:grid-cols-4 gap-2">
+                                <select id="artist-filter" class="p-2.5 bg-white dark:bg-[#1C1C1E] border border-slate-200 dark:border-white/[0.06] rounded-lg text-[11px] font-bold text-slate-700 dark:text-slate-300 outline-none cursor-pointer focus:border-blue-600 min-h-[44px]"></select>
+                                <select id="genre-filter" class="p-2.5 bg-white dark:bg-[#1C1C1E] border border-slate-200 dark:border-white/[0.06] rounded-lg text-[11px] font-bold text-slate-700 dark:text-slate-300 outline-none cursor-pointer focus:border-blue-600 min-h-[44px]"></select>
+                                <select id="language-filter" class="p-2.5 bg-white dark:bg-[#1C1C1E] border border-slate-200 dark:border-white/[0.06] rounded-lg text-[11px] font-bold text-slate-700 dark:text-slate-300 outline-none cursor-pointer focus:border-blue-600 min-h-[44px]"></select>
+                                <select id="decade-filter" class="p-2.5 bg-white dark:bg-[#1C1C1E] border border-slate-200 dark:border-white/[0.06] rounded-lg text-[11px] font-bold text-slate-700 dark:text-slate-300 outline-none cursor-pointer focus:border-blue-600 min-h-[44px]"></select>
                             </div>
 
                             <!-- Sort Actions / Segmented Control layout -->
                             <div class="flex justify-between items-center pt-1.5">
                                 <div class="flex bg-slate-100 dark:bg-white/5 p-0.5 rounded-lg gap-0.5 border border-slate-200 dark:border-white/[0.06]">
-                                    <button id="sort-by-title" class="segmented-btn px-3 py-1 text-[11px] font-bold rounded-md">Titel</button>
-                                    <button id="sort-by-artist" class="segmented-btn px-3 py-1 text-[11px] font-bold rounded-md">Interpret</button>
+                                    <button id="sort-by-title" class="segmented-btn px-4 py-1.5 text-[11px] font-bold rounded-md">Titel</button>
+                                    <button id="sort-by-artist" class="segmented-btn px-4 py-1.5 text-[11px] font-bold rounded-md">Interpret</button>
                                 </div>
-                                <button id="random-song-btn" class="px-3.5 py-1.5 bg-black dark:bg-white text-white dark:text-black rounded-lg font-bold flex items-center gap-1 text-[11px] hover:opacity-90 active:scale-95 transition-all">
+                                <button id="random-song-btn" class="px-4 py-2 bg-black dark:bg-white text-white dark:text-black rounded-lg font-bold flex items-center gap-1.5 text-[11px] hover:opacity-90 active:scale-95 transition-all min-h-[36px]">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M15.33 3.52a.75.75 0 01.428 1.316l-3.033 3.033a1.5 1.5 0 01-2.122 0L7.57 4.836A.75.75 0 018.63 3.77l1.745 1.745a.25.25 0 00.354 0L13.5 2.744a.75.75 0 011.33.428L12.5 5.5h2.75a.75.75 0 010 1.5H12.5l2.33 2.33a.75.75 0 11-1.06 1.06L10.738 7.357a1.5 1.5 0 010-2.122L13.77 2.2a.75.75 0 011.56.54v2.78zm-10 4.15a.75.75 0 11-1.06-1.06L7.303 3.577a1.5 1.5 0 012.122 0l3.033 3.033a.75.75 0 11-1.06 1.06L8.36 4.637a.25.25 0 00-.354 0L5.262 7.382z" clip-rule="evenodd" /></svg>
                                     Zufall
                                 </button>
@@ -406,7 +409,7 @@
                                 <li class="p-5 flex items-center justify-between animate-pulse">
                                     <div class="flex items-center min-w-0 flex-grow pr-2">
                                         <div class="w-5 h-4 bg-slate-300 dark:bg-slate-800 rounded mr-3.5"></div>
-                                        <div class="w-10 h-10 bg-slate-300 dark:bg-slate-800 rounded-lg mr-3"></div>
+                                        <div class="w-10 h-10 bg-slate-300 dark:bg-slate-800 rounded-lg mr-3 animate-pulse shimmer"></div>
                                         <div class="space-y-2 min-w-0 flex-grow max-w-xs">
                                             <div class="h-3 bg-slate-300 dark:bg-slate-800 rounded w-3/4 shimmer"></div>
                                             <div class="h-2.5 bg-slate-200 dark:bg-slate-800/60 rounded w-1/2 shimmer"></div>
@@ -417,21 +420,10 @@
                                 <li class="p-5 flex items-center justify-between animate-pulse" style="animation-delay: 150ms;">
                                     <div class="flex items-center min-w-0 flex-grow pr-2">
                                         <div class="w-5 h-4 bg-slate-300 dark:bg-slate-800 rounded mr-3.5"></div>
-                                        <div class="w-10 h-10 bg-slate-300 dark:bg-slate-800 rounded-lg mr-3"></div>
+                                        <div class="w-10 h-10 bg-slate-300 dark:bg-slate-800 rounded-lg mr-3 animate-pulse shimmer"></div>
                                         <div class="space-y-2 min-w-0 flex-grow max-w-xs">
                                             <div class="h-3 bg-slate-300 dark:bg-slate-800 rounded w-2/3 shimmer"></div>
                                             <div class="h-2.5 bg-slate-200 dark:bg-slate-800/60 rounded w-1/3 shimmer"></div>
-                                        </div>
-                                    </div>
-                                    <div class="w-16 h-8 bg-slate-200 dark:bg-slate-800 rounded-lg"></div>
-                                </li>
-                                <li class="p-5 flex items-center justify-between animate-pulse" style="animation-delay: 300ms;">
-                                    <div class="flex items-center min-w-0 flex-grow pr-2">
-                                        <div class="w-5 h-4 bg-slate-300 dark:bg-slate-800 rounded mr-3.5"></div>
-                                        <div class="w-10 h-10 bg-slate-300 dark:bg-slate-800 rounded-lg mr-3"></div>
-                                        <div class="space-y-2 min-w-0 flex-grow max-w-xs">
-                                            <div class="h-3 bg-slate-300 dark:bg-slate-800 rounded w-4/5 shimmer"></div>
-                                            <div class="h-2.5 bg-slate-200 dark:bg-slate-800/60 rounded w-1/2 shimmer"></div>
                                         </div>
                                     </div>
                                     <div class="w-16 h-8 bg-slate-200 dark:bg-slate-800 rounded-lg"></div>
@@ -534,8 +526,8 @@
         <footer class="text-center mt-auto py-8 border-t border-slate-200 dark:border-white/[0.06] relative z-10 flex flex-col items-center justify-center">
             <!-- FOOTER LOGO MIT AUTO-FALLBACK -->
             <div class="relative w-6 h-6 mb-2 flex-shrink-0 group">
-                <img src="logo.png" alt="Heitzify Logo" class="absolute inset-0 w-full h-full object-contain rounded-md hidden" id="footer-logo-img" onload="this.classList.remove('hidden'); document.getElementById('footer-logo-fallback').classList.add('hidden')" onerror="this.remove(); document.getElementById('footer-logo-fallback').classList.remove('hidden')">
-                <div id="footer-logo-fallback" class="w-6 h-6 bg-black dark:bg-white rounded-md flex items-center justify-center text-white dark:text-black font-black text-[10px] shadow-sm transition-transform group-hover:scale-105">H</div>
+                <img src="icon.png" alt="Heitzify Logo" class="absolute inset-0 w-full h-full object-contain rounded-md hidden" id="footer-logo-img" onload="this.classList.remove('hidden'); document.getElementById('footer-logo-fallback').classList.add('hidden')" onerror="this.remove(); document.getElementById('footer-logo-fallback').classList.remove('hidden')">
+                <div id="footer-logo-fallback" class="w-6 h-6 bg-black dark:bg-white rounded-md flex items-center justify-center text-white dark:text-black font-black text-[10px] shadow-sm">H</div>
             </div>
 
             <p class="text-xs font-bold text-slate-800 dark:text-slate-200 tracking-tight">Heitzify Karaoke</p>
@@ -554,7 +546,7 @@
     </div>
     
     <!-- BACK TO TOP BUTTON -->
-    <button id="back-to-top" class="hidden fixed bottom-6 right-6 bg-black dark:bg-white text-white dark:text-black p-2.5 rounded-lg shadow-lg hover:-translate-y-0.5 transition-all z-40 focus:outline-none border border-slate-200 dark:border-white/[0.06]">
+    <button id="back-to-top" class="hidden fixed bottom-6 right-6 bg-black dark:bg-white text-white dark:text-black p-2.5 rounded-lg shadow-lg hover:-translate-y-0.5 transition-all z-40 focus:outline-none border border-slate-200 dark:border-white/[0.06] min-w-[44px] min-h-[44px] flex items-center justify-center">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" /></svg>
     </button>
     
@@ -566,7 +558,7 @@
                 <p>Diese App nutzt LocalStorage, um deine Favoritenliste und Farbschemata zu sichern. Es findet kein Datentransfer statt.</p>
             </div>
             <div class="flex justify-end">
-                <button onclick="acceptCookies('all')" class="px-3 py-1.5 text-[10px] font-bold text-white dark:text-black bg-black dark:bg-white rounded-lg transition-all active:scale-95">Verstanden</button>
+                <button onclick="acceptCookies('all')" class="px-3 py-1.5 text-[10px] font-bold text-white dark:text-black bg-black dark:bg-white rounded-lg transition-all active:scale-95 min-h-[36px]">Verstanden</button>
             </div>
         </div>
     </div>
@@ -581,7 +573,7 @@
                 
                 <div>
                     <h3 class="text-sm font-bold text-slate-800 dark:text-white tracking-tight">Dein Zufallsmix</h3>
-                    <p class="text-[8px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest mt-0.5">Finde deinen Hit</p>
+                    <p class="text-[8px] text-apple-gray font-bold uppercase tracking-widest mt-0.5">Finde deinen Hit</p>
                 </div>
                 
                 <div class="p-3 bg-slate-50 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/[0.06]">
@@ -590,8 +582,8 @@
                 </div>
                 
                 <div class="flex gap-2 justify-center">
-                    <button id="close-modal-btn" class="px-3.5 py-2 bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 rounded-lg font-bold text-[10px] transition-all">Schließen</button>
-                    <button id="reroll-btn" class="px-3.5 py-2 bg-black dark:bg-white text-white dark:text-black rounded-lg font-bold text-[10px] transition-all">Neuer Song</button>
+                    <button id="close-modal-btn" class="px-3.5 py-2 bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 rounded-lg font-bold text-[10px] transition-all min-h-[36px]">Schließen</button>
+                    <button id="reroll-btn" class="px-3.5 py-2 bg-black dark:bg-white text-white dark:text-black rounded-lg font-bold text-[10px] transition-all min-h-[36px]">Neuer Song</button>
                 </div>
             </div>
         </div>
@@ -683,6 +675,7 @@
         let favorites = JSON.parse(localStorage.getItem('heitzify_favorites')) || [];
         let currentSort = 'title';
         let showFavoritesOnly = false;
+        let animationFrameId = null; // Zur Steuerung des Hintergrund-Batching
 
         // Generative Album Cover Art (deterministischer Duotone-Look)
         function generateCoverSVG(artist, title) {
@@ -745,19 +738,11 @@
             const sortByTitleBtn = document.getElementById('sort-by-title');
             const sortByArtistBtn = document.getElementById('sort-by-artist');
             const showFavoritesBtn = document.getElementById('show-favorites-btn');
-            const mobileOverlay = document.getElementById('mobile-menu-overlay');
-
-            const menuBtn = document.getElementById('menu-btn');
-            const closeMenuBtn = document.getElementById('close-menu-btn');
 
             // --- REGEX SECURE PARSER ---
             function escapeRegExp(string) {
                 return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             }
-
-            if (menuBtn) menuBtn.addEventListener('click', window.toggleMenu);
-            if (closeMenuBtn) closeMenuBtn.addEventListener('click', window.toggleMenu);
-            if (mobileOverlay) mobileOverlay.addEventListener('click', window.toggleMenu);
 
             // Theme sofort aufrufen
             const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -825,6 +810,12 @@
                     }
                 });
 
+            // Play Song Action
+            window.playSong = (artist, title) => {
+                const query = encodeURIComponent(`${artist} ${title} Karaoke`);
+                window.open(`https://www.youtube.com/results?search_query=${query}`, '_blank');
+            };
+
             const updateSongOfTheDay = () => {
                 if (!songData.length) return;
                 const today = new Date().toDateString(); 
@@ -878,7 +869,7 @@
                 });
             }
 
-            // --- ULTRA SMOOTH RENDERING (Single Reflow & Safe Listeners) ---
+            // --- ULTRA SMOOTH RENDERING (Progressive Batch Loading & Zero Layout Shift) ---
             function highlightMatch(text, term) {
                 if (!term) return text;
                 const safeTerm = escapeRegExp(term);
@@ -886,11 +877,19 @@
                 return text.toString().replace(regex, '<span class="search-match">$1</span>');
             }
 
-            function renderSongList(songs) {
+            // Rendert Songs stückweise (Batches), um Hauptthread-Lag zu verhindern
+            function renderSongListIncremental(sortedSongs, searchTerm) {
                 if(!songListEl) return;
+                
+                // Eventuelle vorherige Batch-Operationen stoppen
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                    animationFrameId = null;
+                }
+
                 songListEl.innerHTML = '';
                 
-                if (songs.length === 0) {
+                if (sortedSongs.length === 0) {
                     songListEl.innerHTML = `
                         <li class="flex flex-col items-center justify-center py-16 text-center animate-fade-in">
                             <p class="text-xs text-slate-500 dark:text-slate-400 font-bold">Keine Songs gefunden</p>
@@ -899,78 +898,84 @@
                     return;
                 }
 
-                const sortedSongs = [...songs].sort((a, b) => {
-                    if (currentSort === 'artist') { 
-                        const ac = a.artist.localeCompare(b.artist); 
-                        if (ac !== 0) return ac; 
-                    }
-                    return a.title.localeCompare(b.title);
-                });
+                const BATCH_SIZE = 40; // Sofortige Treffer-Anzahl
+                let currentIndex = 0;
 
-                const searchTerm = searchInputEl ? searchInputEl.value.toLowerCase() : '';
-                const fragment = document.createDocumentFragment();
+                function renderNextBatch() {
+                    const fragment = document.createDocumentFragment();
+                    const limit = Math.min(currentIndex + BATCH_SIZE, sortedSongs.length);
 
-                sortedSongs.forEach((song, index) => {
-                    const songKey = `${song.artist}-${song.title}`;
-                    const isFav = favorites.includes(songKey);
-                    const li = document.createElement('li');
-                    
-                    li.className = 'flex items-center justify-between p-3 sm:p-4 hover:bg-slate-100/40 dark:hover:bg-white/[0.02] transition-colors duration-150 group relative';
-                    
-                    const displayTitle = highlightMatch(song.title, searchTerm);
-                    const displayArtist = highlightMatch(song.artist, searchTerm);
-                    
-                    const heartClass = isFav ? "text-rose-500 fill-rose-500" : "text-slate-300 dark:text-slate-600 hover:text-rose-500";
-                    const dynamicCover = generateCoverSVG(song.artist, song.title);
-                    
-                    const tags = [];
-                    if(song.genre) tags.push(song.genre);
-                    if(song.language) tags.push(song.language);
-                    if(song.year) tags.push(song.year.toString());
-
-                    const tagsHtml = tags.map(tag => `<span class="px-1.5 py-0.5 text-[8px] font-extrabold tracking-wide uppercase rounded bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400">${tag}</span>`).join('');
-
-                    // Klick-Listener programmatisch binden für 100%ige Sicherheit gegen Sonderzeichen
-                    li.innerHTML = `
-                        <div class="flex items-center min-w-0 flex-grow pr-2">
-                            <span class="text-slate-400/50 dark:text-slate-600 font-mono text-[10px] w-5 text-right mr-3.5 font-bold">${index + 1}</span>
-                            
-                            <!-- Apple-style Album Art with Noise Overlay -->
-                            <div class="cover-grain w-10 h-10 flex-shrink-0 mr-3 rounded-lg overflow-hidden shadow-sm">
-                                <img src="${dynamicCover}" alt="Art Cover" class="w-full h-full object-cover">
-                            </div>
-                            
-                            <div class="min-w-0">
-                                <p class="font-extrabold text-slate-800 dark:text-slate-100 text-xs sm:text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">${displayTitle}</p>
-                                <p class="text-[10px] text-slate-500 dark:text-slate-400 font-semibold mt-0.5 truncate">${displayArtist}</p>
-                                <div class="flex flex-wrap gap-1 mt-1">${tagsHtml}</div>
-                            </div>
-                        </div>
+                    for (let i = currentIndex; i < limit; i++) {
+                        const song = sortedSongs[i];
+                        const songKey = `${song.artist}-${song.title}`;
+                        const isFav = favorites.includes(songKey);
+                        const li = document.createElement('li');
                         
-                        <div class="flex items-center gap-1 flex-shrink-0">
-                             <button class="play-btn-trigger p-2 rounded-lg text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-all" title="YouTube Suche">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                             </button>
-                             <button class="fav-btn-trigger p-2 rounded-lg transition-all" title="Favorit">
-                                <svg class="w-4 h-4 ${heartClass}" fill="${isFav ? 'currentColor' : 'none'}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
-                             </button>
-                        </div>
-                    `;
+                        // Hardwarebeschleunigung triggern
+                        li.className = 'flex items-center justify-between p-3.5 sm:p-4 hover:bg-slate-100/40 dark:hover:bg-white/[0.02] transition-colors duration-150 group relative will-change-transform';
+                        
+                        const displayTitle = highlightMatch(song.title, searchTerm);
+                        const displayArtist = highlightMatch(song.artist, searchTerm);
+                        
+                        const heartClass = isFav ? "text-rose-500 fill-rose-500" : "text-slate-300 dark:text-slate-600 hover:text-rose-500";
+                        const dynamicCover = generateCoverSVG(song.artist, song.title);
+                        
+                        const tags = [];
+                        if(song.genre) tags.push(song.genre);
+                        if(song.language) tags.push(song.language);
+                        if(song.year) tags.push(song.year.toString());
 
-                    li.querySelector('.play-btn-trigger').addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        window.playSong(song.artist, song.title);
-                    });
-                    
-                    li.querySelector('.fav-btn-trigger').addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        window.toggleFav(songKey);
-                    });
+                        const tagsHtml = tags.map(tag => `<span class="px-1.5 py-0.5 text-[8px] font-extrabold tracking-wide uppercase rounded bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400">${tag}</span>`).join('');
 
-                    fragment.appendChild(li);
-                });
-                
-                songListEl.appendChild(fragment);
+                        li.innerHTML = `
+                            <div class="flex items-center min-w-0 flex-grow pr-2">
+                                <span class="text-slate-400/50 dark:text-slate-600 font-mono text-[10px] w-5 text-right mr-3.5 font-bold">${i + 1}</span>
+                                
+                                <!-- Apple-style Album Art with Noise Overlay -->
+                                <div class="cover-grain w-10 h-10 flex-shrink-0 mr-3 rounded-lg overflow-hidden shadow-sm bg-slate-200/50 dark:bg-white/5 aspect-square relative">
+                                    <img src="${dynamicCover}" alt="Art Cover" class="absolute inset-0 w-full h-full object-cover rounded-lg" loading="lazy">
+                                </div>
+                                
+                                <div class="min-w-0">
+                                    <p class="font-extrabold text-slate-800 dark:text-slate-100 text-xs sm:text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">${displayTitle}</p>
+                                    <p class="text-[10px] text-slate-500 dark:text-slate-400 font-semibold mt-0.5 truncate">${displayArtist}</p>
+                                    <div class="flex flex-wrap gap-1 mt-1">${tagsHtml}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-1 flex-shrink-0">
+                                 <button class="play-btn-trigger p-2 rounded-lg text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-all min-w-[44px] min-h-[44px] flex items-center justify-center" title="YouTube Suche">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                 </button>
+                                 <button class="fav-btn-trigger p-2 rounded-lg transition-all min-w-[44px] min-h-[44px] flex items-center justify-center" title="Favorit">
+                                    <svg class="w-4 h-4 ${heartClass}" fill="${isFav ? 'currentColor' : 'none'}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+                                 </button>
+                            </div>
+                        `;
+
+                        li.querySelector('.play-btn-trigger').addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            window.playSong(song.artist, song.title);
+                        });
+                        
+                        li.querySelector('.fav-btn-trigger').addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            window.toggleFav(songKey);
+                        });
+
+                        fragment.appendChild(li);
+                    }
+
+                    songListEl.appendChild(fragment);
+                    currentIndex = limit;
+
+                    if (currentIndex < sortedSongs.length) {
+                        // Nächsten Batch im nächsten Frame zeichnen
+                        animationFrameId = requestAnimationFrame(renderNextBatch);
+                    }
+                }
+
+                renderNextBatch();
             }
 
             function setupFilters(selectEl, items, defaultText) {
@@ -1047,7 +1052,7 @@
                     const mFav = showFavoritesOnly ? favorites.includes(`${s.artist}-${s.title}`) : true;
                     return mSearch && mArtist && mGenre && mLang && mDec && mFav;
                 });
-                renderSongList(filtered);
+                renderSongListIncremental(filtered, st);
             }
             
             if (searchClearBtn) {
@@ -1062,7 +1067,7 @@
 
             function updateSortButtons() {
                 const active = "bg-white dark:bg-[#323236] text-slate-800 dark:text-white shadow-sm font-bold";
-                const inactive = "bg-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white font-medium";
+                const inactive = "bg-transparent text-apple-gray hover:text-slate-800 dark:hover:text-white font-medium";
                 if (currentSort === 'title') { 
                     if(sortByTitleBtn) sortByTitleBtn.className = `segmented-btn px-3 py-1 text-[11px] rounded-md transition-all ${active}`; 
                     if(sortByArtistBtn) sortByArtistBtn.className = `segmented-btn px-3 py-1 text-[11px] rounded-md transition-all ${inactive}`; 
