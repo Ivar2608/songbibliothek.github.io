@@ -1,10 +1,12 @@
-const CACHE_NAME = 'heitzify-final-v3';
+const CACHE_NAME = 'heitzify-premium-v10';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
+  './logo.png',
+  './icon.png',
   'https://cdn.tailwindcss.com',
-  'https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&display=swap'
+  'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap'
 ];
 
 self.addEventListener('install', (e) => {
@@ -25,20 +27,20 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  // Für die Song-Datenbank IMMER zuerst das Netzwerk fragen, damit neue Songs sofort erscheinen
+  // songs.json soll direkt vom Netz geladen werden, falls online, ansonsten Offline-Cache
   if (e.request.url.includes('songs.json')) {
     e.respondWith(
       fetch(e.request).then(response => {
-        // Behoben: Nur fehlerfreie Server-Antworten in den Offline-Cache schreiben (verhindert verunreinigte Leercaches)
         if (response.status === 200) {
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(e.request, responseClone));
+          return caches.open(CACHE_NAME).then(cache => {
+            cache.put(e.request, response.clone());
+            return response;
+          });
         }
         return response;
       }).catch(() => caches.match(e.request))
     );
   } else {
-    // Für alle anderen Dateien den Cache nutzen
     e.respondWith(
       caches.match(e.request).then(response => {
         return response || fetch(e.request);
