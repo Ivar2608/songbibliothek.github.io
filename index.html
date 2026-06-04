@@ -12,8 +12,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <!-- Browser-Tab-Icons & Apple-Touch-Vorbereitung (Taskleiste und Homescreen) -->
-    <link class="brand-logo" rel="icon" type="image/png" href="icon.png" sizes="192x192">
-    <link class="brand-logo" rel="apple-touch-icon" href="icon.png">
+    <link rel="icon" type="image/png" href="icon.png" sizes="192x192">
+    <link rel="apple-touch-icon" href="icon.png">
     
     <!-- FOUC FIX: Verhindert weißes Flackern beim Laden -->
     <script>
@@ -436,9 +436,9 @@
                                 <div class="absolute left-3.5 text-slate-500 dark:text-slate-400 pointer-events-none">
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                                 </div>
-                                <input type="text" id="search-input" placeholder="Titel, Interpret, Genre..." class="w-full pl-10 pr-10 py-3 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/[0.06] rounded-xl focus:ring-2 focus:ring-blue-600/20 focus:border-transparent outline-none transition-all text-slate-800 dark:text-slate-100 placeholder-slate-400 text-xs font-semibold min-h-[44px]">
+                                <input type="text" id="search-input" placeholder="Titel, Interpret, Genre..." class="w-full pl-10 pr-10 py-2.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/[0.06] rounded-xl focus:ring-2 focus:ring-blue-600/20 focus:border-transparent outline-none transition-all text-slate-800 dark:text-slate-100 placeholder-slate-400 text-xs font-semibold min-h-[44px]">
                                 <button id="search-clear" class="absolute right-3.5 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hidden min-w-[44px] min-h-[44px] flex items-center justify-center" title="Leeren">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                                 </button>
                             </div>
                             
@@ -457,7 +457,7 @@
                                     <button id="sort-by-artist" class="segmented-btn px-4 py-1.5 text-[11px] font-bold rounded-md">Interpret</button>
                                 </div>
                                 <button id="random-song-btn" class="px-4 py-2 bg-black dark:bg-white text-white dark:text-black rounded-lg font-bold flex items-center gap-1.5 text-[11px] hover:opacity-90 active:scale-95 transition-all min-h-[36px]">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M15.33 3.52a.75.75 0 01.428 1.316l-3.033 3.033a1.5 1.5 0 01-2.122 0L7.57 4.836A.75.75 0 018.63 3.77l1.745 1.745a.25.25 0 00.354 0L13.5 2.744a.75.75 0 011.33.428L12.5 5.5h2.75a.75.75 0 010 1.5H12.5l2.33a.75.75 0 11-1.06 1.06L10.738 7.357a1.5 1.5 0 010-2.122L13.77 2.2a.75.75 0 011.56.54v2.78zm-10 4.15a.75.75 0 11-1.06-1.06L7.303 3.577a1.5 1.5 0 012.122 0l3.033 3.033a.75.75 0 11-1.06 1.06L8.36 4.637a.25.25 0 00-.354 0L5.262 7.382z" clip-rule="evenodd" /></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M15.33 3.52a.75.75 0 01.428 1.316l-3.033 3.033a1.5 1.5 0 01-2.122 0L7.57 4.836A.75.75 0 018.63 3.77l1.745 1.745a.25.25 0 00.354 0L13.5 2.744a.75.75 0 011.33.428L12.5 5.5h2.75a.75.75 0 010 1.5H12.5l2.33 2.33a.75.75 0 11-1.06 1.06L10.738 7.357a1.5 1.5 0 010-2.122L13.77 2.2a.75.75 0 011.56.54v2.78zm-10 4.15a.75.75 0 11-1.06-1.06L7.303 3.577a1.5 1.5 0 012.122 0l3.033 3.033a.75.75 0 11-1.06 1.06L8.36 4.637a.25.25 0 00-.354 0L5.262 7.382z" clip-rule="evenodd" /></svg>
                                     Zufall
                                 </button>
                             </div>
@@ -511,7 +511,7 @@
             <!-- DOWNLOADS VIEW -->
             <div id="downloads-view" class="view-section hidden">
                 <div class="apple-panel p-6 sm:p-8 rounded-2xl max-w-2xl mx-auto space-y-5">
-                    <h2 class="text-xl font-bold text-slate-800 dark:text-white pb-2.5 border-b border-apple-borderLight dark:border-apple-borderDark">Verfügbare Pakete</h2>
+                    <h2 class="text-xl font-bold text-slate-800 dark:text-white pb-2.5 border-b border-slate-200 dark:border-white/[0.06]">Verfügbare Pakete</h2>
                     
                     <div class="p-4 bg-red-500/5 border border-red-500/10 rounded-xl flex gap-3.5 items-start">
                          <div class="w-6 h-6 rounded-full bg-red-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -529,20 +529,20 @@
                     <p class="text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest text-[8px]">Download-Zentren</p>
                     
                     <div class="space-y-2.5">
-                        <div class="bg-slate-50/50 dark:bg-white/5 p-4 rounded-xl border border-apple-borderLight dark:border-apple-borderDark flex justify-between items-center opacity-50 grayscale">
+                        <div class="bg-slate-50/50 dark:bg-white/5 p-4 rounded-xl border border-slate-200 dark:border-white/[0.06] flex justify-between items-center opacity-50 grayscale">
                             <div>
                                 <h3 class="font-bold text-xs text-slate-800 dark:text-slate-200">Heitzify UltraStar Paket</h3>
-                                <p class="text-[10px] text-apple-gray mt-0.5">Komplettes Softwarepaket</p>
+                                <p class="text-[10px] text-slate-500 mt-0.5">Komplettes Softwarepaket</p>
                             </div>
-                            <button class="px-3 py-1.5 bg-slate-200 dark:bg-white/10 text-apple-gray rounded-lg font-bold text-[10px] cursor-not-allowed" disabled>Inaktiv</button>
+                            <button class="px-3 py-1.5 bg-slate-200 dark:bg-white/10 text-slate-500 rounded-lg font-bold text-[10px] cursor-not-allowed" disabled>Inaktiv</button>
                         </div>
 
-                        <div class="bg-slate-50/50 dark:bg-white/5 p-4 rounded-xl border border-apple-borderLight dark:border-apple-borderDark flex justify-between items-center opacity-50 grayscale">
+                        <div class="bg-slate-50/50 dark:bg-white/5 p-4 rounded-xl border border-slate-200 dark:border-white/[0.06] flex justify-between items-center opacity-50 grayscale">
                             <div>
                                 <h3 class="font-bold text-xs text-slate-800 dark:text-slate-200">Songdatenbank Update</h3>
-                                <p class="text-[10px] text-apple-gray mt-0.5">Ausschließlich neue Musikdateien</p>
+                                <p class="text-[10px] text-slate-500 mt-0.5">Ausschließlich neue Musikdateien</p>
                             </div>
-                            <button class="px-3 py-1.5 bg-slate-200 dark:bg-white/10 text-apple-gray rounded-lg font-bold text-[10px] cursor-not-allowed" disabled>Inaktiv</button>
+                            <button class="px-3 py-1.5 bg-slate-200 dark:bg-white/10 text-slate-500 rounded-lg font-bold text-[10px] cursor-not-allowed" disabled>Inaktiv</button>
                         </div>
                     </div>
                 </div>
@@ -551,7 +551,7 @@
             <!-- IMPRESSUM VIEW -->
             <div id="impressum-view" class="view-section hidden">
                 <div class="apple-panel p-6 sm:p-8 rounded-2xl max-w-2xl mx-auto space-y-5">
-                    <h2 class="text-xl font-bold text-slate-800 dark:text-white pb-2.5 border-b border-apple-borderLight dark:border-apple-borderDark">Impressum</h2>
+                    <h2 class="text-xl font-bold text-slate-800 dark:text-white pb-2.5 border-b border-slate-200 dark:border-white/[0.06]">Impressum</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
                         <div>
                             <p class="font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-[9px] mb-0.5">Verantwortlich nach § 5 TMG</p>
@@ -559,7 +559,7 @@
                         </div>
                         <div>
                             <p class="font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-[9px] mb-0.5">Direkter Draht</p>
-                            <a href="mailto:dennis.heitz1@gmail.com" class="text-apple-blue hover:opacity-80 font-bold transition-opacity">dennis.heitz1@gmail.com</a>
+                            <a href="mailto:dennis.heitz1@gmail.com" class="text-blue-600 dark:text-blue-400 hover:opacity-80 font-bold transition-opacity">dennis.heitz1@gmail.com</a>
                         </div>
                     </div>
                 </div>
@@ -568,14 +568,14 @@
             <!-- DATENSCHUTZ VIEW -->
             <div id="datenschutz-view" class="view-section hidden">
                 <div class="apple-panel p-6 sm:p-8 rounded-2xl max-w-2xl mx-auto space-y-4">
-                    <h2 class="text-xl font-bold text-slate-800 dark:text-white pb-2.5 border-b border-apple-borderLight dark:border-apple-borderDark">Datenschutzerklärung</h2>
+                    <h2 class="text-xl font-bold text-slate-800 dark:text-white pb-2.5 border-b border-slate-200 dark:border-white/[0.06]">Datenschutzerklärung</h2>
                     <div class="space-y-3.5 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                        <div class="p-3.5 bg-slate-50/50 dark:bg-white/5 rounded-xl border border-apple-borderLight dark:border-apple-borderDark">
+                        <div class="p-3.5 bg-slate-50/50 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/[0.06]">
                             <h3 class="font-bold text-slate-800 dark:text-slate-100 mb-0.5">1. Webserver Logs</h3>
                             <p>Die Anwendung wird über <strong>GitHub Pages</strong> bereitgestellt. Bei Aufruf erfasst GitHub automatisch Zugriffsinformationen (z. B. Ihre IP-Adresse) aus Sicherheitsgründen.</p>
                         </div>
 
-                        <div class="p-3.5 bg-slate-50/50 dark:bg-white/5 rounded-xl border border-apple-borderLight dark:border-apple-borderDark">
+                        <div class="p-3.5 bg-slate-50/50 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/[0.06]">
                             <h3 class="font-bold text-slate-800 dark:text-slate-100 mb-0.5">2. Lokale Speicherung</h3>
                             <p>Wir erheben keine Web-Cookies zur Verfolgung Ihrer Person. Sämtliche gewählten Favoriten und Systemthemen verbleiben via <strong>LocalStorage</strong> unverschlüsselt lokal auf Ihrem Browser.</p>
                         </div>
@@ -585,7 +585,7 @@
         </main>
         
         <!-- FOOTER -->
-        <footer class="text-center mt-auto py-8 border-t border-apple-borderLight dark:border-apple-borderDark relative z-10 flex flex-col items-center justify-center">
+        <footer class="text-center mt-auto py-8 border-t border-slate-200 dark:border-white/[0.06] relative z-10 flex flex-col items-center justify-center">
             <!-- FOOTER LOGO MIT AUTO-FALLBACK -->
             <div class="relative w-6 h-6 mb-2 flex-shrink-0 group">
                 <img src="icon.png" alt="Heitzify Logo" class="absolute inset-0 w-full h-full object-contain rounded-md hidden" id="footer-logo-img" onload="this.classList.remove('hidden'); document.getElementById('footer-logo-fallback').classList.add('hidden')" onerror="this.remove(); document.getElementById('footer-logo-fallback').classList.remove('hidden')">
@@ -661,7 +661,11 @@
 
         // Generative Album Cover Art (deterministischer Duotone-Look im Apple pastell Stil)
         function generateCoverSVG(artist, title) {
-            const hashStr = artist + title;
+            // Extrem sichere String-Bereinigung, um jegliche Uncaught Exceptions zu verhindern!
+            const safeArtist = (artist || '').toString().trim();
+            const safeTitle = (title || '').toString().trim();
+            const hashStr = safeArtist + safeTitle;
+            
             let hash = 0;
             for (let i = 0; i < hashStr.length; i++) {
                 hash = hashStr.charCodeAt(i) + ((hash << 5) - hash);
@@ -689,7 +693,7 @@
                 geometry = `<line x1="15" y1="15" x2="65" y2="65" stroke="white" stroke-width="0.5" opacity="0.3"/>`;
             }
             
-            const letter = artist.trim().charAt(0).toUpperCase() || 'H';
+            const letter = safeArtist.charAt(0).toUpperCase() || 'H';
 
             const svg = `
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" width="100%" height="100%">
@@ -730,14 +734,11 @@
             const savedTheme = localStorage.getItem('theme') || 'dark';
             window.applyTheme(savedTheme);
 
-            // Cookie Consent Banner Check (Wiederhergestellt)
-            const checkCookieConsent = () => {
-                const banner = document.getElementById('cookie-banner');
-                if (banner && !localStorage.getItem('cookieConsent')) {
-                    banner.classList.remove('hidden');
-                }
-            };
-            checkCookieConsent();
+            // Cookie Consent Banner Check
+            const banner = document.getElementById('cookie-banner');
+            if (banner && !localStorage.getItem('cookieConsent')) {
+                banner.classList.remove('hidden'); 
+            }
 
             // Scroll FAB Event
             window.addEventListener('scroll', () => { 
@@ -848,7 +849,7 @@
                 });
             }
 
-            // --- ULTRA SMOOTH RENDERING (Progressive Batch Loading & Zero Layout Shift) ---
+            // --- ULTRA SMOOTH RENDERING (Single Reflow & Safe Listeners) ---
             function highlightMatch(text, term) {
                 if (!term) return text;
                 const safeTerm = escapeRegExp(term);
@@ -975,7 +976,7 @@
             
             function calculateAndDisplayStats() {
                 const totalSongs = songData.length;
-                const artists = songData.map(s => s.artist);
+                const artists = songData.map(s => s.artist).filter(Boolean);
                 const uniqueArtists = [...new Set(artists)];
                 const uniqueGenres = [...new Set(songData.map(s => s.genre).filter(Boolean))];
                 const uniqueLanguages = [...new Set(songData.map(s => s.language).filter(Boolean))];
@@ -1041,6 +1042,8 @@
                 });
             }
 
+            function getDecade(year) { if(!year) return null; return Math.floor(year / 10) * 10 + 'er'; }
+
             function updateSortButtons() {
                 const active = "bg-white dark:bg-[#323236] text-slate-800 dark:text-white shadow-sm font-bold";
                 const inactive = "bg-transparent text-apple-gray hover:text-slate-800 dark:hover:text-white font-medium";
@@ -1069,13 +1072,13 @@
             
             function showModal() {
                 if(!randomSongModal) return;
-                const st = searchInputEl ? searchInputEl.value.toLowerCase() : '';
-                const sa = artistFilterEl ? artistFilterEl.value : 'all';
-                const sg = genreFilterEl ? genreFilterEl.value : 'all';
-                const sl = languageFilterEl ? languageFilterEl.value : 'all';
-                const sd = decadeFilterEl ? decadeFilterEl.value : 'all';
+                const mt = searchInputEl ? searchInputEl.value.toLowerCase() : '';
+                const ma = artistFilterEl ? artistFilterEl.value : 'all';
+                const mg = genreFilterEl ? genreFilterEl.value : 'all';
+                const ml = languageFilterEl ? languageFilterEl.value : 'all';
+                const md = decadeFilterEl ? decadeFilterEl.value : 'all';
                 const songs = songData.filter(s => {
-                    return (sa === 'all' || s.artist === sa) && (sg === 'all' || s.genre === sg) && (sl === 'all' || s.language === sl) && (sd === 'all' || getDecade(s.year) === sd) && (s.title.toLowerCase().includes(st) || s.artist.toLowerCase().includes(st));
+                    return (ma === 'all' || s.artist === ma) && (mg === 'all' || s.genre === mg) && (ml === 'all' || s.language === ml) && (md === 'all' || getDecade(s.year) === md) && (s.title.toLowerCase().includes(mt) || s.artist.toLowerCase().includes(mt));
                 });
                 
                 if(songs.length > 0) {
