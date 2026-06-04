@@ -12,8 +12,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <!-- Browser-Tab-Icons & Apple-Touch-Vorbereitung (Taskleiste und Homescreen) -->
-    <link rel="icon" type="image/png" href="icon.png" sizes="192x192">
-    <link rel="apple-touch-icon" href="icon.png">
+    <link class="brand-logo" rel="icon" type="image/png" href="icon.png" sizes="192x192">
+    <link class="brand-logo" rel="apple-touch-icon" href="icon.png">
     
     <!-- FOUC FIX: Verhindert weißes Flackern beim Laden -->
     <script>
@@ -22,9 +22,83 @@
         } else {
             document.documentElement.classList.add('dark');
         }
+
+        // Globale Hilfs- und Navigationssteuerungen (Sicher vor temporalen oder Scoping-Zyklen im Head definiert)
+        window.switchView = function(viewName) {
+            document.querySelectorAll('.view-section').forEach(el => { 
+                el.classList.add('hidden'); 
+                el.classList.remove('active'); 
+            });
+            const target = document.getElementById(viewName + '-view');
+            if (target) { 
+                target.classList.remove('hidden'); 
+                setTimeout(() => target.classList.add('active'), 10); 
+                window.scrollTo({ top: 0, behavior: 'smooth' }); 
+            }
+        };
+
+        window.toggleMenu = function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileOverlay = document.getElementById('mobile-menu-overlay');
+            if (mobileMenu && mobileOverlay) {
+                if (mobileMenu.classList.contains('menu-closed')) {
+                    mobileOverlay.classList.remove('hidden');
+                    void mobileOverlay.offsetWidth; // Reflow erzwingen
+                    mobileOverlay.classList.remove('opacity-0');
+                    mobileOverlay.classList.add('opacity-100');
+                    
+                    mobileMenu.classList.remove('menu-closed');
+                    mobileMenu.classList.add('menu-open');
+                } else {
+                    mobileOverlay.classList.remove('opacity-100');
+                    mobileOverlay.classList.add('opacity-0');
+                    
+                    mobileMenu.classList.remove('menu-open');
+                    mobileMenu.classList.add('menu-closed');
+                    
+                    setTimeout(() => {
+                        if (mobileMenu.classList.contains('menu-closed')) {
+                            mobileOverlay.classList.add('hidden');
+                        }
+                    }, 500);
+                }
+            }
+        };
+
+        window.applyTheme = function(theme) {
+            const lightIcon = document.getElementById('nav-icon-light');
+            const darkIcon = document.getElementById('nav-icon-dark');
+            if (theme === 'dark') { 
+                document.documentElement.classList.add('dark'); 
+                if (lightIcon) lightIcon.classList.remove('hidden'); 
+                if (darkIcon) darkIcon.classList.add('hidden'); 
+            } else { 
+                document.documentElement.classList.remove('dark'); 
+                if (lightIcon) lightIcon.classList.add('hidden'); 
+                if (darkIcon) darkIcon.classList.remove('hidden'); 
+            }
+        };
+
+        window.toggleTheme = function() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const newTheme = isDark ? 'light' : 'dark';
+            localStorage.setItem('theme', newTheme);
+            window.applyTheme(newTheme);
+        };
+
+        window.acceptCookies = function(type) {
+            localStorage.setItem('cookieConsent', type);
+            const banner = document.getElementById('cookie-banner');
+            if (banner) banner.classList.add('hidden');
+        };
+
+        window.openCookieSettings = function() {
+            const banner = document.getElementById('cookie-banner');
+            if (banner) banner.classList.remove('hidden');
+        };
     </script>
 
-    <!-- Tailwind CSS & Plus Jakarta Sans Fallback -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -116,18 +190,6 @@
         .dark .nav-apple {
             background: rgba(0, 0, 0, 0.7);
             border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-        }
-
-        /* Sektionswechsel */
-        .view-section { display: none; }
-        .view-section.active { 
-            display: block; 
-            animation: appleSlideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
-        }
-        
-        @keyframes appleSlideUp {
-            from { opacity: 0; transform: translateY(24px); filter: blur(6px); }
-            to { opacity: 1; transform: translateY(0); filter: blur(0); }
         }
 
         /* Dropdowns im Apple Look */
@@ -271,8 +333,8 @@
         </div>
     </div>
 
-    <!-- MAIN APP WRAPPER -->
-    <div class="pt-24 max-w-4xl mx-auto w-full px-4 sm:px-6 flex-grow flex flex-col">
+    <!-- MAIN APP WRAPPER (Mit Notch-kompatibler Höhenberechnung) -->
+    <div class="pt-[calc(4.5rem+env(safe-area-inset-top))] max-w-4xl mx-auto w-full px-4 sm:px-6 flex-grow flex flex-col">
         
         <!-- HEADER -->
         <header class="relative text-center mb-10 flex flex-col items-center">
@@ -395,7 +457,7 @@
                                     <button id="sort-by-artist" class="segmented-btn px-4 py-1.5 text-[11px] font-bold rounded-md">Interpret</button>
                                 </div>
                                 <button id="random-song-btn" class="px-4 py-2 bg-black dark:bg-white text-white dark:text-black rounded-lg font-bold flex items-center gap-1.5 text-[11px] hover:opacity-90 active:scale-95 transition-all min-h-[36px]">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M15.33 3.52a.75.75 0 01.428 1.316l-3.033 3.033a1.5 1.5 0 01-2.122 0L7.57 4.836A.75.75 0 018.63 3.77l1.745 1.745a.25.25 0 00.354 0L13.5 2.744a.75.75 0 011.33.428L12.5 5.5h2.75a.75.75 0 010 1.5H12.5l2.33 2.33a.75.75 0 11-1.06 1.06L10.738 7.357a1.5 1.5 0 010-2.122L13.77 2.2a.75.75 0 011.56.54v2.78zm-10 4.15a.75.75 0 11-1.06-1.06L7.303 3.577a1.5 1.5 0 012.122 0l3.033 3.033a.75.75 0 11-1.06 1.06L8.36 4.637a.25.25 0 00-.354 0L5.262 7.382z" clip-rule="evenodd" /></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M15.33 3.52a.75.75 0 01.428 1.316l-3.033 3.033a1.5 1.5 0 01-2.122 0L7.57 4.836A.75.75 0 018.63 3.77l1.745 1.745a.25.25 0 00.354 0L13.5 2.744a.75.75 0 011.33.428L12.5 5.5h2.75a.75.75 0 010 1.5H12.5l2.33a.75.75 0 11-1.06 1.06L10.738 7.357a1.5 1.5 0 010-2.122L13.77 2.2a.75.75 0 011.56.54v2.78zm-10 4.15a.75.75 0 11-1.06-1.06L7.303 3.577a1.5 1.5 0 012.122 0l3.033 3.033a.75.75 0 11-1.06 1.06L8.36 4.637a.25.25 0 00-.354 0L5.262 7.382z" clip-rule="evenodd" /></svg>
                                     Zufall
                                 </button>
                             </div>
@@ -449,7 +511,7 @@
             <!-- DOWNLOADS VIEW -->
             <div id="downloads-view" class="view-section hidden">
                 <div class="apple-panel p-6 sm:p-8 rounded-2xl max-w-2xl mx-auto space-y-5">
-                    <h2 class="text-xl font-bold text-slate-800 dark:text-white pb-2.5 border-b border-slate-200 dark:border-white/[0.06]">Verfügbare Pakete</h2>
+                    <h2 class="text-xl font-bold text-slate-800 dark:text-white pb-2.5 border-b border-apple-borderLight dark:border-apple-borderDark">Verfügbare Pakete</h2>
                     
                     <div class="p-4 bg-red-500/5 border border-red-500/10 rounded-xl flex gap-3.5 items-start">
                          <div class="w-6 h-6 rounded-full bg-red-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -467,20 +529,20 @@
                     <p class="text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest text-[8px]">Download-Zentren</p>
                     
                     <div class="space-y-2.5">
-                        <div class="bg-slate-50/50 dark:bg-white/5 p-4 rounded-xl border border-slate-200 dark:border-white/[0.06] flex justify-between items-center opacity-50 grayscale">
+                        <div class="bg-slate-50/50 dark:bg-white/5 p-4 rounded-xl border border-apple-borderLight dark:border-apple-borderDark flex justify-between items-center opacity-50 grayscale">
                             <div>
                                 <h3 class="font-bold text-xs text-slate-800 dark:text-slate-200">Heitzify UltraStar Paket</h3>
-                                <p class="text-[10px] text-slate-500 mt-0.5">Komplettes Softwarepaket</p>
+                                <p class="text-[10px] text-apple-gray mt-0.5">Komplettes Softwarepaket</p>
                             </div>
-                            <button class="px-3 py-1.5 bg-slate-200 dark:bg-white/10 text-slate-500 rounded-lg font-bold text-[10px] cursor-not-allowed" disabled>Inaktiv</button>
+                            <button class="px-3 py-1.5 bg-slate-200 dark:bg-white/10 text-apple-gray rounded-lg font-bold text-[10px] cursor-not-allowed" disabled>Inaktiv</button>
                         </div>
 
-                        <div class="bg-slate-50/50 dark:bg-white/5 p-4 rounded-xl border border-slate-200 dark:border-white/[0.06] flex justify-between items-center opacity-50 grayscale">
+                        <div class="bg-slate-50/50 dark:bg-white/5 p-4 rounded-xl border border-apple-borderLight dark:border-apple-borderDark flex justify-between items-center opacity-50 grayscale">
                             <div>
                                 <h3 class="font-bold text-xs text-slate-800 dark:text-slate-200">Songdatenbank Update</h3>
-                                <p class="text-[10px] text-slate-500 mt-0.5">Ausschließlich neue Musikdateien</p>
+                                <p class="text-[10px] text-apple-gray mt-0.5">Ausschließlich neue Musikdateien</p>
                             </div>
-                            <button class="px-3 py-1.5 bg-slate-200 dark:bg-white/10 text-slate-500 rounded-lg font-bold text-[10px] cursor-not-allowed" disabled>Inaktiv</button>
+                            <button class="px-3 py-1.5 bg-slate-200 dark:bg-white/10 text-apple-gray rounded-lg font-bold text-[10px] cursor-not-allowed" disabled>Inaktiv</button>
                         </div>
                     </div>
                 </div>
@@ -489,7 +551,7 @@
             <!-- IMPRESSUM VIEW -->
             <div id="impressum-view" class="view-section hidden">
                 <div class="apple-panel p-6 sm:p-8 rounded-2xl max-w-2xl mx-auto space-y-5">
-                    <h2 class="text-xl font-bold text-slate-800 dark:text-white pb-2.5 border-b border-slate-200 dark:border-white/[0.06]">Impressum</h2>
+                    <h2 class="text-xl font-bold text-slate-800 dark:text-white pb-2.5 border-b border-apple-borderLight dark:border-apple-borderDark">Impressum</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
                         <div>
                             <p class="font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-[9px] mb-0.5">Verantwortlich nach § 5 TMG</p>
@@ -497,7 +559,7 @@
                         </div>
                         <div>
                             <p class="font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-[9px] mb-0.5">Direkter Draht</p>
-                            <a href="mailto:dennis.heitz1@gmail.com" class="text-blue-600 dark:text-blue-400 hover:opacity-80 font-bold transition-opacity">dennis.heitz1@gmail.com</a>
+                            <a href="mailto:dennis.heitz1@gmail.com" class="text-apple-blue hover:opacity-80 font-bold transition-opacity">dennis.heitz1@gmail.com</a>
                         </div>
                     </div>
                 </div>
@@ -506,14 +568,14 @@
             <!-- DATENSCHUTZ VIEW -->
             <div id="datenschutz-view" class="view-section hidden">
                 <div class="apple-panel p-6 sm:p-8 rounded-2xl max-w-2xl mx-auto space-y-4">
-                    <h2 class="text-xl font-bold text-slate-800 dark:text-white pb-2.5 border-b border-slate-200 dark:border-white/[0.06]">Datenschutzerklärung</h2>
+                    <h2 class="text-xl font-bold text-slate-800 dark:text-white pb-2.5 border-b border-apple-borderLight dark:border-apple-borderDark">Datenschutzerklärung</h2>
                     <div class="space-y-3.5 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                        <div class="p-3.5 bg-slate-50/50 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/[0.06]">
+                        <div class="p-3.5 bg-slate-50/50 dark:bg-white/5 rounded-xl border border-apple-borderLight dark:border-apple-borderDark">
                             <h3 class="font-bold text-slate-800 dark:text-slate-100 mb-0.5">1. Webserver Logs</h3>
                             <p>Die Anwendung wird über <strong>GitHub Pages</strong> bereitgestellt. Bei Aufruf erfasst GitHub automatisch Zugriffsinformationen (z. B. Ihre IP-Adresse) aus Sicherheitsgründen.</p>
                         </div>
 
-                        <div class="p-3.5 bg-slate-50/50 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/[0.06]">
+                        <div class="p-3.5 bg-slate-50/50 dark:bg-white/5 rounded-xl border border-apple-borderLight dark:border-apple-borderDark">
                             <h3 class="font-bold text-slate-800 dark:text-slate-100 mb-0.5">2. Lokale Speicherung</h3>
                             <p>Wir erheben keine Web-Cookies zur Verfolgung Ihrer Person. Sämtliche gewählten Favoriten und Systemthemen verbleiben via <strong>LocalStorage</strong> unverschlüsselt lokal auf Ihrem Browser.</p>
                         </div>
@@ -523,7 +585,7 @@
         </main>
         
         <!-- FOOTER -->
-        <footer class="text-center mt-auto py-8 border-t border-slate-200 dark:border-white/[0.06] relative z-10 flex flex-col items-center justify-center">
+        <footer class="text-center mt-auto py-8 border-t border-apple-borderLight dark:border-apple-borderDark relative z-10 flex flex-col items-center justify-center">
             <!-- FOOTER LOGO MIT AUTO-FALLBACK -->
             <div class="relative w-6 h-6 mb-2 flex-shrink-0 group">
                 <img src="icon.png" alt="Heitzify Logo" class="absolute inset-0 w-full h-full object-contain rounded-md hidden" id="footer-logo-img" onload="this.classList.remove('hidden'); document.getElementById('footer-logo-fallback').classList.add('hidden')" onerror="this.remove(); document.getElementById('footer-logo-fallback').classList.remove('hidden')">
@@ -591,93 +653,13 @@
 
     <!-- MAIN APP SCRIPT -->
     <script>
-        // Globale Hilfs- und Navigationssteuerungen (Sicher vor temporalen oder Scoping-Zyklen)
-        window.switchView = function(viewName) {
-            document.querySelectorAll('.view-section').forEach(el => { 
-                el.classList.add('hidden'); 
-                el.classList.remove('active'); 
-            });
-            const target = document.getElementById(viewName + '-view');
-            if (target) { 
-                target.classList.remove('hidden'); 
-                setTimeout(() => target.classList.add('active'), 10); 
-                window.scrollTo({ top: 0, behavior: 'smooth' }); 
-            }
-        };
-
-        // Verbessertes modales Menü-Toggling mit nativem Verdunkelungs-Backdrop
-        window.toggleMenu = function() {
-            const mobileMenu = document.getElementById('mobile-menu');
-            const mobileOverlay = document.getElementById('mobile-menu-overlay');
-            if (mobileMenu && mobileOverlay) {
-                if (mobileMenu.classList.contains('menu-closed')) {
-                    // Öffnen
-                    mobileOverlay.classList.remove('hidden');
-                    // Reflow erzwingen für flüssige CSS-Blenden
-                    void mobileOverlay.offsetWidth;
-                    mobileOverlay.classList.remove('opacity-0');
-                    mobileOverlay.classList.add('opacity-100');
-                    
-                    mobileMenu.classList.remove('menu-closed');
-                    mobileMenu.classList.add('menu-open');
-                } else {
-                    // Schließen
-                    mobileOverlay.classList.remove('opacity-100');
-                    mobileOverlay.classList.add('opacity-0');
-                    
-                    mobileMenu.classList.remove('menu-open');
-                    mobileMenu.classList.add('menu-closed');
-                    
-                    // Overlay nach Transition unsichtbar machen
-                    setTimeout(() => {
-                        if (mobileMenu.classList.contains('menu-closed')) {
-                            mobileOverlay.classList.add('hidden');
-                        }
-                    }, 500);
-                }
-            }
-        };
-
-        // Globaler, zuverlässiger Theme-Manager
-        window.applyTheme = function(theme) {
-            const lightIcon = document.getElementById('nav-icon-light');
-            const darkIcon = document.getElementById('nav-icon-dark');
-            if (theme === 'dark') { 
-                document.documentElement.classList.add('dark'); 
-                if (lightIcon) lightIcon.classList.remove('hidden'); 
-                if (darkIcon) darkIcon.classList.add('hidden'); 
-            } else { 
-                document.documentElement.classList.remove('dark'); 
-                if (lightIcon) lightIcon.classList.add('hidden'); 
-                if (darkIcon) darkIcon.classList.remove('hidden'); 
-            }
-        };
-
-        window.toggleTheme = function() {
-            const isDark = document.documentElement.classList.contains('dark');
-            const newTheme = isDark ? 'light' : 'dark';
-            localStorage.setItem('theme', newTheme);
-            window.applyTheme(newTheme);
-        };
-
-        window.acceptCookies = function(type) {
-            localStorage.setItem('cookieConsent', type);
-            const banner = document.getElementById('cookie-banner');
-            if (banner) banner.classList.add('hidden');
-        };
-
-        window.openCookieSettings = function() {
-            const banner = document.getElementById('cookie-banner');
-            if (banner) banner.classList.remove('hidden');
-        };
-
         let songData = [];
         let favorites = JSON.parse(localStorage.getItem('heitzify_favorites')) || [];
         let currentSort = 'title';
         let showFavoritesOnly = false;
-        let animationFrameId = null; // Zur Steuerung des Hintergrund-Batching
+        let animationFrameId = null;
 
-        // Generative Album Cover Art (deterministischer Duotone-Look)
+        // Generative Album Cover Art (deterministischer Duotone-Look im Apple pastell Stil)
         function generateCoverSVG(artist, title) {
             const hashStr = artist + title;
             let hash = 0;
@@ -748,11 +730,14 @@
             const savedTheme = localStorage.getItem('theme') || 'dark';
             window.applyTheme(savedTheme);
 
-            // Cookie Consent Banner Check
-            const banner = document.getElementById('cookie-banner');
-            if (banner && !localStorage.getItem('cookieConsent')) {
-                banner.classList.remove('hidden'); 
-            }
+            // Cookie Consent Banner Check (Wiederhergestellt)
+            const checkCookieConsent = () => {
+                const banner = document.getElementById('cookie-banner');
+                if (banner && !localStorage.getItem('cookieConsent')) {
+                    banner.classList.remove('hidden');
+                }
+            };
+            checkCookieConsent();
 
             // Scroll FAB Event
             window.addEventListener('scroll', () => { 
@@ -809,12 +794,6 @@
                             </li>`; 
                     }
                 });
-
-            // Play Song Action
-            window.playSong = (artist, title) => {
-                const query = encodeURIComponent(`${artist} ${title} Karaoke`);
-                window.open(`https://www.youtube.com/results?search_query=${query}`, '_blank');
-            };
 
             const updateSongOfTheDay = () => {
                 if (!songData.length) return;
@@ -970,7 +949,6 @@
                     currentIndex = limit;
 
                     if (currentIndex < sortedSongs.length) {
-                        // Nächsten Batch im nächsten Frame zeichnen
                         animationFrameId = requestAnimationFrame(renderNextBatch);
                     }
                 }
@@ -1062,8 +1040,6 @@
                     searchInputEl.focus();
                 });
             }
-
-            function getDecade(year) { if(!year) return null; return Math.floor(year / 10) * 10 + 'er'; }
 
             function updateSortButtons() {
                 const active = "bg-white dark:bg-[#323236] text-slate-800 dark:text-white shadow-sm font-bold";
