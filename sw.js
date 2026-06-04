@@ -1,9 +1,8 @@
-const CACHE_NAME = 'heitzify-premium-v10';
+const CACHE_NAME = 'heitzify-premium-v12';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './logo.png',
   './icon.png',
   'https://cdn.tailwindcss.com',
   'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap'
